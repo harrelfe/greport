@@ -1,0 +1,81 @@
+% Usage: \def\poptype{0:no popup tooltips  1:ocgtools  2:movable popups}
+%        \usepackage{greport}
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{greport}[2014/02/19 Support for R greport reports]
+
+% User must define LaTeX macros \tooltipn, \tooltipm, and \tooltipw
+% for narrow, medium, and wide LaTeX objects to pop up
+% Must also define macro \hsepline as \hrule doesn't work in a parbox
+\ifnum\poptype=0
+  \newcommand{\tooltipn}[2]{#1}{#2}
+  \newcommand{\tooltipm}[2]{#1}{#2}
+  \newcommand{\tooltipw}[2]{#1}{#2}
+  \def\hsepline{\hrule}
+  \def\popnotation{}
+  \fi
+\ifnum\poptype=1
+  \usepackage[mouseover]{ocgtools}
+  \usepackage{xcolor,pbox}
+  % Needs the 3 packages the user must install using e.g.:
+  % getlatex acrotex
+  % getlatex ocgtools
+  % getlatexfrom asymptote http://mirrors.ctan.org/graphics
+  % Use |-> symbol for popup rather than coloring object blue
+  \def\ocgtextstart{}
+  \def\ocgtextend{~\textcolor[gray]{0.5}{$\mapsto$}}
+  \def\defaultocgpapercolor{yellow!20}
+  \newcommand{\tooltipn}[2]{\ocgminitext{#1}{\pbox{7in}{#2}}}
+  \newcommand{\tooltipm}[2]{\ocgminitext{#1}{\pbox{7in}{#2}}}
+  \newcommand{\tooltipw}[2]{\ocgtext{#1}{\pbox{7in}{#2}}}
+  % If want to have more control, use the following:
+  % \newcommand{\tooltipn}[2]{\ocgminitext[width=3.5in]{#1}{#2}}
+  % \newcommand{\tooltipm}[2]{\ocgminitext[width=5in]{#1}{#2}}
+  % \newcommand{\tooltipw}[2]{\ocgtext[width=6.5in]{#1}{#2}}
+  \def\hsepline{}
+  %\def\hsepline{\hrule}  % use if not using \parbox or \pbox
+\fi
+
+\ifnum\poptype=2
+  \usepackage{tooltip,pbox}
+  % For movable tooltips, download tooltip.sty, move to
+  % /usr/share/texmf/tex/latex and run mktexlsr
+  % Note: tooltip expands width pretty well for non-wide objects
+  \newcommand{\tooltipn}[2]{\tooltip{#1~\textcolor[gray]{0.5}{$\mapsto$}}{%
+       \pbox{7in}{#2}}}
+  % For stricter control of layout for narrow popups use
+  %   \newcommand{tooltipn}[2]{\tooltip{#1~\textcolor[gray]{0.5}{$\mapsto$}}{%
+  %    \parbox[c]{3.5in}{#2}}
+  \newcommand{\tooltipm}[2]{\tooltip{#1~\textcolor[gray]{0.5}{$\mapsto$}}{%
+       \pbox{7in}{#2}}}
+       % \parbox[c]{5in}{#2}}}
+  \newcommand{\tooltipw}[2]{\tooltip{#1-\textcolor[gray]{0.5}{$\mapsto$}}{%
+       \pbox{7in}{#2}}}
+       % \parbox[c]{6.5in}{#2}}}
+ \def\hsepline{}
+\fi
+
+\typeout{Using poptype=\poptype}
+
+ %------------begin Float Adjustment
+%two column float page must be 90% full
+\renewcommand\dblfloatpagefraction{.90}
+%two column top float can cover up to 80% of page
+\renewcommand\dbltopfraction{.80}
+%float page must be x% full
+\renewcommand\floatpagefraction{.9}
+%top float can cover up to x% of page
+\renewcommand\topfraction{.90}
+%bottom float can cover up to x% of page
+\renewcommand\bottomfraction{.80}
+%at least x% of a normal page must contain text
+\renewcommand\textfraction{.07}
+%separation between floats and text
+\setlength\dbltextfloatsep{9pt plus 5pt minus 3pt }
+%separation between two column floats and text
+\setlength\textfloatsep{4pt plus 2pt minus 1.5pt}
+\endinput
+
+% To install:
+sudo cp greport.sty /usr/share/texlive/texmf-dist/tex/latex/.
+sudo mktexlsr

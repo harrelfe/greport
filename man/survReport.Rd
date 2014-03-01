@@ -1,0 +1,99 @@
+\name{survReport}
+\alias{survReport}
+\title{Survival Report}
+\usage{
+survReport(formula, data = NULL, subset = NULL, na.action = na.retain,
+  ylab = NULL, what = c("S", "1-S"), conf = c("diffbands", "bands",
+  "bars", "none"), panel = "surv", subpanel = NULL, head = NULL,
+  tail = NULL, h = 3, w = 4.5, multi = FALSE, mfrow = NULL,
+  y.n.risk = -0.5, bot = 2, append = FALSE, ...)
+}
+\arguments{
+  \item{formula}{a formula with survival (\code{Srv})
+  objects on the left hand side and an optional
+  stratification factor on the right (or \code{1} if none).
+  The survival object component variables should be
+  labeled; these labels are used for graph annotation.}
+
+  \item{data}{data.frame}
+
+  \item{subset}{optional subsetting criteria}
+
+  \item{na.action}{function for handling \code{NA}s while
+  creating a data frame}
+
+  \item{ylab}{character. Passed to
+  \code{\link[rms]{survplot.survfit}} as the \code{ylab}
+  argument.  Constructed by default.}
+
+  \item{what}{\code{"S"} (the default) to plot survival
+  functions or \code{"1-S"} to plot cumulative incidence
+  functions.}
+
+  \item{conf}{character. See
+  \code{\link[rms]{survplot.survfit}}.}
+
+  \item{panel}{character string.  Name of panel, which goes
+  into file base names and figure labels for
+  cross-referencing.}
+
+  \item{subpanel}{character string.  If calling
+  \code{dReport} more than once for the same type of chart
+  (categorical or continuous), specify \code{subpanel} to
+  distinguish the multiple calls.  In that case,
+  \code{-subpanel} will be appended to \code{panel} when
+  creating figure labels and cross-references.}
+
+  \item{head}{character string.  Specifies initial text in
+  the figure caption, otherwise a default is used.}
+
+  \item{tail}{optional character string.  Specifies final
+  text in the figure caption, e.g., what might have been
+  put in a footnote in an ordinary text page.  This appears
+  just before any needles.}
+
+  \item{h}{numeric. Height of plots.}
+
+  \item{w}{numeric. Width of plots in inches.}
+
+  \item{multi}{logical.  If \code{TRUE}, multiple figures
+  are produced, othewise a single figure with a matrix of
+  survival plots is made.}
+
+  \item{mfrow}{numeric 2-vector, used if
+  \code{multi=FALSE}.  If not specified, default plot
+  matrix layout will be figured.}
+
+  \item{y.n.risk}{used if \code{what="1-S"}, to specify
+  \code{y} coordinate for putting numbers at risk,
+  typically below the \code{x}-axis label}
+
+  \item{bot}{number of spaces to reserve at bottom of plot
+  for numbers at risk, if \code{what="1-S"}}
+
+  \item{append}{logical. If \code{TRUE} output will be
+  appended instead of overwritten.}
+
+  \item{\dots}{ignored}
+}
+\description{
+Generate a Survival Report with Kaplan-Meier Estimates
+}
+\examples{
+## See tests directory test.Rnw for a live example
+\dontrun{
+  set.seed(1)
+  n <- 400
+  dat <- data.frame(t1=runif(n, 2, 5), t2=runif(n, 2, 5),
+                    e1=rbinom(n, 1, .5), e2=rbinom(n, 1, .5),
+                    treat=sample(c('a','b','c'), n, TRUE))
+  dat <- upData(dat,
+                labels=c(t1='Time to operation',
+                         t2='Time to rehospitalization',
+                         e1='Operation', e2='Hospitalization',
+                         treat='Treatment')
+                units=c(t1='year', t2='year'))
+  survReport(Srv(t1, e1) + Srv(t2, e2) ~ treat, data=dat)
+}
+}
+

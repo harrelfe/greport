@@ -1,0 +1,27 @@
+\name{startPlot}
+\alias{endPlot}
+\alias{startPlot}
+\title{Plot Initialization}
+\usage{
+startPlot(file, h = 7, w = 7, lattice = TRUE, ...)
+
+endPlot()
+}
+\arguments{
+  \item{file}{character.  Character string specifying file
+  prefix.}
+
+  \item{h}{numeric.  Height of plot in inches, default=7.}
+
+  \item{w}{numeric.  Width of plot in inches, default=7.}
+
+  \item{lattice}{logical.  Set to \code{FALSE} to prevent
+  \code{latticeInit} from being called.}
+
+  \item{\dots}{Arguments to be passed to \code{spar}.}
+}
+\description{
+Toggle plotting.  Sets options by examining
+\code{setgreportOption(gtype=}.
+}
+

@@ -1,0 +1,21 @@
+\name{mfrowSuggest}
+\alias{mfrowSuggest}
+\title{Compute mfrow Parameter}
+\usage{
+mfrowSuggest(n, small = FALSE)
+}
+\arguments{
+  \item{n}{numeric. Total number of figures to place in
+  layout.}
+
+  \item{small}{logical. Set to \sQuote{TRUE} if the plot
+  area should be smaller to accomodate many plots.}
+}
+\value{
+return numeric vector. oldmfrow <- mfrowSet(8)
+}
+\description{
+Compute a good \code{par("mfrow")} given the number of
+figures to plot.
+}
+

@@ -1,0 +1,15 @@
+accrualReport           Accrual Report
+dNeedle                 Draw Needles
+dReport                 Descriptive Statistics Report
+eReport                 Event Report
+exReport                Exclusion Report
+getgreportOption        Get greport Options
+latticeInit             Setup lattice plots using greport options
+Merge                   Merge Multiple Data Frames
+mfrowSuggest            Compute mfrow Parameter
+putFig                  Put Figure
+sampleFrac              Compute Sample Fractions
+setgreportOption        Set greport Options
+startPlot               Plot Initialization
+survReport              Survival Report
+upFirst                 Change First Letters to Upper Case

@@ -1,0 +1,428 @@
+% Usage: Copy test.Rnw to a temporary directory and make directories
+% gentex and pdf under it, then run knitr on test.Rnw
+\documentclass{article}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+\def\titl{DSMB Report for EXAMPLE Trial}
+
+\usepackage[hidelinks,bookmarks,pagebackref,pdfpagemode=UseOutlines,
+    linkcolor=blue,
+    pdfauthor={Frank Harrell},
+    pdftitle={Article Title}]{hyperref}
+
+  
+\def\poptype{1}
+% 0=no popup tooltips  1=ocgtools  2=movable popups
+\usepackage{greport}   % must appear after \usepackage{hyperref}
+
+\graphicspath{{pdf/}}
+\title{\titl}
+\date{\today}
+\pagestyle{fancy}
+\renewcommand{\subsectionmark}[1]{} % suppress subsection titles in headers
+
+\begin{document}
+\maketitle
+\tableofcontents 
+\listoffigures
+\listoftables
+\rhead{\scriptsize The {\em EXAMPLE} Study \\
+    Protocol xyz--001 \\
+    \today}
+
+<<echo=FALSE>>=
+#echo <- TRUE   # show code
+ echo <- FALSE  # hide code
+knitrSet(echo=echo, results='hide')
+require(greport)
+@
+
+<<>>=
+## Generate test data
+set.seed(1)
+n <- 500
+d <- data.frame(country=sample(c('US', 'Canada', 'Spain', 'France',
+                  'Germany'), n, TRUE),
+                site=sample(1:10, n, TRUE))
+d$site   <- paste(substring(d$country, 1, 2), d$site, sep='')
+d$region <- factor(ifelse(d$country %in% c('US', 'Canada'),
+                          'North America', 'Europe'))
+
+d <- upData(d, edate = as.Date('2005-01-01') +
+            round(rgamma(n, 2, .01)) - 600 * (country == 'US'),
+            rdate = edate + round(runif(n, 1, 30)), print=FALSE)
+d$rdate[runif(nrow(d)) < 0.5] <- NA  # non-randomized subjects )
+
+# with(d, table(region, country))
+
+# For US manually compute # randomized per month
+us   <- subset(d, country == 'US')
+site <- us$site
+ed   <- us$edate
+rd   <- us$rdate
+months <- difftime(as.Date('2007-12-31'), ed, units='days') /
+  (365.25 / 12)
+m <- max(months)
+a <- sum(!is.na(rd)) / as.numeric(m)   # .8545774 (agrees with chart)
+# Compute maximum months elapsed for each site then sum over sites
+maxpersite <- tapply(months, site, max)
+b <- sum(!is.na(rd)) / sum(maxpersite)
+## 0.0864429 = 47 / 543.6715 chart: .08645 (rounded)
+
+## Suppose there are more subjects enrolled and randomized than really
+## made their way into the dataset
+denom <- c(enrolled=nrow(d) * 1.1,
+           randomized=sum(!is.na(d$rdate)) + 10)
+
+setgreportOption(gtype=c('pdf', 'interactive')[1], # [2] to debug
+                 tx.var='treat', denom=denom)
+
+## Initialize app.tex
+file <- sprintf('%s/app.tex', getgreportOption('texdir'))
+cat('', file=file)
+@ 
+
+\section{Notation}
+\ifnum\poptype > 0
+\paragraph{Pop-up Tooltips}
+Certain elements of the report, signaled by
+\textcolor[gray]{0.5}{$\mapsto$}, have pop-up tooltips behind them.
+More information will pop up when viewing the report under Acrobat
+Reader when the mouse hovers over \textcolor[gray]{0.5}{$\mapsto$}.
+\ifnum\poptype=1
+Clicking on the information in the pop-up will make it ``stick'', and
+clicking on the \textcolor{red}{X} will make it disappear.  For
+graphics that have pop-up tables you can also click anywhere inside
+the graph.  When the pop-up is a wide table, it will use full-page
+mode.  If the table is tall you may need to scroll vertically.  To do
+that, click on the table when it pops up to make it stick, then
+scroll, then click again to make it disappear.
+\fi
+\ifnum\poptype=2
+Clicking on the pop-up and releasing will allow you to move the pop-up
+with a mouse gesture (do not hold the mouse button down).  Click on
+the pop-up to make it stick in a certain location.  Hover over
+\textcolor[gray]{0.5}{$\mapsto$} to make the pop-up disappear, or
+click on the pop-up again to unstick it.
+\fi
+\fi
+
+\paragraph{Hyperlinks to Tables}
+Some graphics and tables are hyperlinked to tables
+in the Appendix.  For these, clicking anywhere in the graphic or table
+will move the pdf reader to the supporting table.  Clicking on the
+appendix table will bring you back to the original figure.
+
+\paragraph{Figure Captions}
+Needles represent the fraction of observations used in the current
+analysis.  The first needle (red) shows the fraction of enrolled
+patients used.  If randomization was taken into account, a second
+needle (green) represents the fraction of randomized subjects included
+in the analysis.  When the analyses consider treatment assignment, two
+more needles may be added to the display, showing, respectively, the
+fraction of subjects randomized to treatment A used in the analysis
+and the fraction of subjects on treatment B who were analyzed.  The
+colors of these last two needles are the colors used for the two
+treatments throughout the report.  The following table shows some
+examples.
+<<results='asis'>>=
+# dNeedle uses colors in setgreportOption(tx.col=, er.col=)
+dNeedle(1,           'lttdemoa')
+dNeedle(c(3,4)/4 ,   'lttdemob')
+dNeedle(c(1,2)/4,    'lttdemoc')
+dNeedle(c(1,2,3,1)/4,'lttdemod')
+@
+\begin{center}
+  \begin{tabular}{ll}
+      \textbf{Needles} & \textbf{Interpretation} \\ \hline
+      \lttdemoa & All enrolled subjects analyzed, randomization not considered\\
+      \lttdemob & Analysis uses $\frac{3}{4}$ of enrolled subjects,
+                  and all randomized subjects\\
+      \lttdemoc & Analysis uses $\frac{1}{4}$ of enrolled subjects,
+                  and $\frac{1}{2}$ of randomized subjects\\
+      \lttdemod & Same as previous example, and in addition the analysis\\
+                & utilized treatment assignment, analyzing $\frac{3}{4}$ of
+                  those\\
+                & randomized to A and $\frac{1}{4}$ of those randomized to B\\
+      \hline
+  \end{tabular}
+\end{center}
+\paragraph{Extended Box Plots}
+\newcommand{\eboxpopup}[1]{\tooltipm{#1}{\includegraphics{bpplt-proto}}}
+% To not generate pop-up use: \newcommand{\eboxpopup}[1]{}
+
+For depicting distributions of continuous variables, many of the
+following displays use extended box plots, also called
+box--percentile plots.  A prototype, with explanations, is below.
+<<bpplt-proto,w=5,h=3.5>>=
+bpplt()
+@ 
+\paragraph{Survival Curves}
+Graphs containing pairs of Kaplan-Meier survival curves show a shaded
+region centered at the midpoint of the two survival estimates and
+having a height equal to the half-width of the approximate 0.95 pointwise
+confidence interval for the difference of the two survival
+probabilities.  Time points at which the two survival estimates do not
+touch the shaded region denote approximately significantly different
+survival estimates, without any multiplicity correction.
+\clearpage
+
+\section{Accrual}
+
+<<>>=
+accrualReport(enroll(edate) + randomize(rdate) ~
+              region(region) + country(country) + site(site),
+              data=d, hdot=3,
+              dateRange=c('2005-01-01', '2007-12-31'),
+              targetN=
+                data.frame(edate=c(500, 1000), rdate=c(250, 500)),
+              targetDate=c('2006-01-01', '2007-12-31'),
+              zoom=c('2005-01-01', '2005-06-30'),
+              closeDate='2007-12-31')
+@ 
+\input{gentex/accrual}
+\clearpage
+
+\section{Patient Flow and Exclusions}
+<<>>=
+d <- upData(d,
+            subjid = 1 : n,
+            pend   = rbinom(n, 1, .1),
+            e1     = rbinom(n, 1, .02),
+            e2     = rbinom(n, 1, .02),
+            e3     = rbinom(n, 1, .02),
+            e4     = ifelse(runif(n) < 0.25, NA, rbinom(n, 1, .10)),
+            tested = rbinom(n, 1, .75),
+            e5     = ifelse(tested, rbinom(n, 1, .04), NA),
+            e6     = rbinom(n, 1, .02),
+            e7     = rbinom(n, 1, .02),
+            rndz   = rbinom(n, 1, .75),
+            labels=c(e1='Prior MI', e2='History of Asthma',
+              e3='History of Upper GI Bleeding',
+              e4='No Significant CAD', e5='Inadequate Renal Function',
+              e6='Pneumonia within 6 weeks', e7='Prior cardiac surgery'),
+            print=FALSE)
+
+erd <- data.frame(subjid = 1 : 50,
+                  loc   = sample(c('gastric', 'lung', 'trachea'), 50, TRUE))
+
+# To check warning messages, greportOption denom does not match pend, e1-e7
+exReport(~ pending(pend) + e1 + e2 + e3 + e4 + e5 + e6 + e7 +
+         randomized(rndz) + id(subjid) + cond(e5, 'Tested', tested),
+         erdata = erd,
+         whenapp= c(e4='CCTA done'), data=d, hc=3.75, h=4)
+
+# Show exclusions in original variable order
+exReport(~ pending(pend) + e1 + e2 + e3 + e4 + e5 + e6 + e7 +
+         randomized(rndz) + id(subjid) + cond(e5, 'Tested', tested),
+         erdata=erd,
+         whenapp=c(e4='CCTA done'), data=d, hc=3.75, h=4,
+         sort=FALSE, append=TRUE, subpanel='unsorted', app=FALSE)
+@ 
+\input{gentex/excl}
+\clearpage
+
+\section{Baseline Variables}
+<<>>=
+n <- 100
+f <- function(na=FALSE) {
+  x <- sample(c('N', 'Y'), n, TRUE)
+  if(na) x[runif(100) < .1] <- NA
+  x
+}
+set.seed(1)
+d <- data.frame(x1=f(), x2=f(), x3=f(), x4=f(), x5=f(), x6=f(),
+                x7=f(TRUE),
+                age=rnorm(n, 50, 10),
+                sbp=rnorm(n, 120, 7),
+                dbp=rnorm(n,  80, 6),
+                days=sample(1:n, n, TRUE),
+                race=sample(c('Asian', 'Black/AA', 'White'), n, TRUE),
+                sex=sample(c('Female', 'Male'), n, TRUE),
+                treat=sample(c('A', 'B'), n, TRUE),
+                region=sample(c('North America','Europe'), n, TRUE),
+                meda=sample(0:1, n, TRUE), medb=sample(0:1, n, TRUE))
+
+d <- upData(d, labels=c(x1='MI', x2='Stroke', x3='AKI', x4='Migraines',
+                 x5='Pregnant', x6='Other event', x7='MD withdrawal',
+                 race='Race', sex='Sex', treat='treatment',
+                 sbp='Systolic BP', days='Time Since Randomization',
+                 meda='Medication A', medb='Medication B'),
+            units=c(sbp='mmHg', dbp='mmHg', age='years', days='days'),
+            print=FALSE)
+dasna <- subset(d, region=='North America')
+# with(dasna, table(race, treat))
+den <- c(enrolled=n + 50, randomized=n, table(d$treat))
+setgreportOption(denom=den, tx.var='treat')
+             
+dReport(race + sex +
+           ynbind(x1, x2, x3, x4, x5, x6, x7, label='Exclusions') ~ 1,
+           head='Overall frequencies of categorical demographic variables and exclusions',
+           data=d, w=4, h=4.5, popts=list(layout=c(1,3)))
+
+## Leave extra space to right of panels for numerators/denominators
+dReport(race + sex ~ region, data=addMarginal(d, region),
+        groups='region', append=TRUE,
+        w=4.75, h=2.75, subpanel='demoreg',
+        head='Demographics',
+        popts=list(layout=c(1,2),
+           key=list(space='right', cex=.7), text.at=1.5))
+           
+## Add a new block of variables that apply only to males
+dReport(race + sex +
+        pBlock(race, subset=sex=='Male', label='Race: Males') ~ region,
+        data=d, groups='region', append=TRUE,
+        w=4.75, h=3.5, subpanel='demoblock',
+        popts=list(layout=c(1,3),
+          key=list(space='top'),
+          head='Demographics with race for males'))
+
+excl <- with(d, ynbind(x1, x2, x3, x4, x5, x6, x7,
+                       label='Exclusions'))
+dReport(excl ~ 1, head='Exclusions', append=TRUE,
+        w=4, h=2.5, subpanel='excl')
+
+dReport(race + sex + excl ~ treat + region, groups='treat',
+        head='Categorical demographic variables and exclusions',
+        data=d, append=TRUE, w=7, h=4.5, subpanel='txreg')
+
+## Show spike histogram for raw data, 50 bins
+dReport(age + sbp + dbp ~ region,
+        data=d, append=TRUE, w=6, h=2,
+        sopts=list(datadensity=TRUE,
+          scat1d.opts=list(nhistSpike=1,
+            col=adjustcolor('red', alpha.f=.5),
+            nint=50)),
+        head='Baseline continuous variables')
+
+dReport(age + sbp + dbp ~ treat + region, w=6, h=3.5,
+           data=d, append=TRUE, subpanel='txreg')
+
+# Same but show regions combined
+dReport(age + sbp + dbp ~ treat + region, w=6, h=4.75,
+           data=addMarginal(d, region),
+           append=TRUE, subpanel='txregm')
+
+# Show raw data and smoothed relationship between age and sbp,
+# stratified.
+# Label curves in an empty region, for the first panel only
+pan <- function(...)
+  panel.plsmo(..., type='b', label.curves=max(which.packet()) == 1,
+              datadensity=TRUE)
+dReport(sbp ~ age + treat + region, groups='treat', data=d, what='xy',
+        popts=list(panel=pan, paneldoesgroups=TRUE,
+          scat1d.opts=list(lwd=.7), key=NULL),
+        append=TRUE, subpanel='xyplot', h=3, w=6)
+
+
+
+f <- function(x) {
+  x <- x[! is.na(x)]
+  c(smean.cl.normal(x, na.rm=FALSE), n=length(x))
+}
+
+#dReport(sbp ~ treat + region, data=d, groups='treat',
+#        fun = f, head='Mean and confidence limits',
+#        popts = list(textplot='Mean', digits=1,
+#          key=list(space='right')),
+#        append=TRUE, subpanel='statstest', h=3, w=5)
+dReport(sbp ~ treat + region, data=d,
+        fun = f, head='Mean and confidence limits',
+        popts = list(textplot='Mean', digits=1),
+        append=TRUE, subpanel='stats', h=3, w=5)
+@ 
+\input{gentex/desc}
+\clearpage
+\section{Medication Usage Over Time}
+<<>>=
+pan <- function(...)
+  panel.plsmo(..., type='l', label.curves=max(which.packet()) == 1,
+              datadensity=TRUE)
+dReport(meda + medb ~ days + treat + region, what='xy',
+        groups='treat', data=d, h=3.75,
+        popts=list(panel=pan, paneldoesgroups=TRUE,
+          ylab='Proportion Using',
+          scat1d.opts=list(lwd=.7)),
+        head='Medication usage',
+        tail='Tick marks indicate observed measurement times.',
+        panel='meds')
+@ 
+\input{gentex/meds}
+\clearpage
+\section{Time to Hospitalization and Surgery}
+<<>>=
+set.seed(1)
+n <- 400
+dat <- data.frame(t1=runif(n, 2, 5), t2=runif(n, 2, 5),
+                  e1=rbinom(n, 1, .5), e2=rbinom(n, 1, .5),
+                  treat=sample(c('a','b'), n, TRUE))
+dat <- upData(dat,
+              labels=c(t1='Time to operation',
+                       t2='Time to rehospitalization',
+                       e1='Operation', e2='Hospitalization',
+                       treat='Treatment'),
+              units=c(t1='Year', t2='Year'), print=FALSE)
+denom <- c(enrolled=n + 40, randomized=400, a=sum(dat$treat=='a'),
+           b=sum(dat$treat=='b'))
+setgreportOption(denom=denom, tx.var='treat')
+survReport(Surv(t1, e1) + Surv(t2, e2) ~ treat, data=dat,
+           mfrow=c(2,1), w=4.75, h=6, ps=8, what='S')
+
+# Same but use multiple figures and use 1 - S(t) scale
+survReport(Surv(t1, e1) + Surv(t2, e2) ~ treat, data=dat,
+           multi=TRUE, subpanel='multi', append=TRUE, ps=9, what='1-S')
+@ 
+\input{gentex/surv}
+
+\section{Adverse Events}
+For this example, the denominators for the two treatments in the
+pop-up needles will be incorrect because the dataset did not have
+subject IDs.
+<<>>=
+# Original source of aeanonym: HH package
+# aeanonym <- read.table(hh("datasets/aedotplot.dat"), header=TRUE, sep=",")
+# Modified to remove denominators from data and to generate raw data
+# (one record per event per subject)
+
+ae <-
+structure(list(RAND = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 1L, 
+2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 
+2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 
+2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 
+2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L), .Label = c("a", 
+"b"), class = "factor"), PREF = structure(c(12L, 12L, 
+18L, 18L, 26L, 26L, 33L, 33L, 5L, 5L, 27L, 27L, 6L, 6L, 15L, 
+15L, 22L, 22L, 23L, 23L, 31L, 31L, 17L, 17L, 2L, 2L, 3L, 3L, 
+13L, 13L, 25L, 25L, 28L, 28L, 14L, 14L, 4L, 4L, 8L, 8L, 19L, 
+19L, 21L, 21L, 29L, 29L, 10L, 10L, 20L, 20L, 16L, 16L, 32L, 32L, 
+11L, 11L, 1L, 1L, 30L, 30L, 24L, 24L, 9L, 9L, 7L, 7L),
+  .Label = tolower(c("ABDOMINAL PAIN", 
+"ANOREXIA", "ARTHRALGIA", "BACK PAIN", "BRONCHITIS", "CHEST PAIN", 
+"CHRONIC OBSTRUCTIVE AIRWAY", "COUGHING", "DIARRHEA", "DIZZINESS", 
+"DYSPEPSIA", "DYSPNEA", "FATIGUE", "FLATULENCE", "GASTROESOPHAGEAL REFLUX", 
+"HEADACHE", "HEMATURIA", "HYPERKALEMIA", "INFECTION VIRAL", "INJURY", 
+"INSOMNIA", "MELENA", "MYALGIA", "NAUSEA", "PAIN", "RASH", "RESPIRATORY DISORDER", 
+"RHINITIS", "SINUSITIS", "UPPER RESP TRACT INFECTION", "URINARY TRACT INFECTION", 
+"VOMITING", "WEIGHT DECREASE")), class = "factor"), SAE = c(15L, 
+9L, 4L, 9L, 4L, 9L, 2L, 9L, 8L, 11L, 4L, 11L, 9L, 12L, 5L, 12L, 
+7L, 12L, 6L, 12L, 6L, 12L, 2L, 14L, 2L, 15L, 1L, 15L, 4L, 16L, 
+4L, 17L, 11L, 17L, 6L, 20L, 10L, 23L, 13L, 26L, 12L, 26L, 4L, 
+26L, 13L, 28L, 9L, 29L, 12L, 30L, 14L, 36L, 6L, 37L, 8L, 42L, 
+20L, 61L, 33L, 68L, 10L, 82L, 23L, 90L, 76L, 95L)), .Names = c("RAND", 
+"PREF", "SAE"), class = "data.frame", row.names = c(NA, 
+-66L))
+
+subs <- rep(1 : nrow(ae), ae$SAE)
+ae <- ae[subs, c('RAND', 'PREF')]
+names(ae) <- c('treat', 'event')
+label(ae$treat) <- 'Treatment'
+
+eReport(event ~ treat, data=ae, minincidence=.05)
+@ 
+\input{gentex/events}
+\clearpage   % needed to get last tooltips to work
+
+\section{Appendix: Supporting Tables}
+\input{gentex/app}
+\end{document}

@@ -1,0 +1,543 @@
+% Usage: Copy report.Rnw and ssafety.rda to a temporary directory and
+% make directories gentex and pdf under it, then run knitr on report.Rnw
+% To compile: knitr report; pdflatex report
+% Produces: report.pdf
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{relsize}    % for \smaller etc.
+\usepackage{moreverb}   % for \verbatimtabinput
+\usepackage{fancyhdr}   % for fancy headers
+\usepackage{url}        % for \url{}
+
+\def\titl{Example Closed Meeting Data Monitoring Committee Report}
+\definecolor{darkblue}{RGB}{0,0,139}
+\def\linkcol{darkblue}
+
+\usepackage[pdftex,hidelinks,bookmarks,pagebackref,pdfpagemode=UseOutlines,
+    colorlinks,linkcolor=\linkcol,
+    pdfauthor={Frank E Harrell Jr},
+    pdftitle={\titl}]{hyperref}
+% Remove colorlinks and linkcolor options to hyperref to box the
+% hyperlinked items (for screen only)
+
+\def\poptype{1}   % 0=no pop-up tooltips  1=ocgtools  2=movable pop-ups
+\usepackage{greport}
+
+\graphicspath{{pdf/}}
+
+\newcommand{\code}[1]{\texttt{\smaller #1}}  % format software names
+% smaller implemented by relsize: use 1 size smaller than current font
+
+\newcommand{\R}{{\normalfont\textsf{R}}{}}
+
+\author{Frank Harrell}
+\title{\titl}
+\date{\today}
+\pagestyle{fancy}              % used for running headers, footers (rhead)
+\renewcommand{\subsectionmark}[1]{} % suppress subsection titles in headers
+
+\begin{document}
+\maketitle
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage
+\rhead{\scriptsize The {\em EXAMPLE} Study \\
+    Protocol xyz--001 \\
+    \today}
+  
+<<setup,echo=FALSE,results='asis'>>=
+# knitrSet and spar functions may be found in
+# http://biostat.mc.vanderbilt.edu/wiki/pub/Main/RConfiguration/Rprofile
+echo <- TRUE     # include code in report
+# echo <- FALSE    # exclude code in report
+cat('%------------------\n')
+cat(sprintf('\\def\\inclcode{%s}\n', 1 * echo))
+knitrSet(echo=echo)
+require(greport)
+@
+
+<<>>=
+Load(ssafety)
+ssafety <- upData(ssafety, rdate=as.Date(rdate),
+                  smoking=factor(smoking, 0:1, c('No','Yes')),
+                  labels=c(smoking='Smoking', bmi='BMI',
+                    pack.yrs='Pack Years', age='Age',
+                    height='Height', weight='Weight'),
+                  units=c(age='years', height='cm', weight='Kg'),
+                  print=FALSE)
+mtime <- function(f) format(file.info(f)$mtime)
+datadate        <- mtime('ssafety.rda')
+primarydatadate <- mtime('ssafety.rda')
+
+## List of lab variables that are missing too much to be used
+omit  <- Cs(amylase,aty.lymph,glucose.fasting,neutrophil.bands)
+
+## Make a list that separates variables into major categories
+vars <- list(baseline=Cs(age, sex, race, height, weight, bmi,
+               smoking, pack.yrs),
+             ae  =Cs(headache, ab.pain, nausea, dyspepsia, diarrhea,
+                     upper.resp.infect, coad),
+             ekg =setdiff(names(ssafety)[c(49:53,55:56)],
+               'atrial.rate'),
+             chem=setdiff(names(ssafety)[16:48],
+               c(omit, Cs(lymphocytes.abs, atrial.rate,
+                          monocytes.abs, neutrophils.seg,
+                          eosinophils.abs, basophils.abs)))) 
+week  <- ssafety$week
+weeks <- sort(unique(week))
+base  <- subset(ssafety, week==0)
+denom <- c(c(enrolled=500, randomized=nrow(base)), table(base$trx))
+
+setgreportOption(tx.var='trx', denom=denom)
+## Initialize app.tex
+file <- sprintf('%s/app.tex', getgreportOption('texdir'))
+cat('', file=file)
+@ 
+
+\section{Philosophy}
+The reporting tools used here are based on a number of lessons learned
+from the intersection of the fields of statistical graphics, graphic
+design, and cognitive psychology, especially from the work of Bill Cleveland,
+Ralph McGill, John Tukey, Edward Tufte, and Jacques Bertin.
+\begin{enumerate}
+\item Whenever largely numerical information is displayed, graphs
+  convey the information most often needed much better than tables.
+  \begin{enumerate}
+    \item Tables usually show more precision than is warranted by the
+      sample information while hiding important features.
+    \item Graphics are much better than tables for seeing patterns and
+      anomalies. 
+    \end{enumerate}
+\item The best graphics are ones that make use of features that humans are most
+  accurate in perceiving, namely position along a common scale.
+\item Information across multiple data categories is usually easier to
+  judge when the categories are sorted by the numeric quantity
+  underlying the information\footnote{This also facilitates
+    multivariate understanding of trends and differences.  For
+    example, if one sorted countries by the fraction of subjects who
+    died and displayed also the fraction of subjects who suffered a
+    stroke, the extent to which stroke incidence is also sorted by
+    country is a measure of the correlation between mortality and
+    stroke incidence across countries.}.
+\item The most robust and informative descriptive statistics for
+  continuous variables are quantiles and whole distribution
+  summaries\footnote{In particular, the standard deviation is not very
+    meaningful for asymmetric distributions, and is not robust to outliers.}.
+\item For group comparisons, confidence intervals for individual
+  means, medians, or proportions are not very useful, and whether or
+  not two confidence intervals overlap is not the correct statistical
+  approach for judging the significance of the difference between the
+  two.  The half-width of the confidence interval for the difference,
+  when centered at the midpoint of the two estimates, provides a
+  succinct precision display, and this half-interval touches the
+  two estimates if and only if there is no significant difference
+  between the two.
+\item Each graphic needs a marker that provides the reader with a
+  sense of exactly what fraction of the sample is being analyzed in
+  that graphic. 
+\item Tables are best used as backups to graphics.
+\item Tables should emphasize estimates that are not functions of the
+  sample size.  For categorical variables, proportions have
+  interpretations independent of sample size so they are the featured
+  estimates, and numerators and denominators are subordinate to the
+  proportions.  For 
+  continuous variables, minimum and maximum, while useful for data
+  quality checking, are not population parameters, and they expand as
+  $n\uparrow$, so they are not proper summary statistics.
+\end{enumerate}
+
+\section{Notation}
+\ifnum\poptype > 0
+\paragraph{Pop-up Tooltips}
+Certain elements of the report, signaled by
+\textcolor[gray]{0.5}{$\mapsto$}, have pop-up tooltips behind them.
+More information will pop up when viewing the report under Acrobat
+Reader when the mouse hovers over \textcolor[gray]{0.5}{$\mapsto$}.
+\ifnum\poptype=1
+Clicking on the information in the pop-up will make it ``stick'', and
+clicking on the \textcolor{red}{X} will make it disappear.  For
+graphics that have pop-up tables you can also click anywhere inside
+the graph.  When the pop-up is a wide table, it will use full-page
+mode.  If the table is tall you may need to scroll vertically.  To do
+that, click on the table when it pops up to make it stick, then
+scroll, then click again to make it disappear.
+\fi
+\ifnum\poptype=2
+Clicking on the pop-up and releasing will allow you to move the pop-up
+with a mouse gesture (do not hold the mouse button down).  Click on
+the pop-up to make it stick in a certain location.  Hover over
+\textcolor[gray]{0.5}{$\mapsto$} to make the pop-up disappear, or
+click on the pop-up again to unstick it.
+\fi
+\fi
+
+\paragraph{Hyperlinks and Tables}
+Some graphics and tables are hyperlinked to tables
+in the Appendix.  For these, clicking anywhere in the graphic or table
+will move the pdf reader to the supporting table.  Clicking on the
+appendix table will bring you back to the original figure.
+\ifnum\pdfstrcmp{\linkcol}{black}=0
+%
+\else
+Other than for graphics, objects appearing in
+\textcolor{\linkcol}{this color} are hyperlinked.
+\fi
+
+\paragraph{Viewers}
+You must use Adobe Acrobat Reader to view pdf files generated by
+greport otherwise pop-ups will not work. Neither pop-ups nor
+hyperlinks will work if you view documents in a Web browser window. 
+
+\paragraph{Figure Captions}
+Needles represent the fraction of observations used in the current
+analysis.  The first needle (red) shows the fraction of enrolled
+patients used.  If randomization was taken into account, a second
+needle (green) represents the fraction of randomized subjects included
+in the analysis.  When the analyses consider treatment assignment, two
+more needles may be added to the display, showing, respectively, the
+fraction of subjects randomized to treatment A used in the analysis
+and the fraction of subjects on treatment B who were analyzed.  The
+colors of these last two needles are the colors used for the two
+treatments throughout the report.  The following table shows some
+examples.
+<<results='asis'>>=
+# dNeedle uses colors in setgreportOption(tx.col=, er.col=)
+dNeedle(1,           'lttdemoa')
+dNeedle(c(3,4)/4 ,   'lttdemob')
+dNeedle(c(1,2)/4,    'lttdemoc')
+dNeedle(c(1,2,3,1)/4,'lttdemod')
+@
+
+\begin{center}
+  \begin{tabular}{ll}
+      \textbf{Needles} & \textbf{Interpretation} \\ \hline
+      \lttdemoa & All enrolled subjects analyzed, randomization not considered\\
+      \lttdemob & Analysis uses $\frac{3}{4}$ of enrolled subjects,
+                  and all randomized subjects\\
+      \lttdemoc & Analysis uses $\frac{1}{4}$ of enrolled subjects,
+                  and $\frac{1}{2}$ of randomized subjects\\
+      \lttdemod & Same as previous example, and in addition the analysis\\
+                & utilized treatment assignment, analyzing $\frac{3}{4}$ of
+                  those\\
+                & randomized to A and $\frac{1}{4}$ of those randomized to B\\
+      \hline
+  \end{tabular}
+\end{center}
+There are pop-up tooltips embedded in the needles.  When hovering the
+mouse over \textcolor[gray]{0.5}{$\mapsto$} a table of subject counts
+will pop up. 
+
+\paragraph{Extended Box Plots}
+\newcommand{\eboxpopup}[1]{\tooltipm{#1}{\includegraphics{bpplt-proto}}}
+% To not generate pop-up use: \newcommand{\eboxpopup}[1]{}
+For depicting distributions of continuous variables, many of the
+following displays use extended box plots, also called
+box--percentile plots.  The plots are scaled to the marginal 0.01 and
+0.99 quantiles of the variables.  A prototype, with explanations, is
+below.  When viewing the report, hovering the
+mouse over the word ``box'' will pop up this prototype as needed.
+<<bpplt-proto,w=5,h=3.5>>=
+bpplt()
+@
+Typically violin plots are superimposed onto box plots in what
+follows.  Violin plots show mirror images of the estimated probability
+density function for continuous variable, using a kernel density
+estimator.  Violin plots are better able to show multimodality than
+quantile intervals.
+
+\paragraph{Longitudinal Analysis}
+For continuous variables measured repeatedly, line plots show the
+median as a function of time.  Next to each point is a series of thin
+vertical lines, one series on the left for treatment A and another
+series on the right for treatment B, when stratifying by treatment.
+Moving outward from the point showing the median, these lines depict
+the following quantile intervals---the same ones depicted in the
+extended box plots.
+\def\quantint{
+\begin{tabular}{crclc} \hline
+  Horizontal & \multicolumn{3}{c}{Quantiles} & Fraction of\\
+  Sequence   & \multicolumn{3}{c}{Spanned}   & Sample Covered \\ \hline
+  ~~~~~~$1$  & $\frac{1}{20}$ &-& $\frac{19}{20}$  & $\frac{9}{10}$ \\
+  ~~~~$2$    & $\frac{1}{8}$  &-& $\frac{7}{8}$    & ~~$\frac{3}{4}$  \\
+  ~~$3$      & $\frac{1}{4}$  &-& $\frac{3}{4}~$   & ~~~~$\frac{1}{2}$  \\
+  $4$        & $\frac{3}{8}$  &-& $\frac{5}{8}$    & ~~~~~~$\frac{1}{4}$  \\ \hline
+\end{tabular}
+}
+\begin{center}
+\quantint
+\end{center}
+\newcommand{\qintpopup}[1]{\tooltipn{#1}{\quantint}}
+% To no generate pop-up use \newcommand{\qintpopup}[1]{}
+These definitions will pop-up when hovering the mouse at the end of
+the phrase ``quantile intervals'' in captions.
+
+In addition there is a black vertical line centered at the midpoint of
+the two medians, with height equal to $\frac{1}{2}$ of the width of an
+approximate 0.95 confidence interval for the difference in the two
+medians.  When the two medians touch this vertical bar, there is
+approximately no significant difference in the medians at the 0.05
+level.  The Harrell--Davis quantile estimator is used, along with its
+standard error estimate for the median.
+
+Instead of quantile intervals, longitudinal plots may show vertical
+violin plots.  Unlike the mirror--image violin plots shown on box
+plots, there there are two groups being compared the first group has a
+half-violin plot on the left of the point showing the median, and the
+second group has a half-violin plot on the right. Back--to--back
+comparisons of probability density functions are useful for comparing
+entire distributions of continuous variables.  When for a group the
+sample size is less than 10 the violins are more faint, and when the
+sample size is less than 5 they are barely visible.
+
+For binary variables measured repeatedly, the 0.95 Wilson confidence
+intervals are shown on either side of the proportions, and a vertical
+black line appears over the proportions.  The height of this line is
+$\frac{1}{2}$ the length of the normal-approximation 0.95 confidence
+interval for the difference in the two proportions.  When the
+proportions fail to touch this line, they are approximately
+significantly different at (at least) the 0.05 level.
+
+For discrete variables that are not binary, such as adverse event
+presence and severity, means and bootstrap percentile 0.95 confidence
+intervals are shown, along with half-confidence intervals for the
+difference in means using as standard error the square root of the sum
+of squares of the two means' standard errors.
+
+\paragraph{Survival Curves}
+Graphs containing pairs of Kaplan-Meier survival curves show a shaded
+region centered at the midpoint of the two survival estimates and
+having a height equal to the half-width of the approximate 0.95 pointwise
+confidence interval for the difference of the two survival
+probabilities.  Time points at which the two survival estimates do not
+touch the shaded region denote approximately significantly different
+survival estimates, without any multiplicity correction.
+\clearpage
+
+\section{Introduction}
+This is a sample of the part of a closed meeting Data Monitoring
+Committee report that contains software generated results.  Components
+related to efficacy, study design, data monitoring
+plan,\footnote{Lan-DeMets monitoring bounds can be plotted using the
+  open source \R\ \code{gsDesign} package.} 
+summary of previous closed report, interpretation, protocol changes,
+screening, eligibility, and waiting time until treatment commencement
+are not included in this example\footnote{See Ellenberg, Fleming, and
+  DeMets, \emph{Data Monitoring Committees in Clinical Trials} (Wiley,
+  2002), pp.\ 73-74 for recommended components in open and closed data
+  monitoring committee reports.}.  This report used a random sample of
+safety data from a randomized clinical trial.  Randomization date,
+dropouts, and compliance variables were simulated, the latter two not
+being made consistent with the presence or absence of actual data in
+the random sample.  The date and time that the analysis file used here
+was last updated was \Sexpr{datadate}.  Source analysis files were last
+updated on \Sexpr{primarydatadate}.  
+\ifnum\inclcode=1{
+ See Section~\ref{program} for information about software used.
+
+\LaTeX's \code{hyperref} style was used to produce a \code{pdf}
+file with hyperlinks for easy navigation to sections, tables, and
+graphs using Adobe Acrobat Reader.  Internal hyperlinks are shown in
+\linkcol, and external links to web sites are shown in red.
+}\fi
+
+%See the example open meeting report for subject accrual, data
+%availability and completeness, and analyses not stratified by
+%treatment.
+
+\section{Accrual}
+<<accrual>>=
+accrualReport(randomize(rdate) ~ site(site), data=base,
+              dateRange=c('1990-01-01','1994-12-31'),
+              targetDate='1994-12-31', targetN=300,
+              closeDate=max(base$rdate))
+@ 
+\input{gentex/accrual}
+\clearpage
+\section{Baseline Variables}
+<<baseline>>=
+dReport(sex + race + smoking ~ trx, groups='trx', data=base,
+        popts=list(layout=c(1, 3), key=list(space='left')),
+        h=4, w=3.5)
+
+## Show spike histogram for raw data, 50 bins
+dReport(age + height + weight + bmi + pack.yrs ~ trx, data=base,
+        h=3.5,
+        sopts=list(datadensity=TRUE,
+          scat1d.opts=list(nhistSpike=1,
+            col=adjustcolor('red', alpha.f=.5),
+            nint=50)),
+        append=TRUE)
+@ 
+\input{gentex/desc}
+\clearpage
+
+%\section{Compliance to Assigned Treatments}
+%complianceReport(ssafety$comply, ssafety$trx, ssafety$week,
+%                 weeks[weeks > 1])
+
+%\section{Dropouts}
+%dropoutReport(base$d.dropout, base$dropout, base$trx, time.inc=14)
+
+\section{Longitudinal Adverse Events}
+<<longae,cache=FALSE>>=
+dReport(headache + ab.pain + nausea + dyspepsia + diarrhea +
+        upper.resp.infect + coad ~ week + trx + id(id),
+        groups='trx', data=ssafety, panel='longae', what='byx',
+        popts=list(cex.strip=.57,
+          key=list(x=.65, y=.2, lines=TRUE, points=FALSE)))
+@ 
+\input{gentex/longae}
+\clearpage
+
+\section{Incidence of Adverse Events at Any Follow-up}
+<<anyae>>=
+## Reformat to one record per event per subject per time
+aev <- vars$ae
+ev  <- ssafety[ssafety$week > 0, c(aev, 'trx', 'id', 'week')]
+## Reshape to tall and thin format
+evt <- reshape(ev, direction='long', idvar=c('id', 'week'),
+               varying=aev, v.names='sev', timevar='event',
+               times=aev)
+## For each event, id and trx see if event occurred at any week
+ne <- with(evt, summarize(sev, llist(id, trx, event),
+                          function(y) any(y > 0, na.rm=TRUE)))
+## Remove non-occurrences of events
+ne <- subset(ne, sev, select=c(id, trx, event))
+## Replace event names with event labels
+elab <- sapply(ssafety[aev], label)
+ne$event <- elab[ne$event]
+label(ne$trx) <- 'Treatment'
+
+eReport(event ~ trx, data=ne, h=3.25)
+@ 
+\input{gentex/events}
+\clearpage
+
+\section{Longitudinal EKG Data}
+<<ekg>>= 
+dReport(axis + corr.qt + pr + qrs + uncorr.qt + hr ~ week + trx +
+        id(id),
+        groups='trx', data=ssafety, panel='ekg', what='byx', w=7)
+@
+\input{gentex/ekg}
+\clearpage
+
+\section{Longitudinal Clinical Chemistry Data}
+<<cchem,cache=FALSE>>=
+## Plot 6 variables per page
+cvar <- split(vars$chem, rep(letters[1:4], each=6))
+for(subpanel in names(cvar)) {
+  form <- paste(cvar[[subpanel]], collapse=' + ')
+  form <- as.formula(paste(form, 'week + trx + id(id)', sep=' ~ '))
+  dReport(form, groups='trx', data=ssafety, panel='cchem',
+          subpanel=subpanel,
+          what='byx', append=subpanel != 'a',
+          popts=list(cex.strip=.7), w=7)
+  }
+## Repeat last figure using quantile intervals instead of violin densities
+dReport(form, groups='trx', data=ssafety, panel='cchem',
+        subpanel='e', what='byx', byx.type='quantiles', append=TRUE,
+        popts=list(cex.strip=.7), w=7)
+@ 
+\input{gentex/cchem}
+\clearpage  % needed to get last tooltips to work
+
+\section{Appendix: Supporting Tables}
+\input{gentex/app}
+\clearpage
+
+\ifnum\inclcode=1{
+\section{Programming}\label{program}
+\subsection{Methods}
+This report was produced using high-quality open source, freely
+available \R\ and \LaTeX\ packages.  High-level \R\ graphics and \LaTeX\
+making functions in FE Harrell's \code{Hmisc} package were used in the
+context of the \R\ \code{knitr} package.
+A new \R\ package \code{greport} contains functions
+%\code{completeness\-Report}, 
+\code{accrual\-Report},
+\code{dReport}, %\code{rep\-Varclus},
+%\code{compliance\-Report}, \code{dropout\-Report},
+\code{ex\-Report}, \code{e\-Report}, and \code{surv\-Report}
+using the philosophy of program-controlled generation of \LaTeX\ text,
+figures, and tables.  When figures were plotted in \R, \LaTeX\ figure
+legends and graphics insertion macro calls were automatically
+generated.
+%Some of the functions produce both open (with pooling of
+%treatment groups) and closed (stratifying on treatment) meeting reports.
+%Automatically created graphics and \code{.tex} files for
+%the open report have names beginning with \code{O}.
+
+The \code{.pdf} file containing the report was generated using
+\code{pdflatex} so as to automatically generate hyperlinks (shown in
+blue) to all the figures and tables for easy navigation when viewing
+on the screen.  If using pop-up method \code{poptype=1},
+the user must install the following \LaTeX\ packages:
+\code{acrotex}, \code{ocgtools}, and \code{asymptote}.  If using
+\code{poptype=2}, the user must install the \code{tooltip} style.
+See \url{http://biostat.mc.vanderbilt.edu/Greport} for more information.
+
+Before running the \R\ code to produce the report components, create the
+following directories underneath your project directory: \code{pdf}
+and \code{gentex}, to hold \code{pdf} graphics and generated \LaTeX\
+code, respectively.  You can change the name of these directories
+using the \code{setgreportOption} function.
+
+The entire process is best managed by creating a single \code{.Rnw}
+file that is executed using the \code{knitr} package in \R.
+\textbf{Note}: When using \code{knitr} with
+\code{cache=TRUE} it is assumed that no cached chunks produce appendix
+tables.  For debugging, it is recommended that slow chunks be cached,
+then to make sure the entire appendix is generated turn off all
+caching and re-run the program.
+
+The user musc define a function \code{spar} using the one in
+\url{http://biostat.mc.vanderbilt.edu/wiki/pub/Main/RConfiguration/Rprofile}
+as a template.  \code{spar} sets good default graphical parameters
+(e.g., space between axis labels and axes) for non-\code{lattice} \R\
+graphics.  The \code{Rprofile} example there also defines the
+\code{knitrSet} function that is used in this example, to pretty-print
+\R\ code. 
+
+\subsection{Data Preparation}
+Variable labels are used in much of the graphical and tabular output,
+so it is advisable to attach \code{label} attributes to almost all
+variables.  Variable names are used when \code{label}s are not
+defined.  Units of measurement also appear in the output, so most
+continuous variables should have a \code{units} attribute.  The
+\code{units} may contain mathematical expressions such as \verb|cm^2|
+which will be properly typeset in tables and plots, using
+superscripts, subscripts, etc.  Variables that are not binary (0/1,
+\code{Y/N}, etc.) but are categorical should have \code{levels} (value
+labels) defined (e.g., using the \code{factor} function) that will be
+attractive in the report.  The Hmisc library \code{upData} function is
+useful for annotating variables with labels, units of measurement, and
+value labels.  See
+\href{http://biostat.mc.vanderbilt.edu/wiki/pub/Main/RS/sintro.pdf}
+{Alzola and Harrell, 2006},
+\href{http://biostat.mc.vanderbilt.edu/StatGraphCourse}, and
+\href{http://biostat.mc.vanderbilt.edu/StatCompCourse} for details
+about setting up analysis files.
+
+\R\ code that created the analysis file for this report is shown
+below.  For this particular application, \code{units} and some of
+the \code{labels} were actually obtained from separate data tables
+as shown in the code.
+
+\subsubsection{Data Assumptions}
+\begin{enumerate}
+  \item Non-randomized subjects are marked by missing data of randomization
+  \item The treatment variable is always the same for every dataset
+    and is defined in \code{tx.var} on \code{setgreportOption}.
+  \item For some graphics there must be either no treatment variable
+    or exactly two treatment levels.
+  \item If there are treatments the design is a parallel-group design.
+\end{enumerate}
+
+\subsection{User \code{knitr} Source File for This Document}
+{\small\verbatimtabinput{report.Rnw}}
+
+}\fi
+
+\end{document}

@@ -1,0 +1,23 @@
+\name{dNeedle}
+\alias{dNeedle}
+\title{Draw Needles}
+\usage{
+dNeedle(sf, name, file = "", append = TRUE)
+}
+\arguments{
+  \item{sf}{output of \code{sampleFrac}}
+
+  \item{name}{character string name of LaTeX variable to
+  create}
+
+  \item{file}{output file name (character string)}
+
+  \item{append}{set to \code{FALSE} to start a new
+  \code{file}}
+}
+\description{
+Create a LaTeX \code{picture} to draw needles for current
+sample sizes.  Uses colors set by call to
+\code{setgreportOptions}.
+}
+

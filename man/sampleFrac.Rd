@@ -1,0 +1,27 @@
+\name{sampleFrac}
+\alias{sampleFrac}
+\title{Compute Sample Fractions}
+\usage{
+sampleFrac(n, nobsY = NULL, table = TRUE)
+}
+\arguments{
+  \item{n}{integer vector, named with
+  \code{"enrolled","randomized"} and optionally also
+  including treatment levels.}
+
+  \item{nobsY}{a result of the the \code{nobsY} Hmisc
+  function}
+
+  \item{table}{set to \code{TRUE} to return as an attribute
+  \code{"table"} a character string containing a LaTeX
+  tabular showing the pertinent frequencies created from
+  \code{n} and the \code{denom} option, and if \code{nobsY}
+  is present, adding another table with response
+  variable-specific counts.}
+}
+\description{
+Uses denominators stored with \code{setgreportOption} along
+with counts specified to \code{SampleFrac} to compute
+fractions of subjects in current analysis
+}
+
