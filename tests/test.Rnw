@@ -6,11 +6,15 @@
 
 \def\titl{DSMB Report for EXAMPLE Trial}
 
-\usepackage[hidelinks,bookmarks,pagebackref,pdfpagemode=UseOutlines,
-    linkcolor=blue,
-    pdfauthor={Frank Harrell},
-    pdftitle={Article Title}]{hyperref}
+\definecolor{darkblue}{RGB}{0,0,139}
+\def\linkcol{darkblue}
 
+\usepackage[pdftex,hidelinks,bookmarks,pagebackref,pdfpagemode=UseOutlines,
+    colorlinks,linkcolor=\linkcol,
+    pdfauthor={Frank E Harrell Jr},
+    pdftitle={\titl}]{hyperref}
+% Remove colorlinks and linkcolor options to hyperref to box the
+% hyperlinked items (for screen only)
   
 \def\poptype{1}
 % 0=no popup tooltips  1=ocgtools  2=movable popups
@@ -32,8 +36,8 @@
     \today}
 
 <<echo=FALSE>>=
-#echo <- TRUE   # show code
- echo <- FALSE  # hide code
+echo <- TRUE   # show code
+# echo <- FALSE  # hide code
 knitrSet(echo=echo, results='hide')
 require(greport)
 @
