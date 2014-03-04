@@ -7,6 +7,9 @@ Current Goals
 =============
 * Add Svetlana Eden's function in rreport package for graphically summarizing adverse events by major and minor categories (e.g., body system and preferred term)
 * Add function similar to that in rreport for group sequential monitoring boundary presentation
+* Need executable tests in tests/
+* See if current tests should become vignettes
+* Add an option to write all LaTeX output other than appendix to the console as compatible with knitr and Sweave
 
 Web Sites
 =============
