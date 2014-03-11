@@ -455,7 +455,7 @@ toLatex(sessionInfo(), locale=FALSE)
 @
 The reproducible research framework \code{knitr}~\cite{knitrbook} was used.
 
-\bibliography{/home/harrelfe/bib/feh.bib}
+\bibliography{feh.bib}
 \bibliographystyle{unsrt}
 \clearpage
 
