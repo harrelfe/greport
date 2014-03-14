@@ -6,9 +6,9 @@
 #' @param data data.frame
 #' @param subset optional subsetting criteria
 #' @param na.action function for handling \code{NA}s while creating a data frame
-#' @param ylab character. Passed to \code{\link[rms]{survplot.survfit}} as the \code{ylab} argument.  Constructed by default.
+#' @param ylab character. Passed to \code{\link[rms]{survplot.npsurv}} as the \code{ylab} argument.  Constructed by default.
 #' @param what \code{"S"} (the default) to plot survival functions or \code{"1-S"} to plot cumulative incidence functions.
-#' @param conf character. See \code{\link[rms]{survplot.survfit}}.
+#' @param conf character. See \code{\link[rms]{survplot.npsurv}}.
 #' @param panel character string.  Name of panel, which goes into file base names and figure labels for cross-referencing.
 #' @param subpanel character string.  If calling \code{dReport} more than once for the same type of chart (categorical or continuous), specify \code{subpanel} to distinguish the multiple calls.  In that case, \code{-subpanel} will be appended to \code{panel} when creating figure labels and cross-references.
 #' @param head character string.  Specifies initial text in the figure caption, otherwise a default is used.
@@ -119,30 +119,6 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
        else paste('Incidence of', yl)
     }
 
-    # The following function is built-in in next release of rms
-    ## TODO
-if(!existsFunction('npsurv')) {
-  npsurv <- function(formula, data, subset, na.action, ...) {
-    m <- match.call(expand.dots = FALSE)
-    m$... <- NULL
-    m[[1]] <- as.name('survfit')
-    m$formula <- formula
-    f <- eval(m, sys.parent())
-    m[[1]] <- as.name('model.frame')
-    g <- eval(m, sys.parent())
-    
-    f$maxtime <- max(f$time)
-    
-    Y <- model.extract(g, 'response')
-    f$units <- units(Y)
-    f$time.label  <- label(Y, type='time')
-    f$event.label <- label(Y, type='event')
-    f$call <- match.call()
-    class(f) <- c('npsurv', 'survfit')
-    f
-  }
-  survplot.npsurv <- rms:::survplot.survfit
-}
     s <- npsurv(y ~ x)
     if(x.is.tx) {
       no        <- c(no, s$n)

@@ -23,7 +23,7 @@ survReport(formula, data = NULL, subset = NULL, na.action = na.retain,
   creating a data frame}
 
   \item{ylab}{character. Passed to
-  \code{\link[rms]{survplot.survfit}} as the \code{ylab}
+  \code{\link[rms]{survplot.npsurv}} as the \code{ylab}
   argument.  Constructed by default.}
 
   \item{what}{\code{"S"} (the default) to plot survival
@@ -31,7 +31,7 @@ survReport(formula, data = NULL, subset = NULL, na.action = na.retain,
   functions.}
 
   \item{conf}{character. See
-  \code{\link[rms]{survplot.survfit}}.}
+  \code{\link[rms]{survplot.npsurv}}.}
 
   \item{panel}{character string.  Name of panel, which goes
   into file base names and figure labels for
