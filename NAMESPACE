@@ -1,8 +1,7 @@
 import(Hmisc)
 import(lattice)
 import(latticeExtra)
-# Add to below: npsurv
-importFrom(rms, survplot)
+importFrom(rms, npsurv, survplot)
 importFrom(survival, survfit)
 importFrom(Formula, Formula, model.part)
 
