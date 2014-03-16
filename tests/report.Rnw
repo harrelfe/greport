@@ -8,6 +8,7 @@
 \usepackage{moreverb}   % for \verbatimtabinput
 \usepackage{fancyhdr}   % for fancy headers
 \usepackage{url}        % for \url{}
+\usepackage{chngpage}   % for exReport \begin{adjustwidth}
 
 \def\titl{Example Closed Meeting Data Monitoring Committee Report}
 \definecolor{darkblue}{RGB}{0,0,139}

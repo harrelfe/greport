@@ -46,12 +46,12 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   assign(envir = en, 'pending',    function(x) x)
   assign(envir = en, 'randomized', function(x) x)
   assign(envir = en, 'id',         function(x) x)
-  g <- function(x, label, condition) {
+  gcond <- function(x, label, condition) {
     attr(condition, 'what') <- c(variable = as.character(substitute(x)),
                                  label    = label)
     condition
   }
-  assign(envir = en, 'cond', g)
+  assign(envir = en, 'cond', gcond)
   X <- if(length(subset)) model.frame(formula, data=data, subset=subset,
                                       na.action=na.action)
    else model.frame(formula, data=data, na.action=na.action)
@@ -67,7 +67,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     gsub('\\)', '', a)
   }
          
-  g <- function(x) {
+  ispos <- function(x) {
     w <- if(is.logical(x)) x
     else if(is.numeric(x)) x > 0
     else tolower(as.character(x)) %in%
@@ -75,6 +75,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     w[is.na(x)] <- FALSE
     w
   }
+
   mis <- function(x) if(is.factor(x) && length(levels(x)) == 1 &&
                         tolower(levels(x)) %in%
                         c('present', 'yes', 'y', 'true', 'positive'))
@@ -87,7 +88,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     warning(sprintf('number of observations (%s) does not equal number enrolled (%s) specified using setgreportOption(denom=)', n, N['enrolled']))
 
   rnd <- NULL
-  if(length(sr)) rnd <- g(X[[sr]])
+  if(length(sr)) rnd <- ispos(X[[sr]])
   
   margdenom <- sapply(if(length(c(sp, sr, sc, si))) X[, -c(sp, sr, sc, si)]
                        else X,
@@ -104,10 +105,10 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
 
   npend <- 0
   if(length(sp)) {
-    pending <- g(X[[sp]])
+    pending <- ispos(X[[sp]])
     ## Any observations marked as excluded should have pending ignored
     anyex   <- rep(FALSE, n)
-    for(j in (1 : ncol(X))[- c(sp, sr, sc, si)]) anyex <- anyex | g(X[[j]])
+    for(j in (1 : ncol(X))[- c(sp, sr, sc, si)]) anyex <- anyex | ispos(X[[j]])
     pending[anyex] <- FALSE
     ## Same with any observation marked as randomized
     if(length(rnd)) pending[rnd & ! is.na(rnd)] <- FALSE
@@ -127,68 +128,35 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   anyre <- rep(FALSE, n)
   if(length(rnd)) {
     exclv <- character(0)
-    nex   <- integer(0)
+    nexr  <- integer(0)
     Ids   <- Idso <- character(0)
     for(i in 1 : k) {
-      x <- g(X[[i]])
+      x <- ispos(X[[i]])
       anyre <- anyre | (x & rnd)
       r <- sum(x & rnd, na.rm=TRUE)
       if(r > 0) {
         exclv <- c(exclv, Xlab[i])
-        nex   <- c(nex,   r)
+        nexr   <- c(nexr,   r)
         if(length(Id)) {
           Ids  <- c(Ids, paste(Id[x & rnd], collapse=', '))
           Idso <- c(Idso, Id[x & rnd])
         }
       }
     }
-    if(length(nex)) {
+    if(length(nexr)) {
       nnre  <- sum(anyre, na.rm=TRUE)
       exclv <- c(exclv, 'Any Exclusion')
-      nex   <- c(nex, nnre)
+      nexr   <- c(nexr, nnre)
       if(length(Ids)) Ids <- c(Ids, '')
-      E     <- data.frame(Exclusion=latexTranslate(exclv), Frequency=nex)
-      cap   <- 'Frequency of exclusions for subjects marked as randomized'
-      scap  <- 'Exclusions in randomized subjects'
-      z     <- latex(E, file=file, append=TRUE,
-                     label=sprintf('tab:exclrand%s', subp),
-                     hyperref=if(app && length(Ids))
-                      sprintf('tab:randsubjexcl%s', subp),
-                     rowname=NULL, col.just=c('l', 'r'),
-                     caption=cap, caption.lot=scap, where='htbp')
-      if(app && length(Ids)) {
-        cat('\\begin{table}[htbp]\\caption{Subject IDs for randomized subjects with exclusions}\\label{tab:randsubjexcl', subp, '}\n\\medskip%\n',
-            sep='', file=appfile, append=TRUE)
-        cat(sprintf('\\hyperref[tab:exclrand%s]{$\\leftarrow$}\n\n', subp),
-            file=appfile, append=TRUE)
-        le <- length(nex) - 1
-        for(i in 1 : le) {
-          cat('\\textbf{', as.character(E$Exclusion[i]), '}:\\\\\n',
-              file=appfile, append=TRUE, sep='')
-          cat('\\parbox{5in}{', Ids[i], '}',
-              if(i < le) '\\\\\n', sep='',
-              file=appfile, append=TRUE)
-        }
-        if(length(erdata)) {
-          erd <- erdata[as.character(interaction(erdata[Idnames]))
-                        %in% Idso, ]
-          colnames(erd) <- latexTranslate(colnames(erd))
-          z <- function(x) ifelse(is.na(x), '', as.character(x))
-          for(j in 1 : ncol(erd))
-            erd[[j]] <- latexTranslate(z(erd[[j]]))
-          z <- latex(erd, file=appfile, append=TRUE, rowname=NULL,
-                     table.env=FALSE, na.blank=TRUE)
-        }
-        cat('\\end{table}\n\n', file=appfile, append=TRUE)
-      }
+      E <- data.frame(Exclusion=latexTranslate(exclv), Frequency=nexr)
     }
   }
   
-  marg      <- sapply(X, function(x) sum(g(x), na.rm=TRUE))
+  marg      <- sapply(X, function(x) sum(ispos(x), na.rm=TRUE))
   
   add      <- if(sort) which.max(marg) else 1
   cadd     <- Xname[add]
-  exclude  <- g(X[[cadd]])   ## new exclusion
+  exclude  <- ispos(X[[cadd]])   ## new exclusion
   nexclude <- sum(exclude, na.rm=TRUE)
   nexcludec <- if(cadd %in% names(Xc)) sum(exclude & Xc[[cadd]], na.rm=TRUE)
    else nexclude
@@ -197,10 +165,10 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   cd         <- n - nexclude
   
   if(k > 1) for(i in 2 : k) {
-    remain   <- sapply(X, function(x) sum(g(x), na.rm=TRUE))
+    remain   <- sapply(X, function(x) sum(ispos(x), na.rm=TRUE))
     add      <- if(sort) which.max(remain) else i
     xn       <- Xname[add]
-    exclude  <- g(X[[xn]])
+    exclude  <- ispos(X[[xn]])
     nex      <- sum(exclude, na.rm=TRUE)
     nexc <- if(xn %in% names(Xc)) sum(exclude & Xc[[xn]], na.rm=TRUE)
      else nex
@@ -318,14 +286,14 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   putFig(panel=panel, name=lb, caption='Cumulative exclusions',
          longcaption=cap)
 
-  g <- function(x) format(round(x, 3))
-  f <- function(x) ifelse(is.na(x), '', format(x))
+  rf <- function(x) format(round(x, 3))
+  f  <- function(x) ifelse(is.na(x), '', format(x))
   tabl <- data.frame(elab      = c(latexTranslate(elab), '\\textbf{Total}'),
                      nexclude  = c(nexclude, m),
                      marg      = c(marg, NA),
-                     frac      = g(c(nexclude / n, m / n)),
-                     frace     = g(c(nexclude / m, 1)),
-                     fracremain= g(c(fracremain, (n - m) / n)),
+                     frac      = rf(c(nexclude / n, m / n)),
+                     frace     = rf(c(nexclude / m, 1)),
+                     fracremain= rf(c(fracremain, (n - m) / n)),
                      row.names = 1 : (length(elab) + 1),
                      stringsAsFactors=FALSE)
 
@@ -333,7 +301,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   
   ct('\\begin{table}[htbp]\\small\n',
      '\\caption[Exclusions]{Exclusions.  \\texttt{Incremental Exclusions} are those in addition to exclusions in earlier rows.  \\texttt{Marginal Exclusions} are numbers of subjects excluded for the indicated reason whether or not she was excluded for other reasons.  The three \\texttt{Fractions} are based on incremental exclusions.\\label{tab:exclstats', subp, '}}\n',
-     '\\begin{center}\n',
+     '\\begin{center}\\begin{adjustwidth}{-.75in}{-.75in}\n',
      '\\begin{tabular}{lrrrrr}\\hline\\hline\n',
      '\\multicolumn{1}{c}{Exclusions}&\\multicolumn{1}{c}{Incremental}&\\multicolumn{1}{c}{Marginal}&\\multicolumn{1}{c}{Fraction of}&\\multicolumn{1}{c}{Fraction of}&\\multicolumn{1}{c}{Fraction}\\tabularnewline',
      '&\\multicolumn{1}{c}{Exclusions}&\\multicolumn{1}{c}{Exclusions}&\\multicolumn{1}{c}{Enrolled}&\\multicolumn{1}{c}{Exclusions}&\\multicolumn{1}{c}{Remaining}\\tabularnewline\\hline\n')
@@ -348,14 +316,14 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     if(cn %in% names(Xc)) {
       ct('\\multicolumn{6}{l}{~~~~$\\frac{', nexcludec[i], '}{',
          sx <- sum(Xc[, cn], na.rm=TRUE), '}$ =',
-         round(nexcludec[i] / sx, 3), ' of ', latexTranslate(Xclab[cn]),
+         rf(nexcludec[i] / sx), ' of ', latexTranslate(Xclab[cn]),
          '}\\tabularnewline\n')
       ct('&&&&&\\tabularnewline\n')
     }
     if(i == (nrow(tabl) - 1)) ct('\\hline')
     ct('\n')
   }
-  ct('\\hline\\end{tabular}\\end{center}\\end{table}\n\n')
+  ct('\\hline\\end{tabular}\\end{adjustwidth}\\end{center}\\end{table}\n\n')
 
   
   ## Two-panel dot chart
@@ -436,5 +404,44 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
          caption='Incremental exclusions and fraction of remaining subjects',
          longcaption=cap)
 
+  ## If needed, display subjects marked as randomized who are marked as
+  ## meeting exclusion criteria
+  if(length(rnd) && length(nexr)) {
+    cat('\\clearpage\n', file=file, append=TRUE)
+    cap   <- 'Frequency of exclusions for subjects marked as randomized'
+    scap  <- 'Exclusions in randomized subjects'
+    z     <- latex(E, file=file, append=TRUE,
+                   label=sprintf('tab:exclrand%s', subp),
+                   hyperref=if(app && length(Ids))
+                   sprintf('tab:randsubjexcl%s', subp),
+                   rowname=NULL, col.just=c('l', 'r'),
+                   caption=cap, caption.lot=scap, where='htbp')
+    if(app && length(Ids)) {
+      cat('\\begin{table}[htbp]\\caption{Subject IDs for randomized subjects with exclusions}\\label{tab:randsubjexcl', subp, '}\n\\medskip%\n',
+          sep='', file=appfile, append=TRUE)
+      cat(sprintf('\\hyperref[tab:exclrand%s]{$\\leftarrow$}\n\n', subp),
+          file=appfile, append=TRUE)
+      le <- length(nexr) - 1
+      for(i in 1 : le) {
+        cat('\\textbf{', as.character(E$Exclusion[i]), '}:\\\\\n',
+            file=appfile, append=TRUE, sep='')
+        cat('\\parbox{5in}{', Ids[i], '}',
+            if(i < le) '\\\\\n', sep='',
+            file=appfile, append=TRUE)
+      }
+      if(length(erdata)) {
+        erd <- erdata[as.character(interaction(erdata[Idnames]))
+                      %in% Idso, ]
+        colnames(erd) <- latexTranslate(colnames(erd))
+        z <- function(x) ifelse(is.na(x), '', as.character(x))
+        for(j in 1 : ncol(erd))
+          erd[[j]] <- latexTranslate(z(erd[[j]]))
+        z <- latex(erd, file=appfile, append=TRUE, rowname=NULL,
+                   table.env=FALSE, na.blank=TRUE)
+      }
+      cat('\\end{table}\n\n', file=appfile, append=TRUE)
+    }
+  }
+  
   invisible()
 }
