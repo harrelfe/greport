@@ -1,4 +1,5 @@
 Changes in version 0.5-1 (2014-03-??)
    * survReport: changed to use npsurv instead of survfit.formula
 	 * exReport: changed order of output so that analysis of randomized patients marked for exclusions appears last; use LaTeX chngpage package to allow detailed table to go into left margin so as to be centered on page
+   * exReport: added adjustwidth argument
 
