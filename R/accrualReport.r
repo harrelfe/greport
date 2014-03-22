@@ -155,7 +155,7 @@ accrualReport <-
     y <- y[! is.na(y)]
     target <- if(! length(names(targetN))) targetN else targetN[[nam]]
     dtarget <- targetDate
-    if(min(target) > 0) {
+    if(length(target) && min(target) > 0) {
       target <- c(0, target)
       dtarget <- c(dr[1], dtarget)
     }
