@@ -20,7 +20,7 @@
 #' @param w width of 2-panel graph
 #' @param hc height of cumulative exclusion 1-panel graph
 #' @param wc width of this 1-panel graph
-#' @param adjustwidth used to allow wide detailed exclusion table to go into left margin in order to be centered on the physical page.  The default is \code{'-0.75'}, which works well when using article document class with default page width.  To use the geometry package in LaTeX with margin=.45in specify \code{adjustwidth='+.90in'}.
+#' @param adjustwidth used to allow wide detailed exclusion table to go into left margin in order to be centered on the physical page.  The default is \code{'-0.75in'}, which works well when using article document class with default page width.  To use the geometry package in LaTeX with margin=.45in specify \code{adjustwidth='+.90in'}.
 #' @param append set to \code{TRUE} if adding to an existing sub-report
 #' @param popts a list of options to pass to graphing functions
 #' @param app set to \code{FALSE} to prevent writing appendix information
@@ -32,7 +32,7 @@
 exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                      autoother=FALSE, sort=TRUE, whenapp=NULL, erdata=NULL,
                      panel='excl', subpanel=NULL, head=NULL, tail=NULL,
-                     h=5.5, w=6.5, hc=4.5, wc=5, adjustwidth='-0.75',
+                     h=5.5, w=6.5, hc=4.5, wc=5, adjustwidth='-0.75in',
                      append=FALSE, popts=NULL, app=TRUE) {
 
   file <- sprintf('%s/%s.tex', getgreportOption('texdir'), panel)
@@ -40,8 +40,8 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   appfile <- sprintf('%s/app.tex', getgreportOption('texdir'))
   subp <- if(length(subpanel)) subpanel else ''
 
-  Nobs <- nobsY(formula, group=getgreportOption('tx.var'),
-                data=data, subset=subset, na.action=na.action)
+#  Nobs <- nobsY(formula, group=getgreportOption('tx.var'),
+#                data=data, subset=subset, na.action=na.action)
   environment(formula) <- new.env(parent = environment(formula))
   en <- environment(formula)
   assign(envir = en, 'pending',    function(x) x)
@@ -146,7 +146,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     }
     if(length(nexr)) {
       nnre  <- sum(anyre, na.rm=TRUE)
-      exclv <- c(exclv, 'Any Exclusion')
+      exclv <- c(exclv, 'Total Subjects with Any Exclusion')
       nexr   <- c(nexr, nnre)
       if(length(Ids)) Ids <- c(Ids, '')
       E <- data.frame(Exclusion=latexTranslate(exclv), Frequency=nexr)
