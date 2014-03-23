@@ -1,0 +1,76 @@
+\name{nriskReport}
+\alias{nriskReport}
+\title{Number at Risk Report}
+\usage{
+nriskReport(formula, groups = NULL, data = NULL, subset = NULL,
+  na.action = na.retain, ylab = "Number Followed", panel = "nrisk",
+  head = NULL, tail = NULL, h = 5.5, w = 5.5, outerlabels = TRUE,
+  append = FALSE, popts = NULL)
+}
+\arguments{
+  \item{formula}{a formula with time and the left hand
+  side, and with variables on the right side being possible
+  stratification variables.  If no stratification put
+  \code{1} as the right hand side.}
+
+  \item{groups}{a character string naming a
+  superpositioning variable.  Must also be included in
+  \code{formula}.}
+
+  \item{data}{data frame}
+
+  \item{subset}{a subsetting epression for the entire
+  analysis}
+
+  \item{na.action}{a NA handling function for data frames,
+  default is \code{na.retain}}
+
+  \item{ylab}{character string if you want to override
+  \code{"Number Followed"}}
+
+  \item{panel}{character string.  Name of panel, which goes
+  into file base names and figure labels for
+  cross-referencing.  The default is \code{'nrisk'}.}
+
+  \item{head}{character string.  Specifies initial text in
+  the figure caption, otherwise a default is used}
+
+  \item{tail}{optional character string.  Specifies final
+  text in the figure caption, e.g., what might have been
+  put in a footnote in an ordinary text page.  This appears
+  just before any needles.}
+
+  \item{h}{numeric.  Height of plot, in inches}
+
+  \item{w}{numeric.  Width of plot}
+
+  \item{outerlabels}{logical that if \code{TRUE}, pass
+  \code{lattice} graphics through the \code{latticeExtra}
+  package's \code{useOuterStrips}function if there are two
+  conditioning (paneling) variables, to put panel labels in
+  outer margins.}
+
+  \item{append}{logical.  Set to \code{FALSE} to start a
+  new panel}
+
+  \item{popts}{list specifying extra arguments to pass to
+  \code{Ecdf}.  A common use is for example
+  \code{popts=list(layout=c(columns,rows))} to be used in
+  rendering \code{lattice} plots.  \code{key} and
+  \code{panel} are also frequently used.}
+}
+\description{
+Graph number of subjects at risk
+}
+\details{
+\code{nriskReport} generates multi-panel charts, separately
+for categorical analysis variables.  Each panel depicts the
+number at risk as a function of follow-up time.  The Hmisc
+\code{Ecdf} function is used.  Stratification is by
+treatment or other variables.  It is assumed that this
+function is only run on randomized subjects.
+}
+\examples{
+# See test.Rnw in tests directory
+}
+
