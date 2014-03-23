@@ -353,6 +353,7 @@ dReport(meda + medb ~ days + treat + region, what='xy',
         tail='Tick marks indicate observed measurement times.',
         panel='meds')
 
+# Show number being followed as days since randomization gets larger
 nriskReport(days ~ region,
             data=addMarginal(d, region),
             head='Number of subjects followed for medication usage',

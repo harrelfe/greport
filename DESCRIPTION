@@ -6,6 +6,7 @@ Author: Frank E Harrell Jr <f.harrell@vanderbilt.edu>
 Maintainer: Frank E Harrell Jr <f.harrell@vanderbilt.edu>
 Depends: Hmisc (>= 3.14-2)
 Imports: rms (>= 4.1-3), lattice, latticeExtra, Formula, survival
+Suggests: data.table
 Description: The greport package contains many functions useful for
     monitoring and reporting the results of clinical trials and other
     experiments in which treatments are compared.  LaTeX is
