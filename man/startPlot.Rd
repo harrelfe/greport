@@ -22,6 +22,6 @@ endPlot()
 }
 \description{
 Toggle plotting.  Sets options by examining
-\code{setgreportOption(gtype=}.
+\code{setgreportOption(gtype=)}.
 }
 

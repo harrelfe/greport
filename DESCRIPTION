@@ -1,17 +1,24 @@
 Package: greport
-Version: 0.5-0
-Date: 2014-03-02
+Version: 0.5-1
+Date: 2014-03-26
 Title: Graphical Reporting for Clinical Trials
 Author: Frank E Harrell Jr <f.harrell@vanderbilt.edu>
 Maintainer: Frank E Harrell Jr <f.harrell@vanderbilt.edu>
-Depends: Hmisc (>= 3.14-2)
-Imports: rms (>= 4.1-3), lattice, latticeExtra, Formula, survival
-Suggests: data.table
+Depends:
+    Hmisc (>= 3.14-2),
+    data.table
+Imports:
+    rms (>= 4.1-3),
+    lattice,
+    latticeExtra,
+    Formula,
+    survival
 Description: The greport package contains many functions useful for
     monitoring and reporting the results of clinical trials and other
     experiments in which treatments are compared.  LaTeX is
     used to typeset the resulting reports, recommended to be in the
     context of knitr. The Hmisc and lattice packages are used by greport
-    for high-level graphics. 
+    for high-level graphics.
 License: GPL (>= 2)
-URL: http://biostat.mc.vanderbilt.edu/Greport, https://github.com/harrelfe/greport
+URL: http://biostat.mc.vanderbilt.edu/Greport,
+    https://github.com/harrelfe/greport

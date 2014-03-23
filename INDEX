@@ -5,8 +5,9 @@ eReport                 Event Report
 exReport                Exclusion Report
 getgreportOption        Get greport Options
 latticeInit             Setup lattice plots using greport options
-Merge                   Merge Multiple Data Frames
+Merge                   Merge Multiple Data Frames or Data Tables
 mfrowSuggest            Compute mfrow Parameter
+nriskReport             Number at Risk Report
 putFig                  Put Figure
 sampleFrac              Compute Sample Fractions
 setgreportOption        Set greport Options
