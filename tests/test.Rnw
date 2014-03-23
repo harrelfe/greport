@@ -248,7 +248,7 @@ d <- data.frame(x1=f(), x2=f(), x3=f(), x4=f(), x5=f(), x6=f(),
                 treat=sample(c('A', 'B'), n, TRUE),
                 region=sample(c('North America','Europe'), n, TRUE),
                 meda=sample(0:1, n, TRUE), medb=sample(0:1, n, TRUE))
-
+d$days[1] <- NA
 d <- upData(d, labels=c(x1='MI', x2='Stroke', x3='AKI', x4='Migraines',
                  x5='Pregnant', x6='Other event', x7='MD withdrawal',
                  race='Race', sex='Sex', treat='treatment',
@@ -352,9 +352,15 @@ dReport(meda + medb ~ days + treat + region, what='xy',
         head='Medication usage',
         tail='Tick marks indicate observed measurement times.',
         panel='meds')
+
+nriskReport(days ~ region,
+            data=addMarginal(d, region),
+            head='Number of subjects followed for medication usage',
+            panel='meds', append=TRUE, h=3, w=4.5)
 @ 
 \input{gentex/meds}
 \clearpage
+
 \section{Time to Hospitalization and Surgery}
 <<>>=
 set.seed(1)
