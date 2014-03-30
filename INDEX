@@ -4,6 +4,7 @@ dReport                 Descriptive Statistics Report
 eReport                 Event Report
 exReport                Exclusion Report
 getgreportOption        Get greport Options
+greport                 Graphical Reporting for Clinical Trials
 latticeInit             Setup lattice plots using greport options
 Merge                   Merge Multiple Data Frames or Data Tables
 mfrowSuggest            Compute mfrow Parameter

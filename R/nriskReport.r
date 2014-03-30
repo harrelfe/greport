@@ -3,7 +3,7 @@
 #' Graph number of subjects at risk
 #' 
 #' \code{nriskReport} generates multi-panel charts, separately for categorical analysis variables.  Each panel depicts the number at risk as a function of follow-up time.  The Hmisc \code{Ecdf} function is used.  Stratification is by treatment or other variables.  It is assumed that this function is only run on randomized subjects.
-#' @param formula a formula with time and the left hand side, and with variables on the right side being possible stratification variables.  If no stratification put \code{1} as the right hand side.
+#' @param formula a formula with time and the left hand side, and with variables on the right side being possible stratification variables.  If no stratification put \code{1} as the right hand side.  Specify unique subject IDs by including a term \code{id()} if subjects have more than one observation.
 #' @param groups a character string naming a superpositioning variable.  Must also be included in \code{formula}.
 #' @param data data frame
 #' @param subset a subsetting epression for the entire analysis
@@ -30,19 +30,32 @@ nriskReport <-
 {
   gro  <- getgreportOption()
   tvar <- gro$tx.var
-  
   Nobs <- nobsY(formula, group=tvar,
                 data=data, subset=subset, na.action=na.action)
-
+  formula <- Nobs$formula   # removes id()
+  
   X <- if(length(subset)) model.frame(formula, data=data, subset=subset,
                                       na.action=na.action)
    else model.frame(formula, data=data, na.action=na.action)
-
   xnam    <- names(X)
   tx.used <- tvar %in% xnam
   tx      <- if(tx.used) X[[tvar]]
   labs    <- sapply(X, label)
   labs    <- ifelse(labs == '', xnam, labs)
+  id <- Nobs$id
+
+  if(length(id) && any(duplicated(id))) {
+    ## Reduce data matrix to one row per subject per stratum with
+    ## maximum follow-up time
+    X <- data.table(X, .id.=id)
+    setnames(X, xnam[1], '.y.')
+    by <- if(length(xnam) > 1) paste(xnam[-1], '.id.', sep=',') else '.id.'
+    mx <- function(w) as.double(if(any(! is.na(w))) max(w, na.rm=TRUE) else NA)
+    X <- X[, list(.maxy.=mx(.y.)), by=by]
+    X <- X[, c('.maxy.', xnam[-1]), with=FALSE]
+    setnames(X, '.maxy.', xnam[1])
+  }
+
   x1      <- X[[1]]
   xunits  <- units(x1)
   if(xunits == '') xunits <- 'days'
@@ -79,7 +92,7 @@ nriskReport <-
     lwd <- rep(c(1, 3), length=10)
   }
   dl <- list(x=form,
-             data=data, na.action=na.action,
+             data=X, na.action=na.action,
              what='1-f', col=col, lwd=lwd)
   if(length(subset)) dl$subset <- subset
   if(length(ylab))   dl$ylab   <- ylab
@@ -91,9 +104,10 @@ nriskReport <-
                       columns=length(glevels), lines=TRUE, points=FALSE)
   }
 
+  www <- c(dl, popts)
   p <- if(! length(groups)) do.call('Ecdf', c(dl, popts))
   else {
-    a <- sprintf("Ecdf(form, groups=%s, data=data, na.action=na.action, what='1-f', col=col, lwd=lwd", groups)
+    a <- sprintf("Ecdf(form, groups=%s, data=X, na.action=na.action, what='1-f', col=col, lwd=lwd", groups)
     if(length(subset)) a <- paste(a, ', subset=subset')
     if(length(ylab))   a <- paste(a, ', ylab=ylab')
     a <- paste(a, ')')
