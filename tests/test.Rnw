@@ -357,7 +357,6 @@ dReport(meda + medb ~ days + treat + region, what='xy',
 # Show number being followed as days since randomization gets larger
 # make sure nriskReport doesn't get fooled by duplicate data
 d2 <- rbind(d, d)
-source('~/R/greport/R/nriskReport.r')
 nriskReport(days ~ region + id(subjid),
             data=addMarginal(d2, region),
             head='Number of subjects followed for medication usage',

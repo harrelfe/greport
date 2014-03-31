@@ -6,3 +6,5 @@ Changes in version 0.5-1 (2014-03-??)
    * exReport: fine tuning
    * nriskReport: new report to show number of subjects still being followed at each day
 	 * Merge: added support for data.table
+   * nriskReport: added id() variable
+   * exReport: fixed bug when there is an exclusion with 0 frequency

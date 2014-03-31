@@ -410,7 +410,8 @@ upFirst <- function(txt) {
                 'to', 'toward', 'towards', 'under', 'underneath',
                 'unlike', 'until', 'up', 'upon', 'via', 'vs.', 'when',
                 'with', 'within', 'without', 'worth', 'yet')
-  cap <- c('mi', 'gi', 'ecg', 'ekg', 'cad', 'ccta', 'lm')
+  cap <- c('mi', 'gi', 'ecg', 'ekg', 'cad', 'ccta', 'lm', 'hf', 'i', 'ii',
+           'iii', 'iv', 'iii-iv', 'ii-iv', 'i-iv', 'nyha')
   s <- strsplit(tolower(x), " ")[[1]]
   w <- (1 : length(s)) == 1 | s %nin% notcap
   s[w] <- paste(toupper(substring(s[w], 1,1)), substring(s[w], 2),

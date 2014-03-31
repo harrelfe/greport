@@ -337,11 +337,11 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   }
   excl  <- factor(elab,          levels=rev(elab))
   excl2 <- factor(c(elab, elab), levels=rev(elab))
-
   x <- c(nexclude, marg)
-  hh <- c(rep('Incremental Exclusions', k + (npend > 0)),
-          rep('Single Exclusions',      k + (npend > 0)))
-  fracremain <- c(fracremain, rep(NA,   k + (npend > 0)))
+  j <- length(elab)  # was k + (npend > 0)
+  hh <- c(rep('Incremental Exclusions', j),
+          rep('Single Exclusions',      j))
+  fracremain <- c(fracremain, rep(NA,   j))
   
   panel.ex <- 
       function (x, y, groups, ..., pch, col) {
