@@ -11,7 +11,9 @@ nriskReport(formula, groups = NULL, data = NULL, subset = NULL,
   \item{formula}{a formula with time and the left hand
   side, and with variables on the right side being possible
   stratification variables.  If no stratification put
-  \code{1} as the right hand side.}
+  \code{1} as the right hand side.  Specify unique subject
+  IDs by including a term \code{id()} if subjects have more
+  than one observation.}
 
   \item{groups}{a character string naming a
   superpositioning variable.  Must also be included in

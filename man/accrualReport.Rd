@@ -4,8 +4,8 @@
 \usage{
 accrualReport(formula, data = NULL, subset = NULL, na.action = na.retain,
   dateRange = NULL, zoom = NULL, targetN = NULL, targetDate = NULL,
-  closeDate = NULL, panel = "accrual", h = 2.5, w = 3.75, hb = 5,
-  wb = 5, hdot = 3.5)
+  closeDate = NULL, minrand = 10, panel = "accrual", h = 2.5,
+  w = 3.75, hb = 5, wb = 5, hdot = 3.5)
 }
 \arguments{
   \item{formula}{formula object, with time variables on the

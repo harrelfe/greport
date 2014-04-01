@@ -8,3 +8,4 @@ Changes in version 0.5-1 (2014-03-??)
 	 * Merge: added support for data.table
    * nriskReport: added id() variable
    * exReport: fixed bug when there is an exclusion with 0 frequency
+   * accrualReport: improved graphics formatting, added minrand argument
