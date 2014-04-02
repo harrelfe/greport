@@ -126,6 +126,14 @@ accrualReport <-
     persite <- nrand / nsites
     z <- c(z, c(nrand, g(persite, 1)))
     k <- c(k, c('Subjects randomized', 'Subjects per site'))
+    ## maxs = for each site the # months since that site first randomized
+    ##        a subject (NA if none randomized)
+    ## site months is sum of maxs
+    ## avg. months since first randomized = mean maxs excluding NAs
+    ## rand per site per month = # rand / site months
+    ## Note: # rand / # sites / avg. months != rand per site per month
+    ## because some sites have not randomized any subjects.  Such sites
+    ## are counted in # sites but not in site-months
     if(pclose) {
       months <- as.numeric(difftime(closeDate, rdate, units='days')) /
         (365.25 / 12)
@@ -134,12 +142,14 @@ accrualReport <-
       maxs       <- tapply(months, Site, mx)
       sitemonths <- sum(maxs, na.rm=TRUE)
       z <- c(z, g(max(months, na.rm=TRUE), 1),
+                g(sitemonths, 1),
                 g(mean(maxs, na.rm=TRUE), 1),
                 g(nrand / sitemonths, 2))
       k <- c(k, paste('Months from first subject randomized (',
                       format(min(rdate, na.rm=TRUE)), ') to ',
                       format(closeDate), sep=''),
-                'Average months a site is online',
+                'Site-months',
+                'Average months since a site first randomized',
                 'Subjects randomized per site per month')
     }
   }
