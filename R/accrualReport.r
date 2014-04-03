@@ -13,6 +13,7 @@
 #' @param targetN integer vector with target sample sizes over time, same length as \code{targetDate}
 #' @param targetDate \code{Date} or character vector corresponding to \code{targetN}
 #' @param closeDate \code{Date} or characterstring.  Used for randomizations per month and per site-month - contains the dataset closing date to be able to compute the number of dates that a group (country, site, etc.) has been online since randomizating its first subject.
+#' @param enrollmax numeric specifying the upper y-axis limit for cumulative enrollment when not zoomed
 #' @minrand integer.  Minimum number of randomized subjects a country must have before a box plot of time to randomization is included.
 #' @param panel character string.  Name of panel, which goes into file base names and figure labels for cross-referencing.
 #' @param h numeric.  Height of ordinary plots, in inches.
@@ -29,7 +30,7 @@
 accrualReport <-
   function(formula, data=NULL, subset=NULL, na.action=na.retain,
            dateRange=NULL, zoom=NULL, targetN=NULL, targetDate=NULL,
-           closeDate=NULL, minrand=10, panel = 'accrual',
+           closeDate=NULL, enrollmax=NULL, minrand=10, panel = 'accrual',
            h=2.5, w=3.75, hb=5, wb=5, hdot=3.5)
 {
   formula <- Formula(formula)
@@ -148,7 +149,7 @@ accrualReport <-
       k <- c(k, paste('Months from first subject randomized (',
                       format(min(rdate, na.rm=TRUE)), ') to ',
                       format(closeDate), sep=''),
-                'Site-months',
+                'Site-months for sites randomizing',
                 'Average months since a site first randomized',
                 'Subjects randomized per site per month')
     }
@@ -187,7 +188,9 @@ accrualReport <-
          ylab='Cumulative Number',
          subtitles=FALSE, axes=FALSE,
          xlim=dr,
-         ylim=c(0, if(length(target)) max(length(y), target) else length(y)))
+         ylim=c(0, if(length(target)) max(length(y), target)
+          else if(lab == 'enrolled' && length(enrollmax)) enrollmax
+          else length(y)))
     axis(2)
     axis.Date(1, at=seq(dr[1], dr[2], by='year'))
     axis.Date(1, at=seq(dr[1], dr[2], by='month'),

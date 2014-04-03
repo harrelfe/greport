@@ -8,6 +8,8 @@
 #' @param data input data frame
 #' @param subset subsetting criteria
 #' @param na.action function for handling \code{NA}s when creating analysis frame
+#' @param ignoreExcl a formula with only a right-hand side, specifying the names of exclusion variable names that are to be ignored when counting exclusions (screen failures)
+#' @param ignoreRand a formula with only a right-hand side, specifying the names of exclusion variable names that are to be ignored when counting randomized subjects marked as exclusions
 #' @param autoother set to \code{TRUE} to add another exclusion \code{Unspecified} that is set to \code{TRUE} for non-pending subjects that have no other exclusions
 #' @param sort set to \code{FALSE} to not sort variables by descending exclusion frequency
 #' @param whenapp a named character vector (with names equal to names of variables in formula).  For each variable that is only assessed (i.e., is not \code{NA}) under certain conditions, add an element to this vector naming the condition
@@ -30,15 +32,20 @@
 #' # See test.Rnw in tests directory
 
 exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
+                     ignoreExcl=NULL, ignoreRand=NULL,
                      autoother=FALSE, sort=TRUE, whenapp=NULL, erdata=NULL,
                      panel='excl', subpanel=NULL, head=NULL, tail=NULL,
-                     h=5.5, w=6.5, hc=4.5, wc=5, adjustwidth='-0.75in',
+                     h=5.5, w=6.5, hc=4.5, wc=5,
+                     adjustwidth='-0.75in',
                      append=FALSE, popts=NULL, app=TRUE) {
 
   file <- sprintf('%s/%s.tex', getgreportOption('texdir'), panel)
   if(!append) cat('', file=file)
   appfile <- sprintf('%s/app.tex', getgreportOption('texdir'))
   subp <- if(length(subpanel)) subpanel else ''
+
+  if(length(ignoreExcl)) ignoreExcl <- all.vars(ignoreExcl)
+  if(length(ignoreRand)) ignoreRand <- all.vars(ignoreRand)
 
 #  Nobs <- nobsY(formula, group=getgreportOption('tx.var'),
 #                data=data, subset=subset, na.action=na.action)
@@ -90,8 +97,12 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
 
   rnd <- NULL
   if(length(sr)) rnd <- ispos(X[[sr]])
-  
-  margdenom <- sapply(if(length(c(sp, sr, sc, si))) X[, -c(sp, sr, sc, si)]
+
+  ig <- if(length(ignoreExcl)) match(ignoreExcl, names(X))
+  if(length(ig) && any(is.na(ig)))
+    stop('ignoreExcl contains variables not in formula')
+  margdenom <- sapply(if(length(c(sp, sr, sc, si, ig)))
+                      X[, -c(sp, sr, sc, si, ig)]
                        else X,
                       function(x) sum(! mis(x)))
   Xc <- NULL
@@ -108,8 +119,10 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   if(length(sp)) {
     pending <- ispos(X[[sp]])
     ## Any observations marked as excluded should have pending ignored
-    anyex   <- rep(FALSE, n)
-    for(j in (1 : ncol(X))[- c(sp, sr, sc, si)]) anyex <- anyex | ispos(X[[j]])
+    anyex <- rep(FALSE, n)
+    namx  <- names(X)
+    for(j in (1 : ncol(X))[- c(sp, sr, sc, si)])
+      if(namx[j] %nin% ignoreExcl) anyex <- anyex | ispos(X[[j]])
     pending[anyex] <- FALSE
     ## Same with any observation marked as randomized
     if(length(rnd)) pending[rnd & ! is.na(rnd)] <- FALSE
@@ -132,6 +145,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     nexr  <- integer(0)
     Ids   <- Idso <- character(0)
     for(i in 1 : k) {
+      if(length(ignoreRand) && Xname[i] %in% ignoreRand) next
       x <- ispos(X[[i]])
       anyre <- anyre | (x & rnd)
       r <- sum(x & rnd, na.rm=TRUE)
@@ -151,6 +165,13 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       if(length(Ids)) Ids <- c(Ids, '')
       E <- data.frame(Exclusion=latexTranslate(exclv), Frequency=nexr)
     }
+  }
+
+  if(length(ignoreExcl)) {
+    X <- X[names(X) %nin% ignoreExcl]
+    k <- ncol(X)
+    Xname <- names(X)
+    Xlab  <- Xlab[Xname]
   }
   
   marg      <- sapply(X, function(x) sum(ispos(x), na.rm=TRUE))
@@ -281,7 +302,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   if(n - m != N['randomized'])
     wrn2 <- sprintf('\\textbf{Note}: Number of enrolled (%s) minus number excluded (%s) does not match official number randomized (%s).',
                     n, m, N['randomized'])
-  
+
   cap <- paste(cap, tail, wrn1, wrn2)
 
   putFig(panel=panel, name=lb, caption='Cumulative exclusions',

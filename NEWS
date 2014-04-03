@@ -9,3 +9,5 @@ Changes in version 0.5-1 (2014-03-??)
    * nriskReport: added id() variable
    * exReport: fixed bug when there is an exclusion with 0 frequency
    * accrualReport: improved graphics formatting, added minrand argument
+   * accrualReport: added enrollmax argument, clarified notation
+   * exReport: added ignoreExcl, ignoreRand arguments
