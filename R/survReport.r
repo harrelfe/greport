@@ -58,8 +58,9 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   conf <- match.arg(conf)
 
   texdir <- getgreportOption('texdir')
-
-  if(! append) cat('', file=sprintf('%s/%s.tex', texdir, panel))
+  file   <- if(getgreportOption('texwhere') == 'gentex')
+    sprintf('%s/%s.tex', texdir, panel) else ''
+  if(file != '' && ! append) cat('', file=file)
   lb <- if(length(subpanel)) sprintf('%s-%s', panel, subpanel)
    else panel
 
@@ -146,8 +147,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       cap <- paste(shortcap,
                    ', along with half-height of 0.95 confidence limits centered at survival estimate midpoints. $N$=', no[1],
                    '. ', tail, sep='')
-      dNeedle(sampleFrac(no, Nobs), name='lttsurv',
-              file=sprintf('%s/%s.tex', texdir, panel))
+      dNeedle(sampleFrac(no, Nobs), name='lttsurv', file=file)
       cap <- sprintf('%s~\\hfill\\lttsurv', cap)
       putFig(panel=panel, name=lbi, caption=shortcap, longcaption=cap)
     }
@@ -170,8 +170,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       shortcap <- paste(shortcap, 'stratified by', labx)
     cap <- paste(shortcap,
                  ', along with half-height of 0.95 confidence limits centered at survival estimate midpoints. $N$=', nobs[1], '. ', tail, sep='')
-    dNeedle(sampleFrac(nobs, Nobs), name='lttsurv',
-            file=sprintf('%s/%s.tex', texdir, panel))
+    dNeedle(sampleFrac(nobs, Nobs), name='lttsurv', file=file)
     cap <- sprintf('%s~\\hfill\\lttsurv', cap)
     putFig(panel=panel, name=lb, caption=shortcap, longcaption=cap)
   }

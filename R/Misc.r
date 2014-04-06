@@ -82,6 +82,7 @@ mfrowSuggest <- function(n, small=FALSE) {
 #'  \item{\code{gtype}:}{graphics type, \code{"pdf"} or \code{"interactive"}}
 #'  \item{\code{pdfdir}:}{name of subdirectory in which to write \code{pdf} graphics}
 #'  \item{\code{texdir}:}{name of subdirectory in which to write \code{LaTeX} code}
+#'  \item{\code{texwhere}:}{default is \code{"texdir"} to use location specified by \code{texdir}.  Set to \code{""} to write generated non-appendix LaTeX code to the console as expected by \code{knitr}}
 #' }
 setgreportOption <- function(...) {
   default <- getOption('greport')
@@ -92,7 +93,8 @@ setgreportOption <- function(...) {
                     tx.var = '', en.col = NULL,
                     denom = c(enrolled=NA, randomized=NA),
                     tablelink = 'hyperref', figenv='figure', figpos='htb!',
-                    gtype = 'pdf', pdfdir='pdf', texdir='gentex')
+                    gtype = 'pdf', pdfdir='pdf', texdir='gentex',
+                    texwhere='texdir')
   opts <- list(...)
   if(length(opts)) {
     if(any(names(opts) %nin% names(default)))
@@ -260,6 +262,7 @@ putFig <- function(panel, name, caption=NULL, longcaption=NULL,
   o <- getgreportOption()
   gtype     <- o$gtype
   texdir    <- o$texdir
+  texwhere  <- o$texwhere
   tablelink <- o$tablelink
   figenv    <- o$figenv
   figpos    <- o$figpos
@@ -273,6 +276,7 @@ putFig <- function(panel, name, caption=NULL, longcaption=NULL,
   panel <- translate(panel, '\\.', '-')
   name  <- translate(name,  '\\.', '-')
   file  <- sprintf('%s/%s.tex', texdir, panel)
+  if(texwhere == '') file <- ''
 
   ## if(length(caption)) caption <- latexTranslate(caption)
   ## if(length(longcaption)) longcaption <- latexTranslate(longcaption)

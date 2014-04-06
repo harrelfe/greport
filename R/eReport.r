@@ -142,7 +142,8 @@ eReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     zr <- data.frame(event=upFirst(row.names(zr)), zr)
 
     file <- sprintf('%s/%s.tex', getgreportOption('texdir'), panel)
-    if(! append) cat('', file=file)
+    if(getgreportOption('texwhere') == '') file <- ''
+     else if(! append) cat('', file=file)
     lb <- if(length(subpanel)) sprintf('%s-%s', panel, subpanel) else panel
     lbn <- gsub('\\.', '', gsub('-', '', lb))
 

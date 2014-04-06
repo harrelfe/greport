@@ -40,7 +40,8 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                      append=FALSE, popts=NULL, app=TRUE) {
 
   file <- sprintf('%s/%s.tex', getgreportOption('texdir'), panel)
-  if(!append) cat('', file=file)
+  if(getgreportOption('texwhere') == '') file <- ''
+   else if(!append) cat('', file=file)
   appfile <- sprintf('%s/app.tex', getgreportOption('texdir'))
   subp <- if(length(subpanel)) subpanel else ''
 

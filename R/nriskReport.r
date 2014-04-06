@@ -62,7 +62,8 @@ nriskReport <-
   sl <- if(ncol(X) > 1) tolower(labs[-1])
 
   file <- sprintf('%s/%s.tex', getgreportOption('texdir'), panel)
-  if(!append) cat('', file=file)
+  if(getgreportOption('texwhere') == '') file <- ''
+   else if(!append) cat('', file=file)
   lb <- gsub('\\.', '', gsub('-', '', panel))
   lbt <- lb
   if(! grepl('nrisk', lb)) {

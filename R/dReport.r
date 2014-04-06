@@ -213,7 +213,8 @@ dReport <-
   }
 
   file <- sprintf('%s/%s.tex', getgreportOption('texdir'), panel)
-  if(!append) cat('', file=file)
+  if(getgreportOption('texwhere') == '') file <- ''
+   else if(!append) cat('', file=file)
 
   lb <- sprintf('%s-%s', panel, what)
   if(length(subpanel)) lb <- paste(lb, subpanel, sep='-')

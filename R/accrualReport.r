@@ -45,7 +45,8 @@ accrualReport <-
   assign(envir = en, "site",      f)
 
   file <- sprintf('%s/%s.tex', getgreportOption('texdir'), panel)
-  cat('', file=file)
+  if(getgreportOption('texwhere') == '') file <- ''
+   else cat('', file=file)
   
   ltt <- function(used, name='ltt')
       dNeedle(sampleFrac(used),

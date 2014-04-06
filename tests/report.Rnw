@@ -550,6 +550,9 @@ as shown in the code.
   \item For some graphics there must be either no treatment variable
     or exactly two treatment levels.
   \item If there are treatments the design is a parallel-group design.
+  \item Whenever a dataset is specified to one of the \code{greport}
+    functions and subject have repeated measurements ($>1$ record), an
+    \code{id} variable must be given.
 \end{enumerate}
 
 \subsection{User \code{knitr} Source File for This Document}
