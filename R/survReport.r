@@ -174,4 +174,5 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     cap <- sprintf('%s~\\hfill\\lttsurv', cap)
     putFig(panel=panel, name=lb, caption=shortcap, longcaption=cap)
   }
+  invisible()
 }

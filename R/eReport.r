@@ -211,4 +211,5 @@ eReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   head <- paste(head, '~\\hfill\\', lttpop, sep='')
   putFig(panel=panel, name=lb, caption=shortcap, longcaption=head,
          poptable=popname, popfull=TRUE)
+  invisible()
 }

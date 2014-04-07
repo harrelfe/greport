@@ -136,4 +136,5 @@ nriskReport <-
     
   putFig(panel = panel, name = lb, caption = shortcap,
          longcaption = cap)
+  invisible()
 }
