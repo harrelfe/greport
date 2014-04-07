@@ -81,7 +81,7 @@ denom <- c(enrolled=nrow(d) * 1.1,
            randomized=sum(!is.na(d$rdate)) + 10)
 
 setgreportOption(gtype=c('pdf', 'interactive')[1], # [2] to debug
-                 tx.var='treat', denom=denom)
+                 tx.var='treat', denom=denom, texwhere='')
 
 ## Initialize app.tex
 file <- sprintf('%s/app.tex', getgreportOption('texdir'))
@@ -175,7 +175,7 @@ survival estimates, without any multiplicity correction.
 
 \section{Accrual}
 
-<<>>=
+<<accrual,results='asis'>>=
 accrualReport(enroll(edate) + randomize(rdate) ~
               region(region) + country(country) + site(site),
               data=d, hdot=3,
@@ -186,11 +186,10 @@ accrualReport(enroll(edate) + randomize(rdate) ~
               zoom=c('2005-01-01', '2005-06-30'),
               closeDate='2007-12-31')
 @ 
-\input{gentex/accrual}
 \clearpage
 
 \section{Patient Flow and Exclusions}
-<<>>=
+<<exclusions,results='asis'>>=
 d <- upData(d,
             subjid = 1 : n,
             pend   = rbinom(n, 1, .1),
@@ -225,11 +224,10 @@ exReport(~ pending(pend) + e1 + e2 + e3 + e4 + e5 + e6 + e7 +
          whenapp=c(e4='CCTA done'), data=d, hc=3.75, h=4,
          sort=FALSE, append=TRUE, subpanel='unsorted', app=FALSE)
 @ 
-\input{gentex/excl}
 \clearpage
 
 \section{Baseline Variables}
-<<>>=
+<<baseline,results='asis'>>=
 n <- 100
 f <- function(na=FALSE) {
   x <- sample(c('N', 'Y'), n, TRUE)
@@ -338,10 +336,9 @@ dReport(sbp ~ treat + region, data=d,
         popts = list(textplot='Mean', digits=1),
         append=TRUE, subpanel='stats', h=3, w=5)
 @ 
-\input{gentex/desc}
 \clearpage
 \section{Medication Usage Over Time}
-<<>>=
+<<meds,results='asis'>>=
 pan <- function(...)
   panel.plsmo(..., type='l', label.curves=max(which.packet()) == 1,
               datadensity=TRUE)
@@ -362,11 +359,10 @@ nriskReport(days ~ region + id(subjid),
             head='Number of subjects followed for medication usage',
             panel='meds', append=TRUE, h=3, w=4.5)
 @ 
-\input{gentex/meds}
 \clearpage
 
 \section{Time to Hospitalization and Surgery}
-<<>>=
+<<hospsurg,results='asis'>>=
 set.seed(1)
 n <- 400
 dat <- data.frame(t1=runif(n, 2, 5), t2=runif(n, 2, 5),
@@ -388,13 +384,12 @@ survReport(Surv(t1, e1) + Surv(t2, e2) ~ treat, data=dat,
 survReport(Surv(t1, e1) + Surv(t2, e2) ~ treat, data=dat,
            multi=TRUE, subpanel='multi', append=TRUE, ps=9, what='1-S')
 @ 
-\input{gentex/surv}
 
 \section{Adverse Events}
 For this example, the denominators for the two treatments in the
 pop-up needles will be incorrect because the dataset did not have
 subject IDs.
-<<>>=
+<<aes,results='asis'>>=
 # Original source of aeanonym: HH package
 # aeanonym <- read.table(hh("datasets/aedotplot.dat"), header=TRUE, sep=",")
 # Modified to remove denominators from data and to generate raw data
@@ -435,7 +430,6 @@ label(ae$treat) <- 'Treatment'
 
 eReport(event ~ treat, data=ae, minincidence=.05)
 @ 
-\input{gentex/events}
 \clearpage   % needed to get last tooltips to work
 
 \section{Appendix: Supporting Tables}

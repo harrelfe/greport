@@ -371,4 +371,5 @@ dReport <-
          tlongcaption = paste(tcap, legend, sep=''),
          poptable= if(length(poptab)) paste('\\', popname, sep=''),
          popfull = length(poptab) && poptab == 'full')
+  invisible()
 }
