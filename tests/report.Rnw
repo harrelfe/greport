@@ -90,7 +90,7 @@ weeks <- sort(unique(week))
 base  <- subset(ssafety, week==0)
 denom <- c(c(enrolled=500, randomized=nrow(base)), table(base$trx))
 
-setgreportOption(tx.var='trx', denom=denom)
+setgreportOption(tx.var='trx', denom=denom, texwhere='')
 ## Initialize app.tex
 file <- sprintf('%s/app.tex', getgreportOption('texdir'))
 cat('', file=file)
@@ -350,16 +350,15 @@ graphs using Adobe Acrobat Reader.  Internal hyperlinks are shown in
 %treatment.
 
 \section{Accrual}
-<<accrual>>=
+<<accrual,results='asis'>>=
 accrualReport(randomize(rdate) ~ site(site), data=base,
               dateRange=c('1990-01-01','1994-12-31'),
               targetDate='1994-12-31', targetN=300,
               closeDate=max(base$rdate))
 @ 
-\input{gentex/accrual}
 \clearpage
 \section{Baseline Variables}
-<<baseline>>=
+<<baseline,results='asis'>>=
 dReport(sex + race + smoking ~ trx, groups='trx', data=base,
         popts=list(layout=c(1, 3), key=list(space='left')),
         h=4, w=3.5)
@@ -373,7 +372,6 @@ dReport(age + height + weight + bmi + pack.yrs ~ trx, data=base,
             nint=50)),
         append=TRUE)
 @ 
-\input{gentex/desc}
 \clearpage
 
 %\section{Compliance to Assigned Treatments}
@@ -384,18 +382,17 @@ dReport(age + height + weight + bmi + pack.yrs ~ trx, data=base,
 %dropoutReport(base$d.dropout, base$dropout, base$trx, time.inc=14)
 
 \section{Longitudinal Adverse Events}
-<<longae,cache=FALSE>>=
+<<longae,cache=FALSE,results='asis'>>=
 dReport(headache + ab.pain + nausea + dyspepsia + diarrhea +
         upper.resp.infect + coad ~ week + trx + id(id),
         groups='trx', data=ssafety, panel='longae', what='byx',
         popts=list(cex.strip=.57,
           key=list(x=.65, y=.2, lines=TRUE, points=FALSE)))
 @ 
-\input{gentex/longae}
 \clearpage
 
 \section{Incidence of Adverse Events at Any Follow-up}
-<<anyae>>=
+<<anyae,results='asis'>>=
 ## Reformat to one record per event per subject per time
 aev <- vars$ae
 ev  <- ssafety[ssafety$week > 0, c(aev, 'trx', 'id', 'week')]
@@ -415,20 +412,18 @@ label(ne$trx) <- 'Treatment'
 
 eReport(event ~ trx, data=ne, h=3.25)
 @ 
-\input{gentex/events}
 \clearpage
 
 \section{Longitudinal EKG Data}
-<<ekg>>= 
+<<ekg,results='asis'>>= 
 dReport(axis + corr.qt + pr + qrs + uncorr.qt + hr ~ week + trx +
         id(id),
         groups='trx', data=ssafety, panel='ekg', what='byx', w=7)
 @
-\input{gentex/ekg}
 \clearpage
 
 \section{Longitudinal Clinical Chemistry Data}
-<<cchem,cache=FALSE>>=
+<<cchem,cache=FALSE,results='asis'>>=
 ## Plot 6 variables per page
 cvar <- split(vars$chem, rep(letters[1:4], each=6))
 for(subpanel in names(cvar)) {
@@ -444,7 +439,6 @@ dReport(form, groups='trx', data=ssafety, panel='cchem',
         subpanel='e', what='byx', byx.type='quantiles', append=TRUE,
         popts=list(cex.strip=.7), w=7)
 @ 
-\input{gentex/cchem}
 \clearpage  % needed to get last tooltips to work
 
 \section{Computing Environment}

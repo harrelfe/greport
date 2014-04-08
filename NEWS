@@ -11,3 +11,5 @@ Changes in version 0.5-1 (2014-03-??)
    * accrualReport: improved graphics formatting, added minrand argument
    * accrualReport: added enrollmax argument, clarified notation
    * exReport: added ignoreExcl, ignoreRand arguments
+   * all: added greportOption texwhere; default is 'gentex'; can specify texwhere='' to write non-appendix LaTeX code to console as for knitr
+
