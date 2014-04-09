@@ -111,15 +111,32 @@ dReport <-
     y <- y[! is.na(y)]
     n <- length(y)
     se <- if(n < 2) NA else sd(y) / sqrt(n)
-    c(smean.cl.boot(y, na.rm=FALSE), se=se, n=length(y))
+    if(is.logical(y) || all(y %in% c(0., 1.))) {
+      p  <- mean(y)
+      ci <- binconf(sum(y), n)[1, ]
+      if(p == 0. || p == 1.) {
+        ## Don't trust se=0 at extremes; backsolve from Wilson interval
+        w  <- diff(ci[c('Lower', 'Upper')])
+        se <- 0.5 * w / qnorm(0.975)
+      } else se <- sqrt(p * (1. - p) / n)
+    }
+    else ci <- smean.cl.boot(y, na.rm=FALSE)
+    z <- c(ci, se=se, n=length(y))
+    z
   }
 
   propw <- function(y) {
     y <- y[!is.na(y)]
     n <- length(y)
     p <- mean(y)
-    se <- sqrt(p * (1. - p) / n)
-    structure(c(binconf(sum(y), n), se=se, n=n),
+    ci <- binconf(sum(y), n)[1, ]
+    if(p == 0. || p == 1.) {
+      ## Don't trust se=0 at extremes; backsolve from Wilson interval
+      w  <- diff(ci[c('Lower', 'Upper')])
+      se <- 0.5 * w / qnorm(0.975)
+    }
+    else se <- sqrt(p * (1. - p) / n)
+    structure(c(ci, se=se, n=n),
               names=c('Proportion', 'Lower', 'Upper', 'se', 'n'))
   }
 
@@ -199,7 +216,7 @@ dReport <-
       else if(! is.numeric(y)) 0
       else length(unique(y[! is.na(y)]))
     }
-    nu <- min(sapply(Y, g))
+    nu <- max(sapply(Y, g))
     what <- if(nu < 3) {
       fun <- propw
       'byx.binary'

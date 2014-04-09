@@ -12,4 +12,4 @@ Changes in version 0.5-1 (2014-03-??)
    * accrualReport: added enrollmax argument, clarified notation
    * exReport: added ignoreExcl, ignoreRand arguments
    * all: added greportOption texwhere; default is 'gentex'; can specify texwhere='' to write non-appendix LaTeX code to console as for knitr
-
+   * dReport: for byx for discrete Y, sense when Y is binary and use Wilson interval instead of bootstrap; adjust SE using confidence interval if proportion is 0 or 1
