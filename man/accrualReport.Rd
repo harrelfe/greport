@@ -4,8 +4,8 @@
 \usage{
 accrualReport(formula, data = NULL, subset = NULL, na.action = na.retain,
   dateRange = NULL, zoom = NULL, targetN = NULL, targetDate = NULL,
-  closeDate = NULL, minrand = 10, panel = "accrual", h = 2.5,
-  w = 3.75, hb = 5, wb = 5, hdot = 3.5)
+  closeDate = NULL, enrollmax = NULL, minrand = 10, panel = "accrual",
+  h = 2.5, w = 3.75, hb = 5, wb = 5, hdot = 3.5)
 }
 \arguments{
   \item{formula}{formula object, with time variables on the
@@ -41,6 +41,9 @@ accrualReport(formula, data = NULL, subset = NULL, na.action = na.retain,
   contains the dataset closing date to be able to compute
   the number of dates that a group (country, site, etc.)
   has been online since randomizating its first subject.}
+
+  \item{enrollmax}{numeric specifying the upper y-axis
+  limit for cumulative enrollment when not zoomed}
 
   \item{panel}{character string.  Name of panel, which goes
   into file base names and figure labels for

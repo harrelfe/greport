@@ -3,10 +3,10 @@
 \title{Exclusion Report}
 \usage{
 exReport(formula, data = NULL, subset = NULL, na.action = na.retain,
-  autoother = FALSE, sort = TRUE, whenapp = NULL, erdata = NULL,
-  panel = "excl", subpanel = NULL, head = NULL, tail = NULL, h = 5.5,
-  w = 6.5, hc = 4.5, wc = 5, adjustwidth = "-0.75in", append = FALSE,
-  popts = NULL, app = TRUE)
+  ignoreExcl = NULL, ignoreRand = NULL, autoother = FALSE, sort = TRUE,
+  whenapp = NULL, erdata = NULL, panel = "excl", subpanel = NULL,
+  head = NULL, tail = NULL, h = 5.5, w = 6.5, hc = 4.5, wc = 5,
+  adjustwidth = "-0.75in", append = FALSE, popts = NULL, app = TRUE)
 }
 \arguments{
   \item{formula}{a formula with only a right-hand side,
@@ -34,6 +34,15 @@ exReport(formula, data = NULL, subset = NULL, na.action = na.retain,
 
   \item{na.action}{function for handling \code{NA}s when
   creating analysis frame}
+
+  \item{ignoreExcl}{a formula with only a right-hand side,
+  specifying the names of exclusion variable names that are
+  to be ignored when counting exclusions (screen failures)}
+
+  \item{ignoreRand}{a formula with only a right-hand side,
+  specifying the names of exclusion variable names that are
+  to be ignored when counting randomized subjects marked as
+  exclusions}
 
   \item{autoother}{set to \code{TRUE} to add another
   exclusion \code{Unspecified} that is set to \code{TRUE}

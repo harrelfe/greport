@@ -36,7 +36,8 @@ which counts of unique \code{id}s are compared.  Sometimes
 \code{Merge}.  If all objects are of class
 \code{data.table}, faster merging will be done using the
 \code{data.table} package's join operation.  This assumes
-that all objects have identical key variables.
+that all objects have identical key variables and those of
+the variables on which to merge.
 }
 \examples{
 a <- data.frame(sid=1:3, age=c(20,30,40))
