@@ -138,3 +138,5 @@ nriskReport <-
          longcaption = cap)
   invisible()
 }
+
+utils::globalVariables('.y.')
