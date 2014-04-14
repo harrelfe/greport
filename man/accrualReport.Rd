@@ -45,6 +45,10 @@ accrualReport(formula, data = NULL, subset = NULL, na.action = na.retain,
   \item{enrollmax}{numeric specifying the upper y-axis
   limit for cumulative enrollment when not zoomed}
 
+  \item{minrand}{integer.  Minimum number of randomized
+  subjects a country must have before a box plot of time to
+  randomization is included.}
+
   \item{panel}{character string.  Name of panel, which goes
   into file base names and figure labels for
   cross-referencing.}

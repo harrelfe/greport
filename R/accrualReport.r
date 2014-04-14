@@ -14,7 +14,7 @@
 #' @param targetDate \code{Date} or character vector corresponding to \code{targetN}
 #' @param closeDate \code{Date} or characterstring.  Used for randomizations per month and per site-month - contains the dataset closing date to be able to compute the number of dates that a group (country, site, etc.) has been online since randomizating its first subject.
 #' @param enrollmax numeric specifying the upper y-axis limit for cumulative enrollment when not zoomed
-#' @minrand integer.  Minimum number of randomized subjects a country must have before a box plot of time to randomization is included.
+#' @param minrand integer.  Minimum number of randomized subjects a country must have before a box plot of time to randomization is included.
 #' @param panel character string.  Name of panel, which goes into file base names and figure labels for cross-referencing.
 #' @param h numeric.  Height of ordinary plots, in inches.
 #' @param w numeric.  Width of ordinary plots.
