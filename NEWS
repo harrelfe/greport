@@ -1,7 +1,4 @@
-Changes in version 0.5-3 (2014-05-)
-   * add globalVariables call to nriskReport
-
-Changes in version 0.5-1 (2014-04-13)
+Changes in version 0.5-1 (2014-04-15)
    * survReport: changed to use npsurv instead of survfit.formula
 	 * exReport: changed order of output so that analysis of randomized patients marked for exclusions appears last; use LaTeX chngpage package to allow detailed table to go into left margin so as to be centered on page
    * exReport: added adjustwidth argument
@@ -17,3 +14,4 @@ Changes in version 0.5-1 (2014-04-13)
    * all: added greportOption texwhere; default is 'gentex'; can specify texwhere='' to write non-appendix LaTeX code to console as for knitr
    * dReport: for byx for discrete Y, sense when Y is binary and use Wilson interval instead of bootstrap; adjust SE using confidence interval if proportion is 0 or 1
    * dReport: changed discreteness non-binary classification to use maximum number of unique values or Y instead of minimum
+   * add globalVariables call to nriskReport
