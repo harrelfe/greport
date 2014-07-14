@@ -162,7 +162,29 @@ accrualReport <-
                label=paste(panel, 'studynos', sep='-'),
                caption='Study Numbers')
   }
-    
+
+  ## axis.Date when given a sequence not on Jan 1 boundaries did not
+  ## place axis labels at correct location
+  axisDate <- function(dr) {
+    cdr <- as.character(dr)
+    yr  <- substring(cdr, 1, 4)
+    outer <- as.Date(c(paste(yr[1], '01-01', sep='-'),
+                       paste(as.numeric(yr[2]) + 1, '01-01', sep='-')))
+    dseq <- seq(outer[1], outer[2], by='year')
+    if(length(dseq) > 3) dseq <- dseq[- c(1, length(dseq))]
+    short <- difftime(dr[2], dr[1], units='days') < 550
+    axis(1, at=as.numeric(dseq),
+         labels=if(! short) substring(dseq, 1, 4) else FALSE)
+    dseq <- seq(dr[1], dr[2], by='month')
+    mo   <- as.numeric(substring(dseq, 6, 7))
+    mo   <- c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct',
+              'Nov','Dec')[mo]
+    mo   <- ifelse(mo == 'Jan', substring(dseq, 1, 4), mo)
+    axis(1, at=as.numeric(dseq), 
+         labels=if(short) mo else FALSE,
+         tcl = 0.5 * par('tcl'), cex.axis=0.6, las=3)
+  }
+  
   ## For each date variable in Y, make a cumulative frequency chart and
   ## optionally zoomed-in chart
   ## If target sample size is present, add that as line graph to chart
@@ -185,18 +207,15 @@ accrualReport <-
     longcap <- paste(shortcap, cap, '~\\hfill\\lttc', sep = '')
 
     startPlot(lb, h=h, w=w, lattice=FALSE)
-    Ecdf(y, what='f', xlab=sprintf('Date %s', capitalize(lab)),
+    Ecdf(as.numeric(y), what='f', xlab=sprintf('Date %s', capitalize(lab)),
          ylab='Cumulative Number',
          subtitles=FALSE, axes=FALSE,
-         xlim=dr,
+         xlim=as.numeric(dr),
          ylim=c(0, if(length(target)) max(length(y), target)
           else if(lab == 'enrolled' && length(enrollmax)) enrollmax
           else length(y)))
     axis(2)
-    axis.Date(1, at=seq(dr[1], dr[2], by='year'))
-    axis.Date(1, at=seq(dr[1], dr[2], by='month'),
-              labels= difftime(dr[2], dr[1], units='days') < 550,
-              tcl=0.5 * par('tcl'), cex=.6)
+    axisDate(dr)
     if(length(target)) lines(dtarget, target, lty=3, lwd=1)
     box(lwd=.75, col=gray(.4))
     endPlot()
@@ -209,7 +228,7 @@ accrualReport <-
       lb <- sprintf('%s-cumulative-%s-zoom', panel, lab)
       startPlot(lb, h=h, w=w, lattice=FALSE)
       zoom <- as.Date(zoom)
-      Ecdf(y, what='f', xlab=sprintf('Date %s', capitalize(lab)),
+      Ecdf(as.numeric(y), what='f', xlab=sprintf('Date %s', capitalize(lab)),
            ylab='Cumulative Number',
            subtitles=FALSE, axes=FALSE,
            xlim=zoom,
@@ -217,10 +236,7 @@ accrualReport <-
              max(target[dtarget <= zoom[2]])) else
              sum(y <= zoom[2], na.rm=TRUE)))
       axis(2)
-      axis.Date(1, at=seq(zoom[1], zoom[2], by='year'))
-      axis.Date(1, at=seq(zoom[1], zoom[2], by='month'),
-                labels= difftime(zoom[2], zoom[1], units='days') < 550,
-                tcl= 0.5 * par('tcl'), cex=.6)
+      axisDate(zoom)
       if(length(target)) lines(dtarget, target, lty=3, lwd=1)
       box(lwd=.5, col=gray(.4))
       endPlot()
