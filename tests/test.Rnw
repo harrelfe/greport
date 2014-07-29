@@ -302,7 +302,8 @@ dReport(age + sbp + dbp ~ region,
         head='Baseline continuous variables')
 
 dReport(age + sbp + dbp ~ treat + region, w=6, h=3.5,
-           data=d, append=TRUE, subpanel='txreg')
+        data=d, append=TRUE, subpanel='txreg',
+        sopts=list(cex.strip=.65))
 
 # Same but show regions combined
 dReport(age + sbp + dbp ~ treat + region, w=6, h=4.75,
