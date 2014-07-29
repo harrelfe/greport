@@ -271,6 +271,7 @@ dReport(race + sex ~ region, data=addMarginal(d, region),
         w=4.75, h=2.75, subpanel='demoreg',
         head='Demographics',
         popts=list(layout=c(1,2),
+           par.strip=list(cex=.5, col='red'),
            key=list(space='right', cex=.7), text.at=1.5))
            
 ## Add a new block of variables that apply only to males
