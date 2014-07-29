@@ -305,7 +305,8 @@ significantly different at (at least) the 0.05 level.
 For discrete variables that are not binary, such as adverse event
 presence and severity, means and bootstrap percentile 0.95 confidence
 intervals are shown, along with half-confidence intervals for the
-difference in means using as standard error the square root of the sum
+difference in means using as standar0  244728   8284   4772 S   0.3  0.2  48:27.28 panel-32-w+ 
+22486 harrelfe  20   d error the square root of the sum
 of squares of the two means' standard errors.
 
 \paragraph{Survival Curves}
@@ -510,6 +511,14 @@ as a template.  \code{spar} sets good default graphical parameters
 graphics.  The \code{Rprofile} example there also defines the
 \code{knitrSet} function that is used in this example, to pretty-print
 \R\ code. 
+
+\subsection{Changing Lattice Graphics Parameters}
+The most common change needed in Lattice graphics is the font size in strip labels, especially to allow longer labels to fit.  Here is a summary of how to change this in a few \code{greport} contexts.
+
+\begin{description}
+\item[violin and box plots with \code{dReport}]: \code{sopts=list(cex.strip=.6)}
+\item[Proportion charts with \code{dReport}]: \code{popts=list(par.strip=list(cex=.6))}
+\end{description}
 
 \subsection{Data Preparation}
 Variable labels are used in much of the graphical and tabular output,
