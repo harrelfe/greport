@@ -248,6 +248,7 @@ dReport <-
                if(length(ylabs) < 7) past(ylabs) else
                paste(length(ylabs), 'variables'))
   al <- tolower(a)
+  al <- latexTranslate(al)
   
   if(!length(head))
     head <-

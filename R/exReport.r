@@ -164,7 +164,8 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       exclv <- c(exclv, 'Total Subjects with Any Exclusion')
       nexr   <- c(nexr, nnre)
       if(length(Ids)) Ids <- c(Ids, '')
-      E <- data.frame(Exclusion=latexTranslate(exclv), Frequency=nexr)
+#      E <- data.frame(Exclusion=latexTranslate(exclv), Frequency=nexr)
+      E <- data.frame(Exclusion=exclv, Frequency=nexr)
     }
   }
 
@@ -447,7 +448,8 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
           file=appfile, append=TRUE)
       le <- length(nexr) - 1
       for(i in 1 : le) {
-        cat('\\textbf{', as.character(E$Exclusion[i]), '}:\\\\\n',
+        cat('\\textbf{', latexTranslate(as.character(E$Exclusion[i])),
+            '}:\\\\\n',
             file=appfile, append=TRUE, sep='')
         cat('\\parbox{5in}{', Ids[i], '}',
             if(i < le) '\\\\\n', sep='',
@@ -456,10 +458,10 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       if(length(erdata)) {
         erd <- erdata[as.character(interaction(erdata[Idnames]))
                       %in% Idso, ]
-        colnames(erd) <- latexTranslate(colnames(erd))
+#        colnames(erd) <- latexTranslate(colnames(erd))
         z <- function(x) ifelse(is.na(x), '', as.character(x))
-        for(j in 1 : ncol(erd))
-          erd[[j]] <- latexTranslate(z(erd[[j]]))
+#        for(j in 1 : ncol(erd))
+#          erd[[j]] <- latexTranslate(z(erd[[j]]))
         z <- latex(erd, file=appfile, append=TRUE, rowname=NULL,
                    table.env=FALSE, na.blank=TRUE)
       }
