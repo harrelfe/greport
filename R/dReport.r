@@ -355,7 +355,7 @@ dReport <-
   if(substring(what, 1, 3) == 'byx')
     poptab <- latexit(s, what, byx.type, file=file)
   else if(what == 'proportions') {
-    z <- latex(s, groups=groups, size='small', file=file)
+    z <- latex(s, groups=groups, size='small', file=file, append=TRUE)
     poptab <- if(attr(z, 'ngrouplevels') > 3) 'full' else 'mini'
   }
   else if(what == 'box' || (what == 'xy' && length(fun))) {
@@ -383,7 +383,7 @@ dReport <-
   cap <- sprintf('%s~\\hfill\\%s', cap, lttpop)
 
   endPlot()
-    
+
   putFig(panel = panel, name = lb, caption = shortcap,
          longcaption = cap,  tcaption=tcap,
          tlongcaption = paste(tcap, legend, sep=''),
