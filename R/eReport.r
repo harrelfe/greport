@@ -30,6 +30,11 @@ eReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                     panel='events', subpanel=NULL, head=NULL, tail=NULL,
                     h=6, w=7, append=FALSE, popts=NULL) {
 
+  if(grepl('[^a-zA-Z-]', panel))
+    stop('panel must contain only A-Z a-z -')
+  if(length(subpanel) && grepl('[^a-zA-Z-]', subpanel))
+    stop('subpanel must contain only A-Z a-z -')
+
   Nobs <- nobsY(formula, group=getgreportOption('tx.var'),
                 data=data, subset=subset, na.action=na.action)
   form <- Formula(formula)

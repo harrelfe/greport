@@ -35,6 +35,9 @@ accrualReport <-
 {
   formula <- Formula(formula)
   
+  if(grepl('[^a-zA-Z-]', panel))
+    stop('panel must contain only A-Z a-z -')
+  
   environment(formula) <- new.env(parent = environment(formula))
   en <- environment(formula)
   f <- function(x) x

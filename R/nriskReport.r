@@ -28,6 +28,9 @@ nriskReport <-
            h=5.5, w=5.5, outerlabels=TRUE, append=FALSE,
            popts=NULL)
 {
+  if(grepl('[^a-zA-Z-]', panel))
+    stop('panel must contain only A-Z a-z -')
+
   gro  <- getgreportOption()
   tvar <- gro$tx.var
   Nobs <- nobsY(formula, group=tvar,

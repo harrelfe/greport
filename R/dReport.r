@@ -46,6 +46,11 @@ dReport <-
   what     <- match.arg(what)
   byx.type <- match.arg(byx.type)
   tvar     <- getgreportOption('tx.var')
+
+  if(grepl('[^a-zA-Z-]', panel))
+    stop('panel must contain only A-Z a-z -')
+  if(length(subpanel) && grepl('[^a-zA-Z-]', subpanel))
+    stop('subpanel must contain only A-Z a-z -')
   
   center <- 'centerline'
   legend <- NULL

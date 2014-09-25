@@ -46,6 +46,11 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                        h=3, w=4.5, multi=FALSE, mfrow=NULL, y.n.risk=-.5,
                        bot=2, append=FALSE, ...)
 {
+  if(grepl('[^a-zA-Z-]', panel))
+    stop('panel must contain only A-Z a-z -')
+  if(length(subpanel) && grepl('[^a-zA-Z-]', subpanel))
+    stop('subpanel must contain only A-Z a-z -')
+    
   what <- match.arg(what)
   conf <- match.arg(conf)
   form <- Formula(formula)

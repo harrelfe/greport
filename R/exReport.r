@@ -40,6 +40,11 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                      adjustwidth='-0.75in',
                      append=FALSE, popts=NULL, app=TRUE) {
 
+  if(grepl('[^a-zA-Z-]', panel))
+    stop('panel must contain only A-Z a-z -')
+  if(length(subpanel) && grepl('[^a-zA-Z-]', subpanel))
+    stop('subpanel must contain only A-Z a-z -')
+
   file <- sprintf('%s/%s.tex', getgreportOption('texdir'), panel)
   if(getgreportOption('texwhere') == '') file <- ''
    else if(!append) cat('', file=file)
