@@ -1,9 +1,10 @@
-Changes in version 0.5-2 (2014-08-??)
+Changes in version 0.5-2 (2014-11-21)
    * accrualReport: axis.Date was not positioning axis labels containing only 4-digit years at Jan 1 so wrote customized axisDate function
    * Better escaping of special characters
    * dReport: handle special characters in table captions
    * dReport: added append=TRUE in call to latex() for proportions
-
+   * exReport: added apptail argument for appendix table of IDs
+   * All functions: checked that panel and subpanel containing only legal LaTeX macro name characters (A-Z a-z -); . are auto-removed
 
 Changes in version 0.5-1 (2014-04-15)
    * survReport: changed to use npsurv instead of survfit.formula
