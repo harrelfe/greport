@@ -13,7 +13,7 @@ Imports:
     latticeExtra,
     Formula,
     survival
-Description: The greport package contains many functions useful for
+Description: Contains many functions useful for
     monitoring and reporting the results of clinical trials and other
     experiments in which treatments are compared.  LaTeX is
     used to typeset the resulting reports, recommended to be in the
