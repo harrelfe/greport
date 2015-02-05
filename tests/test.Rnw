@@ -430,7 +430,7 @@ ae <- ae[subs, c('RAND', 'PREF')]
 names(ae) <- c('treat', 'event')
 label(ae$treat) <- 'Treatment'
 
-eReport(event ~ treat, data=ae, minincidence=.05)
+eReport(event ~ treat, data=ae, minincidence=.05, panel='aevents')
 @ 
 \clearpage   % needed to get last tooltips to work
 

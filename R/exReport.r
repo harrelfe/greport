@@ -271,9 +271,11 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   if(diff(r) < 100)
     axis(2, pos=0, at=seq(r[1], r[2], by= 1), tcl=-.21, labels=FALSE,
          col=gray(.8))
-  axis(2, pos=0, at=seq(r[1], r[2], by=10), cex.axis=.8)
-  axis(2, pos=0, at=seq(r[1], r[2], by= 5), tcl=-.25, labels=FALSE)
-  points(rep(.075, length(cumex)), cumex, pch=19, cex=.75, xpd=NA,
+  major <- pretty(r, n=10)
+  minor <- seq(r[1], r[2], by=10)
+  axis(2, pos=0, at=major, cex.axis=.675)
+  axis(2, pos=0, at=minor, tcl=-.25, labels=FALSE)
+  points(rep(.075, length(cumex)), cumex, pch=19, cex=.7, xpd=NA,
          col='#0080ff')
   side <- 2
   for(i in 1 : length(cumex)) {

@@ -330,7 +330,7 @@ putFig <- function(panel, name, caption=NULL, longcaption=NULL,
         file=file, append=TRUE)
     appfile <- sprintf('%s/app.tex', texdir)
 
-    cat(sf('\\begin{table}[%s]%s%s\\hyperref[fig:%s]{%s}\\end{table}\n\n',
+    cat(sf('\\begin{table}[%s]%s%s\\hyperref[fig:%s]{%s}\\end{table}\\clearpage\n\n',
            figpos, tcap, tlab, name, poptable),
         file=appfile, append=TRUE)
   }

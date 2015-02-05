@@ -26,6 +26,7 @@
 #' @param append logical.  Set to \code{FALSE} to start a new panel
 #' @param sopts list specifying extra arguments to pass to \code{bpplotM}, \code{summaryP}, or \code{summaryS}
 #' @param popts list specifying extra arguments to pass to a plot method.  One example is \code{text.at} to specify some number beyond \code{xlim[2]} to leave extra space for numerators and denominators when using \code{summaryP} for categorical analysis variables.  Another common use is for example \code{popts=list(layout=c(columns,rows))} to be used in rendering \code{lattice} plots.  \code{key} and \code{panel} are also frequently used.
+#' @param lalttice set to \code{TRUE} to use \code{lattice} instead of \code{ggplot2} for proportions.  When this option is in effect, numerators and denominators are shown.
 #' @export
 #' @examples
 #' # See test.Rnw in tests directory
@@ -40,7 +41,7 @@ dReport <-
            fun=NULL, data=NULL, subset=NULL, na.action=na.retain,
            panel = 'desc', subpanel=NULL, head=NULL, tail=NULL,
            continuous=10, h=5.5, w=5.5, outerlabels=TRUE, append=FALSE,
-           sopts=NULL, popts=NULL)
+           sopts=NULL, popts=NULL, lattice=FALSE)
 {
   mwhat    <- missing(what)
   what     <- match.arg(what)
@@ -321,7 +322,17 @@ dReport <-
          },
          proportions = {
            s <- do.call('summaryP', c(dl, sopts))
-           p <- do.call('plot', c(list(x=s, groups=groups), popts))
+           if(lattice) p <- do.call('plot', c(list(x=s, groups=groups), popts))
+           else {
+             if(length(groups) == 1 && groups == tvar)
+               popts <- c(popts, list(col  =getgreportOption('tx.col'),
+                                      shape=getgreportOption('tx.pch')))
+             p <- do.call('ggplot', c(list(data=s, groups=groups), popts))
+             if(length(groups)) p <- p + guides(color=guide_legend(title=''),
+                                                shape=guide_legend(title=''))
+             p <- p + theme(axis.text.x = element_text(size = rel(0.65)),
+                  strip.text=element_text(size=rel(0.7), color='blue'))
+           }
            print(p)
          },
          xy = {
