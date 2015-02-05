@@ -328,6 +328,8 @@ dReport <-
                popts <- c(popts, list(col  =getgreportOption('tx.col'),
                                       shape=getgreportOption('tx.pch')))
              p <- do.call('ggplot', c(list(data=s, groups=groups), popts))
+             fnvar <- attr(p, 'fnvar')
+             if(length(fnvar)) tail <- paste(tail, ' ', fnvar, '.', sep='')
              if(length(groups)) p <- p + guides(color=guide_legend(title=''),
                                                 shape=guide_legend(title=''))
              p <- p + theme(axis.text.x = element_text(size = rel(0.65)),
