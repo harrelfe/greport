@@ -252,13 +252,14 @@ dNeedle <- function(sf, name, file='', append=TRUE) {
 #' @param poptable an optional character string containing LaTeX code that will be used as a pop-up tool tip for the figure (typically a tabular)
 #' @param popfull set to \code{TRUE} to make the pop-up be full-page
 #' @param sidecap set to \code{TRUE} (only applies if \code{greportOption(figenv="SCfigure")}) to assume the figure is narrow and to use side captions
+#' @param outtable set to \code{TRUE} to only have the caption and hyperlink to graphics in a LaTeX table environment and to leave the tabulars to free-standing LaTeX markup.  This is useful when the table is long, to prevent hyperlinking from making the table run outside the visable area.  Instead of the hyperlink area being the whole table, it will be the caption.
 #' @param append logical. If \sQuote{TRUE} output will be appended instead of overwritten.
 #' @export
 
 putFig <- function(panel, name, caption=NULL, longcaption=NULL,
                    tcaption=caption, tlongcaption=NULL,
                    poptable=NULL, popfull=FALSE, sidecap=FALSE,
-                   append=TRUE) {
+                   outtable=FALSE, append=TRUE) {
   o <- getgreportOption()
   gtype     <- o$gtype
   texdir    <- o$texdir
@@ -312,9 +313,13 @@ putFig <- function(panel, name, caption=NULL, longcaption=NULL,
     ref <- if(length(caption))
       sprintf(' {\\smaller (Figure \\ref{fig:%s})}.', name)
     else ''
+    ## linkfromtab <- if(outtable)
+    ##    sf('\\hyperref[fig:%s]{~\\textcolor[gray]{0.5}{$\\mapsto$}}', name)
+    ##  else ''
     tcap <- if(length(tlongcaption))
       sf('\\caption[%s]{%s%s}', tcaption, tlongcaption, ref)
-    else if(length(tcaption)) sf('\\caption[%s]{%s%s}', tcaption, tcaption, ref)
+    else if(length(tcaption)) sf('\\caption[%s]{%s%s}', tcaption, tcaption,
+                                 ref)
     else sprintf('\\caption{%s}', ref)
     cat(sf('\\begin{%s}[%s]\\hyperref[tab:%s]{\\leavevmode%s\\includegraphics{%s.pdf}%s}', figenv, figpos, name, bcenter, name, ecenter),
         file=file, append=append)
@@ -330,9 +335,14 @@ putFig <- function(panel, name, caption=NULL, longcaption=NULL,
         file=file, append=TRUE)
     appfile <- sprintf('%s/app.tex', texdir)
 
-    cat(sf('\\begin{table}[%s]%s%s\\hyperref[fig:%s]{%s}\\end{table}\\clearpage\n\n',
-           figpos, tcap, tlab, name, poptable),
+    if(outtable)
+      cat(sf('\\begin{table}[%s]%s%s\\end{table}\n%s\\clearpage\n\n',
+           figpos, tcap, tlab, poptable),
         file=appfile, append=TRUE)
+    else
+      cat(sf('\\begin{table}[%s]%s%s\\hyperref[fig:%s]{%s}\\end{table}\\clearpage\n\n',
+             figpos, tcap, tlab, name, poptable),
+          file=appfile, append=TRUE)
   }
   invisible()
 }

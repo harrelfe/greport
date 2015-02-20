@@ -265,23 +265,17 @@ dReport(race + sex +
            head='Overall frequencies of categorical demographic variables and exclusions',
            data=d, w=4, h=4.5, popts=list(layout=c(1,3)))
 
-## Leave extra space to right of panels for numerators/denominators
 dReport(race + sex ~ region, data=addMarginal(d, region),
         groups='region', append=TRUE,
         w=4.75, h=2.75, subpanel='demoreg',
-        head='Demographics',
-        popts=list(layout=c(1,2),
-           par.strip=list(cex=.5, col='red'),
-           key=list(space='right', cex=.7), text.at=1.5))
+        head='Demographics')
            
 ## Add a new block of variables that apply only to males
 dReport(race + sex +
         pBlock(race, subset=sex=='Male', label='Race: Males') ~ region,
         data=d, groups='region', append=TRUE,
         w=4.75, h=3.5, subpanel='demoblock',
-        popts=list(layout=c(1,3),
-          key=list(space='top'),
-          head='Demographics with race for males'))
+        head='Demographics with race for males')
 
 excl <- with(d, ynbind(x1, x2, x3, x4, x5, x6, x7,
                        label='Exclusions'))
@@ -291,6 +285,15 @@ dReport(excl ~ 1, head='Exclusions', append=TRUE,
 dReport(race + sex + excl ~ treat + region, groups='treat',
         head='Categorical demographic variables and exclusions',
         data=d, append=TRUE, w=7, h=4.5, subpanel='txreg')
+
+cat('\\clearpage\n')
+
+# Show the same information plus numerators and denominators by using
+# lattice format
+
+dReport(race + sex + excl ~ treat + region, groups='treat',
+        head='Categorical demographic variables and exclusions',
+        data=d, append=TRUE, w=7, h=4.5, subpanel='txregl', lattice=TRUE)
 
 ## Show spike histogram for raw data, 50 bins
 dReport(age + sbp + dbp ~ region,
@@ -386,7 +389,7 @@ survReport(Surv(t1, e1) + Surv(t2, e2) ~ treat, data=dat,
 survReport(Surv(t1, e1) + Surv(t2, e2) ~ treat, data=dat,
            multi=TRUE, subpanel='multi', append=TRUE, ps=9, what='1-S')
 @ 
-
+\clearpage
 \section{Adverse Events}
 For this example, the denominators for the two treatments in the
 pop-up needles will be incorrect because the dataset did not have

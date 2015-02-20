@@ -74,6 +74,10 @@ dReport <-
   ## specials counts from lhs variables
   wid <- sr$id
   if(length(wid)) wid <- wid - ncol(Y)
+
+  glevels <- if(length(groups)) levels(X[[groups]])
+  manygroups <- length(glevels) > 3
+  nstrata <- 1
   
   if(mwhat) {
     if(length(fun)) what <- 'xy'
@@ -198,18 +202,20 @@ dReport <-
       yvar <- unique(as.character(r$yvar))
       w <- latex(r[colnames(r) != 'yvar'],
                  table.env=FALSE, file=file, append=TRUE, rowlabel='',
+                 landscape=FALSE, size=szg,
                  rowname=rep('', nrow(r)),
                  cgroup=c('', lev),
                  n.cgroup=c(1, rep(ncol(s$y), nl)),
-                 rgroup=ylab[yvar], size='scriptsize',
+                 rgroup=ylab[yvar], size=szg,
                  colheads=c(upFirst(xv[1]), rep(names(sk), nl)), center=center)
     }
   else {
     yvar <- unique(as.character(s$yvar))
     w <- latex(s[colnames(s) != 'yvar'],
                table.env=FALSE, file=file, append=TRUE,
+               landscape=FALSE,
                rowlabel='', rowname=rep('', nrow(s)),
-               rgroup=ylab[yvar], size='small',
+               rgroup=ylab[yvar], size=szg,
                colheads=c(upFirst(xv[1]), names(sk)), center=center) 
   }
     if(length(xv) == 2) 'full' else 'mini'
@@ -238,6 +244,15 @@ dReport <-
   file <- sprintf('%s/%s.tex', getgreportOption('texdir'), panel)
   if(getgreportOption('texwhere') == '') file <- ''
    else if(!append) cat('', file=file)
+
+  cat('%dReport:', deparse(formula), ' what:', what, ' group levels:',
+      paste(glevels, collapse=','), '\n',
+      file=file, append=TRUE)
+
+  if(what == 'box' && ! length(groups) && ncol(X) == 1)
+    manygroups <- length(levels(X[[1]])) > 3
+
+  szg <- if(manygroups) 'smaller[2]' else 'smaller'
 
   lb <- sprintf('%s-%s', panel, what)
   if(length(subpanel)) lb <- paste(lb, subpanel, sep='-')
@@ -298,7 +313,6 @@ dReport <-
              outerlabels=outerlabels)
   key <- popts$key
   if(! length(key) && length(groups)) {
-    glevels <- levels(X[[groups]])
     klines <- list(x=.6, y=-.07, cex=.8,
                    columns=length(glevels), lines=TRUE, points=FALSE)
     key=switch(what,
@@ -327,13 +341,17 @@ dReport <-
              if(length(groups) == 1 && groups == tvar)
                popts <- c(popts, list(col  =getgreportOption('tx.col'),
                                       shape=getgreportOption('tx.pch')))
+             popts$addlayer <-
+               theme(axis.text.x =
+                       element_text(size = rel(0.8), angle=-45,
+                                    hjust=0, vjust=1),
+                     strip.text=element_text(size=rel(0.675), color='blue'),
+                     legend.position='bottom')
              p <- do.call('ggplot', c(list(data=s, groups=groups), popts))
              fnvar <- attr(p, 'fnvar')
              if(length(fnvar)) tail <- paste(tail, ' ', fnvar, '.', sep='')
              if(length(groups)) p <- p + guides(color=guide_legend(title=''),
                                                 shape=guide_legend(title=''))
-             p <- p + theme(axis.text.x = element_text(size = rel(0.65)),
-                  strip.text=element_text(size=rel(0.7), color='blue'))
            }
            print(p)
          },
@@ -373,19 +391,23 @@ dReport <-
   if(substring(what, 1, 3) == 'byx')
     poptab <- latexit(s, what, byx.type, file=file)
   else if(what == 'proportions') {
-    z <- latex(s, groups=groups, size='small', file=file, append=TRUE)
-    poptab <- if(attr(z, 'ngrouplevels') > 3) 'full' else 'mini'
+    z <- latex(s, groups=groups, size=szg, file=file, append=TRUE,
+               landscape=FALSE)   ## may sometimes need landscape=manygroups
+    nstrata <- attr(z, 'nstrata')
+    poptab <- if(manygroups) 'full' else 'mini'
   }
   else if(what == 'box' || (what == 'xy' && length(fun))) {
     S <- summaryM(formula.no.id, data=data, subset=subset, na.action=na.action,
                   test=FALSE, groups=groups)
     z <- latex(S, table.env=FALSE, file=file, append=TRUE, prmsd=TRUE,
                npct='both', exclude1=FALSE, middle.bold=TRUE, center=center,
-               round='auto', insert.bottom=FALSE)
+               round='auto', insert.bottom=FALSE, size=szg,
+               landscape=manygroups)
     poptab <- if(length(S$group.freq) > 3) 'full' else 'mini'
     legend <- attr(z, 'legend')
     legend <- if(! length(legend)) ''
      else paste('. ', paste(legend, collapse='\n'), sep='')
+    nstrata <- attr(z, 'nstrata')
   }
   cat('}\n', file=file, append=TRUE)
   
@@ -406,6 +428,8 @@ dReport <-
          longcaption = cap,  tcaption=tcap,
          tlongcaption = paste(tcap, legend, sep=''),
          poptable= if(length(poptab)) paste('\\', popname, sep=''),
-         popfull = length(poptab) && poptab == 'full')
+         popfull = length(poptab) && poptab == 'full',
+         outtable = nstrata > 1 || manygroups)
+  # hyperref doesn't work with multiple tabulars (runs off page) or landscape
   invisible()
 }

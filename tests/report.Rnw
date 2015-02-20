@@ -361,7 +361,6 @@ accrualReport(randomize(rdate) ~ site(site), data=base,
 \section{Baseline Variables}
 <<baseline,results='asis'>>=
 dReport(sex + race + smoking ~ trx, groups='trx', data=base,
-        popts=list(layout=c(1, 3), key=list(space='left')),
         h=4, w=3.5)
 
 ## Show spike histogram for raw data, 50 bins
