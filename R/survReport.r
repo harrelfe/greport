@@ -100,7 +100,8 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       lwd <- gro$tx.lwd
     }
     else {
-      col <- rep(c(gray(c(0, .7)), 'blue', 'red', 'green'), length=ng)
+      ## col <- rep(c(gray(c(0, .7)), 'blue', 'red', 'green'), length=ng)
+      col <- rep(gro$nontx.col, length=ng)
       lwd <- rep(c(1, 3), length=ng)
     }
   } else {

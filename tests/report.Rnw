@@ -9,6 +9,7 @@
 \usepackage{fancyhdr}   % for fancy headers
 \usepackage{url}        % for \url{}
 \usepackage{chngpage}   % for exReport \begin{adjustwidth}
+\usepackage{Sweavelbw}  % black and white themed Sweavel style
 
 \def\titl{Example Closed Meeting Data Monitoring Committee Report}
 \definecolor{darkblue}{RGB}{0,0,139}
@@ -233,7 +234,7 @@ mouse over \textcolor[gray]{0.5}{$\mapsto$} a table of subject counts
 will pop up. 
 
 \paragraph{Extended Box Plots}
-\newcommand{\eboxpopup}[1]{\tooltipm{#1}{\includegraphics{bpplt-proto}}}
+\newcommand{\eboxpopup}[1]{\tooltipm{#1}{\includegraphics{bpplt-proto-1}}}
 % To not generate pop-up use: \newcommand{\eboxpopup}[1]{}
 For depicting distributions of continuous variables, many of the
 following displays use extended box plots, also called
@@ -249,6 +250,15 @@ follows.  Violin plots show mirror images of the estimated probability
 density function for continuous variable, using a kernel density
 estimator.  Violin plots are better able to show multimodality than
 quantile intervals.
+
+\paragraph{Dot Charts}
+Dot charts are used to present stratified proportions.  In these
+charts the area of the symbols is proportional to the square root of
+the denominator.  The legend shows representative denominators and
+their corresponding symbol areas, using denominators that actually
+occurred in the data and extended from the minimum observed to the
+maximum observed sample size.
+
 
 \paragraph{Longitudinal Analysis}
 For continuous variables measured repeatedly, line plots show the
@@ -305,8 +315,7 @@ significantly different at (at least) the 0.05 level.
 For discrete variables that are not binary, such as adverse event
 presence and severity, means and bootstrap percentile 0.95 confidence
 intervals are shown, along with half-confidence intervals for the
-difference in means using as standar0  244728   8284   4772 S   0.3  0.2  48:27.28 panel-32-w+ 
-22486 harrelfe  20   d error the square root of the sum
+difference in means using as standard error the square root of the sum
 of squares of the two means' standard errors.
 
 \paragraph{Survival Curves}

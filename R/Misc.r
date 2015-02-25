@@ -71,10 +71,12 @@ mfrowSuggest <- function(n, small=FALSE) {
 #'  \item{\code{tx.pch}:}{symbols corresponding to treatments}
 #'  \item{\code{tx.col}:}{colors corresponding to treatments}
 #'  \item{\code{tx.linecol}:}{colors for lines in line plots}
+#'  \item{\code{nontx.col}:}{colors for categories other than treatments}
 #'  \item{\code{tx.lty}:}{line types corresponding to treatments}
 #'  \item{\code{tx.lwd}:}{line widths corresponding to treatments}
 #'  \item{\code{tx.var}:}{character string name of treatment variable}
 #'  \item{\code{er.col}:}{2-vector with names \code{"enrolled","randomized"} containing colors to use for enrolled and randomized in needle displays}
+#'  \item{\code{alpha.f}:}{single numeric specifying alpha adjustment to be applied to all colors.  Default is 0.7}
 #'  \item{\code{denom}:}{named vector with overall sample sizes}
 #'  \item{\code{tablelink}:}{a character string, either \code{"tooltip"} or \code{"hyperref"} (the default); use the latter to make supporting data tables be hyperlinked to tables in the appendix rather than using a pop-up tooltip}
 #' \item{\code{figenv}:}{LaTeX figure environment to use, default is \code{"figure"}.  Use \code{figenv="SCfigure"} if using the LaTeX \code{sidecap} package.  \code{SCfigure} is only used for narrow images, by calling \code{putFig} with \code{sidecap=TRUE}.}
@@ -86,16 +88,23 @@ mfrowSuggest <- function(n, small=FALSE) {
 #' }
 setgreportOption <- function(...) {
   default <- getOption('greport')
-  if(! length(default))
-    default <- list(tx.pch = 16:17, tx.col = c('black', '#0080ff'),
-                    tx.linecol = c('black', '#0080ff'),
-                    tx.lty = c(1, 1), tx.lwd = c(1, 2),
-                    tx.var = '', en.col = NULL,
-                    denom = c(enrolled=NA, randomized=NA),
-                    tablelink = 'hyperref', figenv='figure', figpos='htb!',
-                    gtype = 'pdf', pdfdir='pdf', texdir='gentex',
-                    texwhere='texdir')
   opts <- list(...)
+  alpha.f <- if(length(opts$alpha.f)) opts$alpha.f else 0.7
+  if(! length(default))
+    default <-
+      list(tx.pch = 16:17,
+           tx.col = adjustcolor(c('black', '#0080ff'), alpha.f=alpha.f),
+           tx.linecol = adjustcolor(c('black', '#0080ff'), alpha.f=alpha.f),
+           nontx.col = adjustcolor(c("#1b9e77", "#d95f02", "#7570b3", "#e7298a",
+             "#66a61e", "#e6ab02", "#a6761d", "#666666"),
+             alpha.f=alpha.f),  ## see colorbrewer2.org
+           tx.lty = c(1, 1), tx.lwd = c(1, 2),
+           tx.var = '', er.col = NULL, alpha.f = 0.7,
+           denom = c(enrolled=NA, randomized=NA),
+           tablelink = 'hyperref', figenv='figure', figpos='htb!',
+           gtype = 'pdf', pdfdir='pdf', texdir='gentex',
+           texwhere='texdir')
+
   if(length(opts)) {
     if(any(names(opts) %nin% names(default)))
       stop(paste('greport options must be one of the following:',
@@ -106,10 +115,11 @@ setgreportOption <- function(...) {
   if(any(i) && sum(opts$denom[i]) != opts$denom['randomized'])
     stop('sum of # subjects randomized to each treatment must = total number randomized')
   if(! length(default$er.col))
-    default$er.col <- setdiff(c('red', 'green', "#0080ff", "#ff00ff",
-                                "darkgreen", "#ff0000", "orange", "#00ff00",
-                                "brown"),
-                              default$tx.col)[1 : 2]
+    default$er.col <-
+      adjustcolor(setdiff(c('red', 'green', "#0080ff", "#ff00ff",
+                            "darkgreen", "#ff0000", "orange", "#00ff00",
+                            "brown"),
+                          default$tx.col)[1 : 2], alpha.f=alpha.f)
   options(greport = default)
   invisible()
 }
@@ -122,21 +132,26 @@ latticeInit <- function() {
   opt <- getOption('greport')
 
   tx.col <- opt$tx.col
+  nontx.col <- opt$nontx.col
   tx.pch <- opt$tx.pch
   tx.lty <- opt$tx.pty
   tx.lwd <- opt$tx.lwd
+  alpha.f <- opt$alpha.f
   w <- trellis.par.get('dot.symbol')
   w$col <- tx.col[1]
   w$pch <- tx.pch[1]
   trellis.par.set(dot.symbol=w)
   w <- trellis.par.get('superpose.symbol')
-  w$col <- rep(c(tx.col, setdiff(w$col, tx.col)), length=length(w$col))
+  # w$col <- adjustcolor(w$col, alpha.f=alpha.f)
+  # w$col <- rep(c(tx.col, setdiff(w$col, tx.col)), length=length(w$col))
+  w$col <- rep(c(tx.col, nontx.col), length=length(w$col))
   w$pch <- rep(c(tx.pch,
                  setdiff(c(1, 2, 3, 4, 5, 6, 16, 17, 15, 18, 20), tx.pch)),
                length=length(w$pch))
   trellis.par.set(superpose.symbol=w)
   w <- trellis.par.get('superpose.line')
-  w$col <- rep(c(tx.col, setdiff(w$col, tx.col)), length=length(w$col))
+  # w$col <- adjustcolor(w$col, alpha.f=alpha.f)
+  w$col <- rep(c(tx.col, nontx.col), length=length(w$col))
   w$lty <- rep(c(tx.lty, w$lty), length=length(w$lty))
   w$lwd <- rep(c(tx.lwd, w$lwd), length=length(w$lwd))
   trellis.par.set(superpose.line=w)

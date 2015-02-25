@@ -206,7 +206,7 @@ dReport <-
                  rowname=rep('', nrow(r)),
                  cgroup=c('', lev),
                  n.cgroup=c(1, rep(ncol(s$y), nl)),
-                 rgroup=ylab[yvar], size=szg,
+                 rgroup=ylab[yvar],
                  colheads=c(upFirst(xv[1]), rep(names(sk), nl)), center=center)
     }
   else {
@@ -338,14 +338,18 @@ dReport <-
            s <- do.call('summaryP', c(dl, sopts))
            if(lattice) p <- do.call('plot', c(list(x=s, groups=groups), popts))
            else {
-             if(length(groups) == 1 && groups == tvar)
-               popts <- c(popts, list(col  =getgreportOption('tx.col'),
-                                      shape=getgreportOption('tx.pch')))
+             popts <- if(length(groups) == 1 && groups == tvar)
+               c(popts, list(col  =getgreportOption('tx.col'),
+                             shape=getgreportOption('tx.pch'),
+                             abblen=10))
+             else list(col=getgreportOption('nontx.col'))
              popts$addlayer <-
                theme(axis.text.x =
                        element_text(size = rel(0.8), angle=-45,
                                     hjust=0, vjust=1),
-                     strip.text=element_text(size=rel(0.675), color='blue'),
+                     strip.text.x=element_text(size=rel(0.75), color='blue'),
+                     strip.text.y=element_text(size=rel(0.75), color='blue',
+                       angle=0),
                      legend.position='bottom')
              p <- do.call('ggplot', c(list(data=s, groups=groups), popts))
              fnvar <- attr(p, 'fnvar')

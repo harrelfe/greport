@@ -1,6 +1,9 @@
 Changes in version 0.5-3 (2015-03-??)
    * putFig: add \clearpage after every appendix table
    * exReport: fine-tuned vertical dot plot
+   * dReport: rotated strip labels
+   * Added new greport option nontx.col and use that in other functions, for non-treatment groups
+   * dReport: changed strip label font size
 
 Changes in version 0.5-2 (2014-11-21)
    * accrualReport: axis.Date was not positioning axis labels containing only 4-digit years at Jan 1 so wrote customized axisDate function
