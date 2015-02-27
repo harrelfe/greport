@@ -341,8 +341,8 @@ dReport <-
              popts <- if(length(groups) == 1 && groups == tvar)
                c(popts, list(col  =getgreportOption('tx.col'),
                              shape=getgreportOption('tx.pch'),
-                             abblen=10))
-             else list(col=getgreportOption('nontx.col'))
+                             abblen=12))
+             else list(col=getgreportOption('nontx.col'), abblen=12)
              popts$addlayer <-
                theme(axis.text.x =
                        element_text(size = rel(0.8), angle=-45,
@@ -357,7 +357,7 @@ dReport <-
              if(length(groups)) p <- p + guides(color=guide_legend(title=''),
                                                 shape=guide_legend(title=''))
            }
-           print(p)
+           colorFacet(p, col=adjustcolor('blue', alpha.f=0.18))   # was print(p)
          },
          xy = {
            s <- do.call('summaryS', c(dl, list(fun=fun), sopts))

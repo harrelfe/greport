@@ -4,6 +4,7 @@ Changes in version 0.5-3 (2015-03-??)
    * dReport: rotated strip labels
    * Added new greport option nontx.col and use that in other functions, for non-treatment groups
    * dReport: changed strip label font size
+   * dReport: run ggplot.summaryP output through colorFacet (new in Hmisc)
 
 Changes in version 0.5-2 (2014-11-21)
    * accrualReport: axis.Date was not positioning axis labels containing only 4-digit years at Jan 1 so wrote customized axisDate function
