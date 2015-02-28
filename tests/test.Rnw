@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{chngpage}   % for exReport \begin{adjustwidth}
 \usepackage{relsize}
+% pdflatex used Sweavel.sty that is a symbolic link to Sweavelbw.sty
 
 \def\titl{DSMB Report for EXAMPLE Trial}
 

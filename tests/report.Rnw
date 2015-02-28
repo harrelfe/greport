@@ -9,7 +9,7 @@
 \usepackage{fancyhdr}   % for fancy headers
 \usepackage{url}        % for \url{}
 \usepackage{chngpage}   % for exReport \begin{adjustwidth}
-\usepackage{Sweavelbw}  % black and white themed Sweavel style
+% pdflatex used Sweavel.sty that is a symbolic link to Sweavelbw.sty
 
 \def\titl{Example Closed Meeting Data Monitoring Committee Report}
 \definecolor{darkblue}{RGB}{0,0,139}

@@ -357,7 +357,11 @@ dReport <-
              if(length(groups)) p <- p + guides(color=guide_legend(title=''),
                                                 shape=guide_legend(title=''))
            }
-           colorFacet(p, col=adjustcolor('blue', alpha.f=0.18))   # was print(p)
+           presult <- tryCatch(
+             colorFacet(p,
+                        col=adjustcolor('blue', alpha.f=0.18)),
+             error=function(e) list(fail=TRUE)   )
+           if(length(presult$fail) && presult$fail) print(p)
          },
          xy = {
            s <- do.call('summaryS', c(dl, list(fun=fun), sopts))
