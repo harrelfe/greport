@@ -267,7 +267,7 @@ dNeedle <- function(sf, name, file='', append=TRUE) {
 #' @param poptable an optional character string containing LaTeX code that will be used as a pop-up tool tip for the figure (typically a tabular)
 #' @param popfull set to \code{TRUE} to make the pop-up be full-page
 #' @param sidecap set to \code{TRUE} (only applies if \code{greportOption(figenv="SCfigure")}) to assume the figure is narrow and to use side captions
-#' @param outtable set to \code{TRUE} to only have the caption and hyperlink to graphics in a LaTeX table environment and to leave the tabulars to free-standing LaTeX markup.  This is useful when the table is long, to prevent hyperlinking from making the table run outside the visable area.  Instead of the hyperlink area being the whole table, it will be the caption.
+#' @param outtable set to \code{TRUE} to only have the caption and hyperlink to graphics in a LaTeX table environment and to leave the tabulars to free-standing LaTeX markup.  This is useful when the table is long, to prevent hyperlinking from making the table run outside the visable area.  Instead of the hyperlink area being the whole table, it will be the caption.  A \code{clearpage} is issued after the tabular.
 #' @param append logical. If \sQuote{TRUE} output will be appended instead of overwritten.
 #' @export
 
@@ -351,7 +351,7 @@ putFig <- function(panel, name, caption=NULL, longcaption=NULL,
     appfile <- sprintf('%s/app.tex', texdir)
 
     if(outtable)
-      cat(sf('\\begin{table}[%s]%s%s\\end{table}\n%s\\clearpage\n\n',
+      cat(sf('\\clearpage\\begin{table}[%s]%s%s\\end{table}\n%s\\clearpage\n\n',
            figpos, tcap, tlab, poptable),
         file=appfile, append=TRUE)
     else
@@ -440,7 +440,7 @@ upFirst <- function(txt) {
                 'unlike', 'until', 'up', 'upon', 'via', 'vs.', 'when',
                 'with', 'within', 'without', 'worth', 'yet')
   cap <- c('mi', 'gi', 'ecg', 'ekg', 'cad', 'ccta', 'lm', 'hf', 'i', 'ii',
-           'iii', 'iv', 'iii-iv', 'ii-iv', 'i-iv', 'nyha')
+           'iii', 'iv', 'iii-iv', 'ii-iv', 'i-iv', 'nyha', 'st', 'ett')
   s <- strsplit(tolower(x), " ")[[1]]
   w <- (1 : length(s)) == 1 | s %nin% notcap
   s[w] <- paste(toupper(substring(s[w], 1,1)), substring(s[w], 2),

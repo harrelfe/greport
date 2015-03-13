@@ -124,7 +124,7 @@ nriskReport <-
 #      levs <- if(current.var == 'time') lev else factor.levels
 #      strip.default(which.given, which.panel, var.name, factor.levels=levs, ...#)
 #    }
-    p <- useOuterStrips(p) #, strip=strip, strip.left=strip)
+    p <- latticeExtra::useOuterStrips(p) #, strip=strip, strip.left=strip)
   }
 
   startPlot(lb, h=h, w=w)
