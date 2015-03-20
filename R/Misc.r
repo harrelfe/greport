@@ -415,7 +415,7 @@ endPlot <- function() {
 
 #' Change First Letters to Upper Case
 #'
-#' Changes the first letter of each word in a string to upper case, keeping selected words in lower case
+#' Changes the first letter of each word in a string to upper case, keeping selected words in lower case.  Words containing at least 2 capital letters are kept as-is.
 #'
 #' @param txt a character vector
 #' @references
@@ -439,14 +439,14 @@ upFirst <- function(txt) {
                 'to', 'toward', 'towards', 'under', 'underneath',
                 'unlike', 'until', 'up', 'upon', 'via', 'vs.', 'when',
                 'with', 'within', 'without', 'worth', 'yet')
-  cap <- c('mi', 'gi', 'ecg', 'ekg', 'cad', 'ccta', 'lm', 'hf', 'i', 'ii',
-           'iii', 'iv', 'iii-iv', 'ii-iv', 'i-iv', 'nyha', 'st', 'ett')
-  s <- strsplit(tolower(x), " ")[[1]]
-  w <- (1 : length(s)) == 1 | s %nin% notcap
-  s[w] <- paste(toupper(substring(s[w], 1,1)), substring(s[w], 2),
-                sep="")
-  w <- tolower(s) %in% cap
-  s[w] <- toupper(s[w])
+  s <- strsplit(x, " ")[[1]]
+  ## Find words that have more than one upper case letter; assume these
+  ## are acronyms that need capitalization preserved
+  a <- grepl('[A-Z]{1,}.*[A-Z]{1,}', s)
+  s <- ifelse(a, s, ifelse((1 : length(s)) == 1 | s %nin% notcap,
+                           paste(toupper(substring(s, 1, 1)),
+                                 tolower(substring(s, 2)), sep=''),
+                           tolower(s)))
   paste(s, collapse=' ')
 }
   for(i in 1 : length(txt)) txt[i] <- f(txt[i])
