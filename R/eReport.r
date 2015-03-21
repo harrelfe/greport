@@ -199,7 +199,7 @@ eReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   lttpop <- paste('ltt', lbn, sep='')
   if(! length(head))
     head <- paste('Proportion of', etype,
-                  'and risk differences by', tolower(glabel),
+                  'and risk differences by', upFirst(glabel, lower=TRUE),
                   'sorted by risk difference')
   if(minincidence > 0 && any(small))
     head <- paste(head, '. ', sum(small), ' events with less than ',
@@ -207,7 +207,7 @@ eReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                   ' incidence in at least one group are not shown.',
                   sep='')
   shortcap <- paste('Proportion of', etype, 'and risk differences by',
-                    tolower(glabel))
+                    upFirst(glabel, lower=TRUE))
   startPlot(lb, h=h, w=w)
   print(r)
   endPlot()

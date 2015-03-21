@@ -270,7 +270,8 @@ dReport <-
   } else paste('for',
                if(length(ylabs) < 7) past(ylabs) else
                paste(length(ylabs), 'variables'))
-  al <- tolower(a)
+
+  al <- upFirst(a, alllower=TRUE)
   al <- latexTranslate(al)
   
   if(!length(head))
@@ -421,7 +422,7 @@ dReport <-
     nstrata <- attr(z, 'nstrata')
   }
   cat('}\n', file=file, append=TRUE)
-  
+
   nobs <- Nobs$nobs
   r <- range(nobs)
   nn <- if(r[1] == r[2]) r[1] else paste(r[1], 'to', r[2])

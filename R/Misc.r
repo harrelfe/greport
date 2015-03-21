@@ -418,13 +418,15 @@ endPlot <- function() {
 #' Changes the first letter of each word in a string to upper case, keeping selected words in lower case.  Words containing at least 2 capital letters are kept as-is.
 #'
 #' @param txt a character vector
+#' @lower set to \code{TRUE} to make only the very first letter of the string upper case, and to keep words with at least 2 capital letters in their original form
+#' @alllower set to \code{TRUE} to make every word start with lower case unless it has at least 2 caps
 #' @references
 #' \url{http://lanecc.libguides.com/content.php?pid=38483&sid=295540}, \url{http://en.wikipedia.org/wiki/Letter_case#Headings_and_publication_titles}, \url{http://titlecapitalization.com}
 #' @export
 #' @examples
 #' upFirst(c('this and that','that is Beyond question'))
 
-upFirst <- function(txt) {
+upFirst <- function(txt, lower=FALSE, alllower=FALSE) {
   f <- function(x) {
   notcap <- c('a', 'about', 'above', 'across', 'after', 'against',
                 'along', 'among', 'an', 'and', 'around', 'as', 'at',
@@ -443,10 +445,18 @@ upFirst <- function(txt) {
   ## Find words that have more than one upper case letter; assume these
   ## are acronyms that need capitalization preserved
   a <- grepl('[A-Z]{1,}.*[A-Z]{1,}', s)
-  s <- ifelse(a, s, ifelse((1 : length(s)) == 1 | s %nin% notcap,
-                           paste(toupper(substring(s, 1, 1)),
-                                 tolower(substring(s, 2)), sep=''),
-                           tolower(s)))
+  s <- if(alllower)
+         ifelse(a, s, tolower(s))
+  else if(lower)
+         ifelse(a, s, ifelse((1 : length(s)) == 1,
+                             paste(toupper(substring(s, 1, 1)),
+                                   tolower(substring(s, 2)), sep=''),
+                             tolower(s)))
+       else
+         ifelse(a, s, ifelse((1 : length(s)) == 1 | s %nin% notcap,
+                             paste(toupper(substring(s, 1, 1)),
+                                   tolower(substring(s, 2)), sep=''),
+                             tolower(s)))
   paste(s, collapse=' ')
 }
   for(i in 1 : length(txt)) txt[i] <- f(txt[i])

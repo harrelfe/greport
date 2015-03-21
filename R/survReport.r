@@ -73,7 +73,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   if(length(X)) {
     x <- X[[1]]
     namx <- names(X)[1]
-    labx  <- tolower(ifelse(label(x) == '', namx, label(x)))
+    labx  <- upFirst(ifelse(label(x) == '', namx, label(x)), lower=TRUE)
   }
 
   Nobs <- nobsY(formula, group=getgreportOption('tx.var'),
@@ -114,7 +114,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   evlab <- character(ny)
   for(i in 1 : ny) {
     y <- Y[[i]]
-    evlab[i] <- tolower(label(y))
+    evlab[i] <- upFirst(label(y), lower=TRUE)
     no <- nrow(y[! is.na(y)])
     if(multi) {
       lbi <- paste(lb, i, sep='-')

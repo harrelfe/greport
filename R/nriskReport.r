@@ -62,7 +62,7 @@ nriskReport <-
   x1      <- X[[1]]
   xunits  <- units(x1)
   if(xunits == '') xunits <- 'days'
-  sl <- if(ncol(X) > 1) tolower(labs[-1])
+  sl <- if(ncol(X) > 1) upFirst(labs[-1], lower=TRUE)
 
   file <- sprintf('%s/%s.tex', getgreportOption('texdir'), panel)
   if(getgreportOption('texwhere') == '') file <- ''

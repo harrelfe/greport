@@ -210,7 +210,7 @@ accrualReport <-
     longcap <- paste(shortcap, cap, '~\\hfill\\lttc', sep = '')
 
     startPlot(lb, h=h, w=w, lattice=FALSE)
-    Ecdf(as.numeric(y), what='f', xlab=sprintf('Date %s', capitalize(lab)),
+    Ecdf(as.numeric(y), what='f', xlab=sprintf('Date %s', upFirst(lab)),
          ylab='Cumulative Number',
          subtitles=FALSE, axes=FALSE,
          xlim=as.numeric(dr),
@@ -231,7 +231,7 @@ accrualReport <-
       lb <- sprintf('%s-cumulative-%s-zoom', panel, lab)
       startPlot(lb, h=h, w=w, lattice=FALSE)
       zoom <- as.Date(zoom)
-      Ecdf(as.numeric(y), what='f', xlab=sprintf('Date %s', capitalize(lab)),
+      Ecdf(as.numeric(y), what='f', xlab=sprintf('Date %s', upFirst(lab)),
            ylab='Cumulative Number',
            subtitles=FALSE, axes=FALSE,
            xlim=zoom,
@@ -248,6 +248,7 @@ accrualReport <-
       cap <- sprintf("Subjects %s over time", lab)
       if(length(target))
         cap <- paste(cap, '. The solid back line depicts the cumulative frequency.  The dotted line represent targets.', sep='')
+      else cap <- paste(cap, '. ', sep='')
       cap <- paste(cap, sprintf('The plot is zoomed to show %s--%s.~\\hfill\\lttc',
                                 zoom[1], zoom[2]))
       putFig(panel = panel, name = lb, caption = shortcap,
@@ -290,7 +291,8 @@ accrualReport <-
        else Days ~ 1
     popname <- '\\poptabledaysrand'
     cat(sprintf('\\def%s{\\protect\n', popname), file=file, append=TRUE)
-    S <- summaryM(form, test=FALSE)
+    rddata <- subset(data.frame(Days, x1=x1, x2=x2), ! is.na(Days))
+    S <- summaryM(form, data=rddata, test=FALSE)
     z <- latex(S, table.env=FALSE, file=file, append=TRUE, prmsd=TRUE,
                middle.bold=TRUE, center='none', round=1, insert.bottom=FALSE)
     cat('}\n', file=file, append=TRUE)
