@@ -413,6 +413,424 @@ endPlot <- function() {
   invisible()
 }
 
+#' Issue LaTeX section and/or subsection in appendix
+#'
+#' This is useful for copying section and subsection titles in the main body of the report to the appendix, to help in navigating supporting tables.
+#'
+#' @section a character string that will cause a section command to be added to app.tex
+#' @subsection a character string that will cause a subsection command to be added to app.tex
+#'
+#' @export
+
+appsection <- function(section=NULL, subsection=NULL) {
+  texdir <- getgreportOption()
+    file  <- sprintf('%s/%s.tex', texdir, panel)
+  if(texwhere == '') file <- ''
+
+  ## if(length(caption)) caption <- latexTranslate(caption)
+  ## if(length(longcaption)) longcaption <- latexTranslate(longcaption)
+
+  sf <- function(...) paste(sprintf(...), '%\n', sep='')
+  cap <- lab <- tlab <- ""
+  if(length(longcaption))
+    cap <- sf("\\caption[%s]{%s", caption, longcaption)
+  else
+    if(length(caption)) cap <- sf("\\caption{%s", caption)
+  else
+    cap <- '\\caption{'
+  
+  if(length(caption)) {
+    lab  <- sf("\\label{fig:%s}", name)
+    tlab <- sf("\\label{tab:%s}", name)
+  }
+
+  if(! length(poptable)) {
+    cap <- paste(cap, '}', sep='')
+    cat(sf("\\begin{%s}[%s]\\leavevmode%s\\includegraphics{%s.pdf}%s%s\n%s%s\\end{%s}\n", figenv, figpos, bcenter, name, ecenter, '%', cap, lab, figenv),
+        file=file, append=append)
+    return()
+  }
+
+  if(tablelink == 'tooltip') {
+    cmd <- if(popfull) '\\tooltipw' else '\\tooltipm'
+    cat(sf("\\begin{%s}[%s]\\leavevmode%s\\protect%s{\\includegraphics{%s.pdf}%s{%s}}%s%s\\end{%s}",
+           figenv, figpos, bcenter, cmd, name, ecenter, poptable, cap,
+           lab, figenv),
+        file=file, append=append)
+  } else {
+    ref <- if(length(caption))
+      sprintf(' {\\smaller (Figure \\ref{fig:%s})}.', name)
+    else ''
+    ## linkfromtab <- if(outtable)
+    ##    sf('\\hyperref[fig:%s]{~\\textcolor[gray]{0.5}{$\\mapsto$}}', name)
+    ##  else ''
+    tcap <- if(length(tlongcaption))
+      sf('\\caption[%s]{%s%s}', tcaption, tlongcaption, ref)
+    else if(length(tcaption)) sf('\\caption[%s]{%s%s}', tcaption, tcaption,
+                                 ref)
+    else sprintf('\\caption{%s}', ref)
+    cat(sf('\\begin{%s}[%s]\\hyperref[tab:%s]{\\leavevmode%s\\includegraphics{%s.pdf}%s}', figenv, figpos, name, bcenter, name, ecenter),
+        file=file, append=append)
+
+    reft <- sprintf(' {\\smaller (Table \\ref{tab:%s})}}', name)
+    cap <- if(grepl('\\hfill', cap))
+      gsub('\\hfill', paste(reft, '\\hfill', sep=''), cap, fixed=TRUE)
+    else
+      paste(cap, reft, sep='')
+
+    cat(cap, lab, 
+        sprintf('\\end{%s}\n', figenv), sep='',
+        file=file, append=TRUE)
+    appfile <- sprintf('%s/app.tex', texdir)
+
+    if(outtable)
+      cat(sf('\\clearpage\\begin{table}[%s]%s%s\\end{table}\n%s\\clearpage\n\n',
+           figpos, tcap, tlab, poptable),
+        file=appfile, append=TRUE)
+    else
+      cat(sf('\\begin{table}[%s]%s%s\\hyperref[fig:%s]{%s}\\end{table}\\clearpage\n\n',
+             figpos, tcap, tlab, name, poptable),
+          file=appfile, append=TRUE)
+  }
+  invisible()
+}
+
+#' Plot Initialization
+#'
+#' Toggle plotting.  Sets options by examining \code{setgreportOption(gtype=)}.
+#'
+#' @param file character.  Character string specifying file prefix.
+#' @param h numeric.  Height of plot in inches, default=7.
+#' @param w numeric.  Width of plot in inches, default=7.
+#' @param lattice logical.  Set to \code{FALSE} to prevent \code{latticeInit} from being called.
+#' @param \dots Arguments to be passed to \code{spar}.
+#' @export
+
+startPlot <- function(file, h=7, w=7, lattice=TRUE, ...) {
+  gtype <- getgreportOption('gtype')
+  pdfdir <- getgreportOption('pdfdir')
+  if(! length(gtype) || gtype != 'interactive') {
+    file <- paste(pdfdir, '/', translate(file,'.','-'), '.pdf', sep='')
+    pdf(file, height=h, width=w)
+  }
+  if(! existsFunction('spar'))
+    spar <-
+      function(mar=if(!axes)
+               c(2.25+bot-.45*multi,2+left,.5+top+.25*multi,.5+rt) else
+               c(3.25+bot-.45*multi,3.5+left,.5+top+.25*multi,.5+rt),
+               lwd = if(multi)1 else 1.75,
+               mgp = if(!axes) mgp=c(.75, .1, 0) else
+               if(multi) c(1.5, .365, 0) else c(2.4-.4, 0.475, 0),
+               tcl = if(multi)-0.25 else -0.4, xpd=FALSE,
+               bot=0, left=0, top=0, rt=0, ps=if(multi) 14 else 10,
+               mfrow=NULL, axes=TRUE, cex.lab=1.25, cex.axis=1.15,
+               ...) {
+        multi <- length(mfrow) > 0
+        par(mar=mar, lwd=lwd, mgp=mgp, tcl=tcl, ps=ps, xpd=xpd,
+            cex.lab=cex.lab, cex.axis=cex.axis, ...)
+        if(multi) par(mfrow=mfrow)
+      }
+  
+  spar(...)
+  if(lattice) latticeInit()
+  invisible()
+}
+
+#' @rdname startPlot
+#' @export
+
+endPlot <- function() {
+  gtype <- getgreportOption('gtype')
+  if(length(gtype) && gtype == 'interactive') return(invisible())
+  dev.off()
+  invisible()
+}
+
+#' Issue LaTeX section and/or subsection in appendix
+#'
+#' This is useful for copying section and subsection titles in the main body of the report to the appendix, to help in navigating supporting tables.
+#'
+#' @section a character string that will cause a section command to be added to app.tex
+#' @subsection a character string that will cause a subsection command to be added to app.tex
+#'
+#' @export
+
+appsection <- function(section=NULL, subsection=NULL) {
+  texdir <- getgreportOption()
+    file  <- sprintf('%s/%s.tex', texdir, panel)
+  if(texwhere == '') file <- ''
+
+  ## if(length(caption)) caption <- latexTranslate(caption)
+  ## if(length(longcaption)) longcaption <- latexTranslate(longcaption)
+
+  sf <- function(...) paste(sprintf(...), '%\n', sep='')
+  cap <- lab <- tlab <- ""
+  if(length(longcaption))
+    cap <- sf("\\caption[%s]{%s", caption, longcaption)
+  else
+    if(length(caption)) cap <- sf("\\caption{%s", caption)
+  else
+    cap <- '\\caption{'
+  
+  if(length(caption)) {
+    lab  <- sf("\\label{fig:%s}", name)
+    tlab <- sf("\\label{tab:%s}", name)
+  }
+
+  if(! length(poptable)) {
+    cap <- paste(cap, '}', sep='')
+    cat(sf("\\begin{%s}[%s]\\leavevmode%s\\includegraphics{%s.pdf}%s%s\n%s%s\\end{%s}\n", figenv, figpos, bcenter, name, ecenter, '%', cap, lab, figenv),
+        file=file, append=append)
+    return()
+  }
+
+  if(tablelink == 'tooltip') {
+    cmd <- if(popfull) '\\tooltipw' else '\\tooltipm'
+    cat(sf("\\begin{%s}[%s]\\leavevmode%s\\protect%s{\\includegraphics{%s.pdf}%s{%s}}%s%s\\end{%s}",
+           figenv, figpos, bcenter, cmd, name, ecenter, poptable, cap,
+           lab, figenv),
+        file=file, append=append)
+  } else {
+    ref <- if(length(caption))
+      sprintf(' {\\smaller (Figure \\ref{fig:%s})}.', name)
+    else ''
+    ## linkfromtab <- if(outtable)
+    ##    sf('\\hyperref[fig:%s]{~\\textcolor[gray]{0.5}{$\\mapsto$}}', name)
+    ##  else ''
+    tcap <- if(length(tlongcaption))
+      sf('\\caption[%s]{%s%s}', tcaption, tlongcaption, ref)
+    else if(length(tcaption)) sf('\\caption[%s]{%s%s}', tcaption, tcaption,
+                                 ref)
+    else sprintf('\\caption{%s}', ref)
+    cat(sf('\\begin{%s}[%s]\\hyperref[tab:%s]{\\leavevmode%s\\includegraphics{%s.pdf}%s}', figenv, figpos, name, bcenter, name, ecenter),
+        file=file, append=append)
+
+    reft <- sprintf(' {\\smaller (Table \\ref{tab:%s})}}', name)
+    cap <- if(grepl('\\hfill', cap))
+      gsub('\\hfill', paste(reft, '\\hfill', sep=''), cap, fixed=TRUE)
+    else
+      paste(cap, reft, sep='')
+
+    cat(cap, lab, 
+        sprintf('\\end{%s}\n', figenv), sep='',
+        file=file, append=TRUE)
+    appfile <- sprintf('%s/app.tex', texdir)
+
+    if(outtable)
+      cat(sf('\\clearpage\\begin{table}[%s]%s%s\\end{table}\n%s\\clearpage\n\n',
+           figpos, tcap, tlab, poptable),
+        file=appfile, append=TRUE)
+    else
+      cat(sf('\\begin{table}[%s]%s%s\\hyperref[fig:%s]{%s}\\end{table}\\clearpage\n\n',
+             figpos, tcap, tlab, name, poptable),
+          file=appfile, append=TRUE)
+  }
+  invisible()
+}
+
+#' Plot Initialization
+#'
+#' Toggle plotting.  Sets options by examining \code{setgreportOption(gtype=)}.
+#'
+#' @param file character.  Character string specifying file prefix.
+#' @param h numeric.  Height of plot in inches, default=7.
+#' @param w numeric.  Width of plot in inches, default=7.
+#' @param lattice logical.  Set to \code{FALSE} to prevent \code{latticeInit} from being called.
+#' @param \dots Arguments to be passed to \code{spar}.
+#' @export
+
+startPlot <- function(file, h=7, w=7, lattice=TRUE, ...) {
+  gtype <- getgreportOption('gtype')
+  pdfdir <- getgreportOption('pdfdir')
+  if(! length(gtype) || gtype != 'interactive') {
+    file <- paste(pdfdir, '/', translate(file,'.','-'), '.pdf', sep='')
+    pdf(file, height=h, width=w)
+  }
+  if(! existsFunction('spar'))
+    spar <-
+      function(mar=if(!axes)
+               c(2.25+bot-.45*multi,2+left,.5+top+.25*multi,.5+rt) else
+               c(3.25+bot-.45*multi,3.5+left,.5+top+.25*multi,.5+rt),
+               lwd = if(multi)1 else 1.75,
+               mgp = if(!axes) mgp=c(.75, .1, 0) else
+               if(multi) c(1.5, .365, 0) else c(2.4-.4, 0.475, 0),
+               tcl = if(multi)-0.25 else -0.4, xpd=FALSE,
+               bot=0, left=0, top=0, rt=0, ps=if(multi) 14 else 10,
+               mfrow=NULL, axes=TRUE, cex.lab=1.25, cex.axis=1.15,
+               ...) {
+        multi <- length(mfrow) > 0
+        par(mar=mar, lwd=lwd, mgp=mgp, tcl=tcl, ps=ps, xpd=xpd,
+            cex.lab=cex.lab, cex.axis=cex.axis, ...)
+        if(multi) par(mfrow=mfrow)
+      }
+  
+  spar(...)
+  if(lattice) latticeInit()
+  invisible()
+}
+
+#' @rdname startPlot
+#' @export
+
+endPlot <- function() {
+  gtype <- getgreportOption('gtype')
+  if(length(gtype) && gtype == 'interactive') return(invisible())
+  dev.off()
+  invisible()
+}
+
+#' Issue LaTeX section and/or subsection in appendix
+#'
+#' This is useful for copying section and subsection titles in the main body of the report to the appendix, to help in navigating supporting tables.
+#'
+#' @section a character string that will cause a section command to be added to app.tex
+#' @subsection a character string that will cause a subsection command to be added to app.tex
+#'
+#' @export
+
+appsection <- function(section=NULL, subsection=NULL) {
+  texdir <- getgreportOption()
+    file  <- sprintf('%s/%s.tex', texdir, panel)
+  if(texwhere == '') file <- ''
+
+  ## if(length(caption)) caption <- latexTranslate(caption)
+  ## if(length(longcaption)) longcaption <- latexTranslate(longcaption)
+
+  sf <- function(...) paste(sprintf(...), '%\n', sep='')
+  cap <- lab <- tlab <- ""
+  if(length(longcaption))
+    cap <- sf("\\caption[%s]{%s", caption, longcaption)
+  else
+    if(length(caption)) cap <- sf("\\caption{%s", caption)
+  else
+    cap <- '\\caption{'
+  
+  if(length(caption)) {
+    lab  <- sf("\\label{fig:%s}", name)
+    tlab <- sf("\\label{tab:%s}", name)
+  }
+
+  if(! length(poptable)) {
+    cap <- paste(cap, '}', sep='')
+    cat(sf("\\begin{%s}[%s]\\leavevmode%s\\includegraphics{%s.pdf}%s%s\n%s%s\\end{%s}\n", figenv, figpos, bcenter, name, ecenter, '%', cap, lab, figenv),
+        file=file, append=append)
+    return()
+  }
+
+  if(tablelink == 'tooltip') {
+    cmd <- if(popfull) '\\tooltipw' else '\\tooltipm'
+    cat(sf("\\begin{%s}[%s]\\leavevmode%s\\protect%s{\\includegraphics{%s.pdf}%s{%s}}%s%s\\end{%s}",
+           figenv, figpos, bcenter, cmd, name, ecenter, poptable, cap,
+           lab, figenv),
+        file=file, append=append)
+  } else {
+    ref <- if(length(caption))
+      sprintf(' {\\smaller (Figure \\ref{fig:%s})}.', name)
+    else ''
+    ## linkfromtab <- if(outtable)
+    ##    sf('\\hyperref[fig:%s]{~\\textcolor[gray]{0.5}{$\\mapsto$}}', name)
+    ##  else ''
+    tcap <- if(length(tlongcaption))
+      sf('\\caption[%s]{%s%s}', tcaption, tlongcaption, ref)
+    else if(length(tcaption)) sf('\\caption[%s]{%s%s}', tcaption, tcaption,
+                                 ref)
+    else sprintf('\\caption{%s}', ref)
+    cat(sf('\\begin{%s}[%s]\\hyperref[tab:%s]{\\leavevmode%s\\includegraphics{%s.pdf}%s}', figenv, figpos, name, bcenter, name, ecenter),
+        file=file, append=append)
+
+    reft <- sprintf(' {\\smaller (Table \\ref{tab:%s})}}', name)
+    cap <- if(grepl('\\hfill', cap))
+      gsub('\\hfill', paste(reft, '\\hfill', sep=''), cap, fixed=TRUE)
+    else
+      paste(cap, reft, sep='')
+
+    cat(cap, lab, 
+        sprintf('\\end{%s}\n', figenv), sep='',
+        file=file, append=TRUE)
+    appfile <- sprintf('%s/app.tex', texdir)
+
+    if(outtable)
+      cat(sf('\\clearpage\\begin{table}[%s]%s%s\\end{table}\n%s\\clearpage\n\n',
+           figpos, tcap, tlab, poptable),
+        file=appfile, append=TRUE)
+    else
+      cat(sf('\\begin{table}[%s]%s%s\\hyperref[fig:%s]{%s}\\end{table}\\clearpage\n\n',
+             figpos, tcap, tlab, name, poptable),
+          file=appfile, append=TRUE)
+  }
+  invisible()
+}
+
+#' Plot Initialization
+#'
+#' Toggle plotting.  Sets options by examining \code{setgreportOption(gtype=)}.
+#'
+#' @param file character.  Character string specifying file prefix.
+#' @param h numeric.  Height of plot in inches, default=7.
+#' @param w numeric.  Width of plot in inches, default=7.
+#' @param lattice logical.  Set to \code{FALSE} to prevent \code{latticeInit} from being called.
+#' @param \dots Arguments to be passed to \code{spar}.
+#' @export
+
+startPlot <- function(file, h=7, w=7, lattice=TRUE, ...) {
+  gtype <- getgreportOption('gtype')
+  pdfdir <- getgreportOption('pdfdir')
+  if(! length(gtype) || gtype != 'interactive') {
+    file <- paste(pdfdir, '/', translate(file,'.','-'), '.pdf', sep='')
+    pdf(file, height=h, width=w)
+  }
+  if(! existsFunction('spar'))
+    spar <-
+      function(mar=if(!axes)
+               c(2.25+bot-.45*multi,2+left,.5+top+.25*multi,.5+rt) else
+               c(3.25+bot-.45*multi,3.5+left,.5+top+.25*multi,.5+rt),
+               lwd = if(multi)1 else 1.75,
+               mgp = if(!axes) mgp=c(.75, .1, 0) else
+               if(multi) c(1.5, .365, 0) else c(2.4-.4, 0.475, 0),
+               tcl = if(multi)-0.25 else -0.4, xpd=FALSE,
+               bot=0, left=0, top=0, rt=0, ps=if(multi) 14 else 10,
+               mfrow=NULL, axes=TRUE, cex.lab=1.25, cex.axis=1.15,
+               ...) {
+        multi <- length(mfrow) > 0
+        par(mar=mar, lwd=lwd, mgp=mgp, tcl=tcl, ps=ps, xpd=xpd,
+            cex.lab=cex.lab, cex.axis=cex.axis, ...)
+        if(multi) par(mfrow=mfrow)
+      }
+  
+  spar(...)
+  if(lattice) latticeInit()
+  invisible()
+}
+
+#' @rdname startPlot
+#' @export
+
+endPlot <- function() {
+  gtype <- getgreportOption('gtype')
+  if(length(gtype) && gtype == 'interactive') return(invisible())
+  dev.off()
+  invisible()
+}
+
+#' Issue LaTeX section and/or subsection in appendix
+#'
+#' This is useful for copying section and subsection titles in the main body of the report to the appendix, to help in navigating supporting tables.  LaTeX backslash characters need to be doubled.
+#'
+#' @section a character string that will cause a section command to be added to app.tex
+#' @subsection a character string that will cause a subsection command to be added to app.tex
+#'
+#' @export
+
+appsection <- function(section=NULL, subsection=NULL) {
+  texdir <- getgreportOption('texdir')
+  file  <- sprintf('%s/app.tex', texdir, panel)
+  if(length(section))    cat('\\section{', section, '}\n',
+                             file=file, append=TRUE)
+  if(length(subsection)) cat('\\subsection{', subsection, '}\n',
+                             file=file, append=TRUE)
+}
+
+
 #' Change First Letters to Upper Case
 #'
 #' Changes the first letter of each word in a string to upper case, keeping selected words in lower case.  Words containing at least 2 capital letters are kept as-is.
