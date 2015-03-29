@@ -211,6 +211,8 @@ sampleFrac <- function(n, nobsY=NULL, table=TRUE) {
   if(any(names(n) != names(denom)))
     stop('n does not have same names as denom in the same order')
   f <- n / denom
+  if(any(f > 1.)) warning('A sample fraction > 1.0; assuming analysis is to compare randomized and non-randomized subjects\nfraction capped at 1.0')
+  f <- pmin(f, 1.)
   if(! table) return(f)
   tab <- data.frame(upFirst(names(n)), denom, n)
   tab <- latexTabular(tab, align = 'lrr', translate=FALSE, hline=1,
@@ -419,16 +421,26 @@ endPlot <- function() {
 #'
 #' @section a character string that will cause a section command to be added to app.tex
 #' @subsection a character string that will cause a subsection command to be added to app.tex
+#' @main set to \code{TRUE} to also write a section or subsection command to the console to be used in building the main report body (graphical section), in which case you should also specify \code{panel} if option \code{texdir} is not an empty string
 #'
 #' @export
 
-appsection <- function(section=NULL, subsection=NULL) {
-  texdir <- getgreportOption('texdir')
-  file  <- sprintf('%s/app.tex', texdir, panel)
+appsection <- function(section=NULL, subsection=NULL, main=FALSE, panel='') {
+  o <- getgreportOption()
+  texdir   <- o$texdir
+  if(main) {
+    texwhere <- o$texwhere
+    file <- if(texwhere == '') '' else sprintf('%s/%s.tex', texdir, panel)
+    if(length(section))    cat('\\section{', section, '}\n',
+                               sep='', file=file, append=TRUE)
+    if(length(subsection)) cat('\\subsection{', subsection, '}\n',
+                               sep='', file=file, append=TRUE)
+  }
+  file  <- sprintf('%s/app.tex', texdir)
   if(length(section))    cat('\\section{', section, '}\n',
-                             file=file, append=TRUE)
+                             sep='', file=file, append=TRUE)
   if(length(subsection)) cat('\\subsection{', subsection, '}\n',
-                             file=file, append=TRUE)
+                             sep='', file=file, append=TRUE)
   invisible()
 }
 

@@ -9,6 +9,7 @@ Changes in version 0.5-3 (2015-03-??)
    * accrualReport: changed denominator to randomized subjects for table corresponding to box plots of days to randomization
    * all reporting functions: use upFirst(lower=TRUE) for captions
    * appsection: new function
+   * sampleFrac: capped fraction at 1.0, issued warning if > 1 and assumes this indicates that analysis is to compare randomized with non-randomized subjects
 
 Changes in version 0.5-2 (2014-11-21)
    * accrualReport: axis.Date was not positioning axis labels containing only 4-digit years at Jan 1 so wrote customized axisDate function
