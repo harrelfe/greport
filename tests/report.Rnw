@@ -8,7 +8,7 @@
 \usepackage{moreverb}   % for \verbatimtabinput
 \usepackage{fancyhdr}   % for fancy headers
 \usepackage{url}        % for \url{}
-\usepackage{chngpage}   % for exReport \begin{adjustwidth}
+\usepackage{changepage} % for exReport \begin{adjustwidth}
 % pdflatex used Sweavel.sty that is a symbolic link to Sweavelbw.sty
 
 \def\titl{Example Closed Meeting Data Monitoring Committee Report}

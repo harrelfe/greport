@@ -1,4 +1,6 @@
 accrualReport           Accrual Report
+appsection              Issue LaTeX section and/or subsection in
+                        appendix
 dNeedle                 Draw Needles
 dReport                 Descriptive Statistics Report
 eReport                 Event Report

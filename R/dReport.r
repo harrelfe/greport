@@ -10,7 +10,7 @@
 #' @param byx.type set to \code{"quantiles"} to show vertical quantile intervals of \code{y} at each \code{x} for when \code{what="byx"} and the \code{y} variable is continuous numeric, or set \code{byx.type="violin"} (the default) to plot half-violin plots at each \code{x}.
 #' @param violinbox set to \code{TRUE} to add violin plots to box plots
 #' @param violinbox.opts a list to pass to \code{panel.violin}
-#' @summaryPsort set to \code{TRUE} to sort categories in descending order of frequencies
+#' @param summaryPsort set to \code{TRUE} to sort categories in descending order of frequencies
 #' @param fun a function that takes individual response variables (which may be matrices, as in \code{\link[survival]{Surv}} objects) and creates one or more summary statistics that will be computed while the resulting data frame is being collapsed to one row per condition.  Dot charts are drawn when \code{fun} is given.
 #' @param data data frame
 #' @param subset a subsetting epression for the entire analysis

@@ -3,7 +3,7 @@
 \documentclass{article}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
-\usepackage{chngpage}   % for exReport \begin{adjustwidth}
+\usepackage{changepage}   % for exReport \begin{adjustwidth}
 \usepackage{relsize}
 % pdflatex used Sweavel.sty that is a symbolic link to Sweavelbw.sty
 

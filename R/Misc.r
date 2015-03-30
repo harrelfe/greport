@@ -419,10 +419,10 @@ endPlot <- function() {
 #'
 #' This is useful for copying section and subsection titles in the main body of the report to the appendix, to help in navigating supporting tables.  LaTeX backslash characters need to be doubled.
 #'
-#' @section a character string that will cause a section command to be added to app.tex
-#' @subsection a character string that will cause a subsection command to be added to app.tex
-#' @main set to \code{TRUE} to also write a section or subsection command to the console to be used in building the main report body (graphical section), in which case you should also specify \code{panel} if option \code{texdir} is not an empty string
-#'
+#' @param section a character string that will cause a section command to be added to app.tex
+#' @param subsection a character string that will cause a subsection command to be added to app.tex
+#' @param main set to \code{TRUE} to also write a section or subsection command to the console to be used in building the main report body (graphical section), in which case you should also specify \code{panel} if option \code{texdir} is not an empty string
+#' @param panel panel string; must be given if \code{main=TRUE} and option \code{texdir} is not \code{""}
 #' @export
 
 appsection <- function(section=NULL, subsection=NULL, main=FALSE, panel='') {
@@ -449,8 +449,8 @@ appsection <- function(section=NULL, subsection=NULL, main=FALSE, panel='') {
 #' Changes the first letter of each word in a string to upper case, keeping selected words in lower case.  Words containing at least 2 capital letters are kept as-is.
 #'
 #' @param txt a character vector
-#' @lower set to \code{TRUE} to make only the very first letter of the string upper case, and to keep words with at least 2 capital letters in their original form
-#' @alllower set to \code{TRUE} to make every word start with lower case unless it has at least 2 caps
+#' @param lower set to \code{TRUE} to make only the very first letter of the string upper case, and to keep words with at least 2 capital letters in their original form
+#' @param alllower set to \code{TRUE} to make every word start with lower case unless it has at least 2 caps
 #' @references
 #' \url{http://lanecc.libguides.com/content.php?pid=38483&sid=295540}, \url{http://en.wikipedia.org/wiki/Letter_case#Headings_and_publication_titles}, \url{http://titlecapitalization.com}
 #' @export
