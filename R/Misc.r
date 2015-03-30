@@ -291,8 +291,8 @@ putFig <- function(panel, name, caption=NULL, longcaption=NULL,
   bcenter <- if(figenv == 'figure') '\\centerline{' else ''
   ecenter <- if(figenv == 'figure') '}' else ''
   
-  panel <- translate(panel, '\\.', '-')
-  name  <- translate(name,  '\\.', '-')
+  panel <- gsub('\\.', '-', panel)
+  name  <- gsub('\\.', '-', name)
   file  <- sprintf('%s/%s.tex', texdir, panel)
   if(texwhere == '') file <- ''
 
@@ -379,7 +379,7 @@ startPlot <- function(file, h=7, w=7, lattice=TRUE, ...) {
   gtype <- getgreportOption('gtype')
   pdfdir <- getgreportOption('pdfdir')
   if(! length(gtype) || gtype != 'interactive') {
-    file <- paste(pdfdir, '/', translate(file,'.','-'), '.pdf', sep='')
+    file <- paste(pdfdir, '/', gsub('\\.', '-', file), '.pdf', sep='')
     pdf(file, height=h, width=w)
   }
   if(! existsFunction('spar'))
