@@ -399,8 +399,10 @@ startPlot <- function(file, h=7, w=7, lattice=TRUE, ...) {
             cex.lab=cex.lab, cex.axis=cex.axis, ...)
         if(multi) par(mfrow=mfrow)
       }
-  
-  spar(...)
+  dotlist <- list(...)
+  if(length(dotlist))
+    dotlist <- dotlist[names(dotlist) %in% names(par())]
+  do.call(spar, dotlist)
   if(lattice) latticeInit()
   invisible()
 }
