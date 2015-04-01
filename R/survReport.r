@@ -128,6 +128,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     }
 
     s <- npsurv(y ~ x)
+    if(conf == 'diffbands' && length(s$strata) < 2) conf <- 'bands'
     if(x.is.tx) {
       no        <- c(no, s$n)
       names(no) <- c('randomized', levels(x))
@@ -144,6 +145,9 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                lty=1, col=col, ylab=yl,
                label.curves=list(keys='lines', key.opts=list(bty='n')),
                levels.only=TRUE, aehaz=aehaz, ...)
+
+    capconf <- if(conf == 'diffbands') ', along with half-height of 0.95 confidence limits centered at survival estimate midpoints. $N$=' else
+    ', along with 0.95 confidence bands.  $N$='
     
     if(multi) {
       endPlot()
@@ -151,15 +155,14 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       shortcap <- paste(shortcap, 'for', evlab[i])
       if(length(labx))
         shortcap <- paste(shortcap, 'stratified by', labx)
-      cap <- paste(shortcap,
-                   ', along with half-height of 0.95 confidence limits centered at survival estimate midpoints. $N$=', no[1],
-                   '. ', tail, sep='')
+      cap <- paste(shortcap, capconf, no[1], '. ', tail, sep='')
       dNeedle(sampleFrac(no, Nobs), name='lttsurv', file=file)
       cap <- sprintf('%s~\\hfill\\lttsurv', cap)
       putFig(panel=panel, name=lbi, caption=shortcap, longcaption=cap)
     }
     if(! multi) for(j in 1:length(nobs)) nobs[j] <- max(nobs[j], no[j])
     names(nobs) <- names(no)
+    if(! length(names(no)) && length(nobs) == 1) names(nobs) <- 'randomized'
   }
   
   if(! multi) {
@@ -175,8 +178,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     shortcap <- paste(shortcap, 'for', past(evlab))
     if(length(labx))
       shortcap <- paste(shortcap, 'stratified by', labx)
-    cap <- paste(shortcap,
-                 ', along with half-height of 0.95 confidence limits centered at survival estimate midpoints. $N$=', nobs[1], '. ', tail, sep='')
+    cap <- paste(shortcap, capconf, nobs[1], '. ', tail, sep='')
     dNeedle(sampleFrac(nobs, Nobs), name='lttsurv', file=file)
     cap <- sprintf('%s~\\hfill\\lttsurv', cap)
     putFig(panel=panel, name=lb, caption=shortcap, longcaption=cap)

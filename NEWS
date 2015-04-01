@@ -1,4 +1,4 @@
-Changes in version 0.5-3 (2015-03-??)
+Changes in version 0.5-3 (2015-04-??)
    * putFig: add \clearpage after every appendix table
    * exReport: fine-tuned vertical dot plot
    * dReport: rotated strip labels
@@ -12,7 +12,7 @@ Changes in version 0.5-3 (2015-03-??)
    * sampleFrac: capped fraction at 1.0, issued warning if > 1 and assumes this indicates that analysis is to compare randomized with non-randomized subjects
    * test.Rnw, report.Rnw: switch to using changepage style instead of chngpage
    * Misc: use gsub instead of translate()
-   * survReport: added aehaz argument
+   * survReport: added aehaz argument, fixed caption for when differences don't apply (no strata)
 
 Changes in version 0.5-2 (2014-11-21)
    * accrualReport: axis.Date was not positioning axis labels containing only 4-digit years at Jan 1 so wrote customized axisDate function
