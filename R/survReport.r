@@ -74,7 +74,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   if(length(X)) {
     x <- X[[1]]
     namx <- names(X)[1]
-    labx  <- upFirst(ifelse(label(x) == '', namx, label(x)), lower=TRUE)
+    labx  <- upFirst(ifelse(label(x) == '', namx, label(x)), alllower=TRUE)
   }
 
   Nobs <- nobsY(formula, group=getgreportOption('tx.var'),
@@ -101,7 +101,6 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       lwd <- gro$tx.lwd
     }
     else {
-      ## col <- rep(c(gray(c(0, .7)), 'blue', 'red', 'green'), length=ng)
       col <- rep(gro$nontx.col, length=ng)
       lwd <- rep(c(1, 3), length=ng)
     }
@@ -115,14 +114,14 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   evlab <- character(ny)
   for(i in 1 : ny) {
     y <- Y[[i]]
-    evlab[i] <- upFirst(label(y), lower=TRUE)
-    no <- nrow(y[! is.na(y)])
+    evlab[i] <- upFirst(label(y), alllower=TRUE)
+    no <- c(randomized = nrow(y[! is.na(y)]))
     if(multi) {
       lbi <- paste(lb, i, sep='-')
       startPlot(lbi, h=h, w=w, bot=if(what=='1-S') bot else 0, lattice=FALSE, ...)
     }
     yl <- if(length(ylab)) ylab else {
-      yl <- upFirst(evlab[i])
+      yl <- evlab[i]
       if(what == 'S') paste(yl, '-Free Probability', sep='')
        else paste('Incidence of', yl)
     }
@@ -162,7 +161,6 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     }
     if(! multi) for(j in 1:length(nobs)) nobs[j] <- max(nobs[j], no[j])
     names(nobs) <- names(no)
-    if(! length(names(no)) && length(nobs) == 1) names(nobs) <- 'randomized'
   }
   
   if(! multi) {
