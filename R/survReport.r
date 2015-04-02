@@ -44,7 +44,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                        ylab=NULL, what=c('S', '1-S'),
                        conf=c('diffbands', 'bands', 'bars', 'none'),
                        panel='surv', subpanel=NULL, head=NULL, tail=NULL,
-                       h=3, w=4.5, multi=FALSE, mfrow=NULL, y.n.risk=-.5,
+                       h=3, w=4.5, multi=FALSE, mfrow=NULL, y.n.risk=0,
                        bot=2, aehaz=TRUE, append=FALSE, ...)
 {
   if(grepl('[^a-zA-Z-]', panel))
