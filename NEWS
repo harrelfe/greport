@@ -15,6 +15,7 @@ Changes in version 0.5-3 (2015-04-??)
    * survReport: added aehaz argument, fixed caption for when differences don't apply (no strata)
    * startPlot: ignored non-par parameters in ...
    * survReport: changed default y.n.risk to 0 (used if what='1-S')
+   * exReport: added short caption when using app
 
 
 Changes in version 0.5-2 (2014-11-21)

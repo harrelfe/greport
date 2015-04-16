@@ -452,7 +452,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                    caption=cap, caption.lot=scap, where='htbp')
     if(app && length(Ids)) {
       if(length(apptail)) apptail <- paste('.', apptail)
-      cat('\\begin{table}[htbp]\\caption{Subject IDs for randomized subjects with exclusions', apptail, '}\\label{tab:randsubjexcl', subp, '}\n\\medskip%\n',
+      cat('\\begin{table}[htbp]\\caption[Subject IDs for randomized subjects with exclusions]{Subject IDs for randomized subjects with exclusions', apptail, '}\\label{tab:randsubjexcl', subp, '}\n\\medskip%\n',
           sep='', file=appfile, append=TRUE)
       cat(sprintf('\\hyperref[tab:exclrand%s]{$\\leftarrow$}\n\n', subp),
           file=appfile, append=TRUE)
