@@ -16,6 +16,7 @@ Changes in version 0.5-3 (2015-04-??)
    * startPlot: ignored non-par parameters in ...
    * survReport: changed default y.n.risk to 0 (used if what='1-S')
    * exReport: added short caption when using app
+   * survReport: added times argument
 
 
 Changes in version 0.5-2 (2014-11-21)

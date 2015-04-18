@@ -20,6 +20,7 @@
 #' @param y.n.risk used if \code{what="1-S"}, to specify \code{y} coordinate for putting numbers at risk, typically below the \code{x}-axis label
 #' @param bot number of spaces to reserve at bottom of plot for numbers at risk, if \code{what="1-S"}
 #' @aehaz logical.  Set to \code{FALSE} to not print number of events and hazard rate on plots.
+#' @times numeric vector.  If specified, prints cumulative incidence probabilities at those times on the plots.
 #' @param append logical. If \code{TRUE} output will be appended instead of overwritten.
 #' @param \dots ignored
 #' @export
@@ -45,7 +46,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                        conf=c('diffbands', 'bands', 'bars', 'none'),
                        panel='surv', subpanel=NULL, head=NULL, tail=NULL,
                        h=3, w=4.5, multi=FALSE, mfrow=NULL, y.n.risk=0,
-                       bot=2, aehaz=TRUE, append=FALSE, ...)
+                       bot=2, aehaz=TRUE, times=NULL, append=FALSE, ...)
 {
   if(grepl('[^a-zA-Z-]', panel))
     stop('panel must contain only A-Z a-z -')
@@ -137,13 +138,13 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                n.risk=TRUE, conf=conf, lwd=lwd,
                lty=1, col=col, ylab=yl,
                label.curves=list(keys='lines', key.opts=list(bty='n')),
-               levels.only=TRUE, aehaz=aehaz, ...)
+               levels.only=TRUE, aehaz=aehaz, times=times, ...)
     else
       survplot(s, fun=function(y) 1 - y,
                n.risk=TRUE, y.n.risk=y.n.risk, conf=conf, lwd=lwd,
                lty=1, col=col, ylab=yl,
                label.curves=list(keys='lines', key.opts=list(bty='n')),
-               levels.only=TRUE, aehaz=aehaz, ...)
+               levels.only=TRUE, aehaz=aehaz, times=times, ...)
 
     capconf <- if(conf == 'diffbands') ', along with half-height of 0.95 confidence limits centered at survival estimate midpoints. $N$=' else
     ', along with 0.95 confidence bands.  $N$='

@@ -398,12 +398,12 @@ survReport(Surv(t1, e1) + Surv(t2, e2) ~ treat, data=dat,
            mfrow=c(2,1), w=4.75, h=6, ps=8, what='S')
 # Show estimates combining treatments
 survReport(Surv(t1, e1) + Surv(t2, e2) ~ 1, data=dat, subpanel='nostrat',
-           mfrow=c(2,1), w=4.75, h=6, ps=8, what='S', ylim=c(.1, 1))
+           mfrow=c(2,1), w=4.75, h=6, ps=8, what='S', times=3, ylim=c(.1, 1))
 
 # Same but use multiple figures and use 1 - S(t) scale
 survReport(Surv(t1, e1) + Surv(t2, e2) ~ treat, data=dat,
            multi=TRUE, subpanel='multi', append=TRUE, ps=9, what='1-S',
-           y.n.risk=-.02)
+           times=3:4, aehaz=FALSE, y.n.risk=-.02)
 
 survReport(Surv(t1, e1) + Surv(t2, e2) ~ 1, data=dat,
            multi=TRUE, subpanel='multinostrat', append=TRUE, ps=9, what='1-S',
