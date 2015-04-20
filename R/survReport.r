@@ -19,8 +19,8 @@
 #' @param mfrow numeric 2-vector, used if \code{multi=FALSE}.  If not specified, default plot matrix layout will be figured.
 #' @param y.n.risk used if \code{what="1-S"}, to specify \code{y} coordinate for putting numbers at risk, typically below the \code{x}-axis label
 #' @param bot number of spaces to reserve at bottom of plot for numbers at risk, if \code{what="1-S"}
-#' @aehaz logical.  Set to \code{FALSE} to not print number of events and hazard rate on plots.
-#' @times numeric vector.  If specified, prints cumulative incidence probabilities at those times on the plots.
+#' @param aehaz logical.  Set to \code{FALSE} to not print number of events and hazard rate on plots.
+#' @param times numeric vector.  If specified, prints cumulative incidence probabilities at those times on the plots.
 #' @param append logical. If \code{TRUE} output will be appended instead of overwritten.
 #' @param \dots ignored
 #' @export

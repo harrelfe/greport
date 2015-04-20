@@ -47,7 +47,7 @@ nriskReport <-
   labs    <- ifelse(labs == '', xnam, labs)
   id <- Nobs$id
 
-  if(length(id) && any(duplicated(id))) {
+  if(length(id) && anyDuplicated(id)) {
     ## Reduce data matrix to one row per subject per stratum with
     ## maximum follow-up time
     X <- data.table(X, .id.=id)

@@ -27,7 +27,7 @@
 #' @param append logical.  Set to \code{FALSE} to start a new panel
 #' @param sopts list specifying extra arguments to pass to \code{bpplotM}, \code{summaryP}, or \code{summaryS}
 #' @param popts list specifying extra arguments to pass to a plot method.  One example is \code{text.at} to specify some number beyond \code{xlim[2]} to leave extra space for numerators and denominators when using \code{summaryP} for categorical analysis variables.  Another common use is for example \code{popts=list(layout=c(columns,rows))} to be used in rendering \code{lattice} plots.  \code{key} and \code{panel} are also frequently used.
-#' @param lalttice set to \code{TRUE} to use \code{lattice} instead of \code{ggplot2} for proportions.  When this option is in effect, numerators and denominators are shown.
+#' @param lattice set to \code{TRUE} to use \code{lattice} instead of \code{ggplot2} for proportions.  When this option is in effect, numerators and denominators are shown.
 #' @export
 #' @examples
 #' # See test.Rnw in tests directory
@@ -54,6 +54,12 @@ dReport <-
     stop('panel must contain only A-Z a-z -')
   if(length(subpanel) && grepl('[^a-zA-Z-]', subpanel))
     stop('subpanel must contain only A-Z a-z -')
+
+#  rel          <- ggplot2::rel
+#  theme        <- ggplot2::theme
+#  element_text <- ggplot2::element_text
+#  guides       <- ggplot2::guides
+#  guide_legend <- ggplot2::guide_legend
   
   center <- 'centerline'
   legend <- NULL

@@ -1,6 +1,6 @@
 Package: greport
 Version: 0.5-3
-Date: 2015-03-??
+Date: 2015-04-20
 Title: Graphical Reporting for Clinical Trials
 Author: Frank E Harrell Jr <f.harrell@vanderbilt.edu>
 Maintainer: Frank E Harrell Jr <f.harrell@vanderbilt.edu>
@@ -11,6 +11,7 @@ Imports:
     rms (>= 4.1-3),
     lattice,
     latticeExtra,
+		ggplot2,
     Formula,
     survival
 Description: Contains many functions useful for

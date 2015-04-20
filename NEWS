@@ -1,4 +1,4 @@
-Changes in version 0.5-3 (2015-04-??)
+Changes in version 0.5-3 (2015-04-20)
    * putFig: add \clearpage after every appendix table
    * exReport: fine-tuned vertical dot plot
    * dReport: rotated strip labels
@@ -17,6 +17,7 @@ Changes in version 0.5-3 (2015-04-??)
    * survReport: changed default y.n.risk to 0 (used if what='1-S')
    * exReport: added short caption when using app
    * survReport: added times argument
+   * nriskReport: changed any(duplicated()) to anyDuplicated()
 
 
 Changes in version 0.5-2 (2014-11-21)
