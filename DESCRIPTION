@@ -18,8 +18,8 @@ Description: Contains many functions useful for
     monitoring and reporting the results of clinical trials and other
     experiments in which treatments are compared.  LaTeX is
     used to typeset the resulting reports, recommended to be in the
-    context of knitr. The Hmisc and lattice packages are used by greport
-    for high-level graphics.
+    context of 'knitr'. The 'Hmisc', 'ggplot2', and 'lattice' packages are used
+		by 'greport' for high-level graphics.
 License: GPL (>= 2)
 URL: http://biostat.mc.vanderbilt.edu/Greport,
     https://github.com/harrelfe/greport
