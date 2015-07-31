@@ -1,6 +1,6 @@
 Package: greport
-Version: 0.5-3
-Date: 2015-04-20
+Version: 0.6-0
+Date: 2015-07-30
 Title: Graphical Reporting for Clinical Trials
 Author: Frank E Harrell Jr <f.harrell@vanderbilt.edu>
 Maintainer: Frank E Harrell Jr <f.harrell@vanderbilt.edu>
@@ -13,7 +13,8 @@ Imports:
     latticeExtra,
 		ggplot2,
     Formula,
-    survival
+    survival,
+		methods
 Description: Contains many functions useful for
     monitoring and reporting the results of clinical trials and other
     experiments in which treatments are compared.  LaTeX is

@@ -10,6 +10,7 @@
 #' @param na.action function for handling \code{NA}s when creating analysis frame
 #' @param ignoreExcl a formula with only a right-hand side, specifying the names of exclusion variable names that are to be ignored when counting exclusions (screen failures)
 #' @param ignoreRand a formula with only a right-hand side, specifying the names of exclusion variable names that are to be ignored when counting randomized subjects marked as exclusions
+#' @param plotExRemain set to \code{FALSE} to suppress plotting a 2-panel dot plot showing the number of subjects excluded and the fraction of enrolled subjects remaining
 #' @param autoother set to \code{TRUE} to add another exclusion \code{Unspecified} that is set to \code{TRUE} for non-pending subjects that have no other exclusions
 #' @param sort set to \code{FALSE} to not sort variables by descending exclusion frequency
 #' @param whenapp a named character vector (with names equal to names of variables in formula).  For each variable that is only assessed (i.e., is not \code{NA}) under certain conditions, add an element to this vector naming the condition
@@ -33,7 +34,7 @@
 #' # See test.Rnw in tests directory
 
 exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
-                     ignoreExcl=NULL, ignoreRand=NULL,
+                     ignoreExcl=NULL, ignoreRand=NULL, plotExRemain=TRUE,
                      autoother=FALSE, sort=TRUE, whenapp=NULL, erdata=NULL,
                      panel='excl', subpanel=NULL, head=NULL, tail=NULL,
                      apptail=NULL, h=5.5, w=6.5, hc=4.5, wc=5,
@@ -361,21 +362,22 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
 
   
   ## Two-panel dot chart
-  if(npend > 0) {
-    elab       <- c('Pending Randomization', elab)
-    nexclude   <- c(npend, nexclude)
-    marg       <- c(npend,     marg)
-    fracremain <- c(NA, fracremain)
-  }
-  excl  <- factor(elab,          levels=rev(elab))
-  excl2 <- factor(c(elab, elab), levels=rev(elab))
-  x <- c(nexclude, marg)
-  j <- length(elab)  # was k + (npend > 0)
-  hh <- c(rep('Incremental Exclusions', j),
-          rep('Single Exclusions',      j))
-  fracremain <- c(fracremain, rep(NA,   j))
-  
-  panel.ex <- 
+  if(plotExRemain) {
+    if(npend > 0) {
+      elab       <- c('Pending Randomization', elab)
+      nexclude   <- c(npend, nexclude)
+      marg       <- c(npend,     marg)
+      fracremain <- c(NA, fracremain)
+    }
+    excl  <- factor(elab,          levels=rev(elab))
+    excl2 <- factor(c(elab, elab), levels=rev(elab))
+    x <- c(nexclude, marg)
+    j <- length(elab)  # was k + (npend > 0)
+    hh <- c(rep('Incremental Exclusions', j),
+            rep('Single Exclusions',      j))
+    fracremain <- c(fracremain, rep(NA,   j))
+    
+    panel.ex <- 
       function (x, y, groups, ..., pch, col) {
         pn <- panel.number()
         up <- max(x, na.rm=TRUE)
@@ -395,49 +397,50 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
           panel.dotplot  (x, y, pch=20, col=col[1], ...)
         }
       }
-
-  col <- c('black', '#0080ff')
-  r <-
-    dotplot(excl2 ~ x + fracremain, panel=panel.ex,
-            groups=hh,
-            pch=c(20, 18), col=col,
-            outer = TRUE,
-            scales = list(x = list(relation = "free")),
-            xlab = NULL, between = list(x = 1),
-            key = list(
-              points = list(col = col, pch = c(20,18)),
-              text = list(c('Sequential (Incremental) Exclusions',
-                'Individual (Marginal) Exclusions'), col = col,
-                cex = 0.7),
-              columns = 2, between = 0.5, space = "bottom"))
-  r$condlevels[[1]] <- c("Number Excluded", "Fraction Remaining")
-
-  lb <- paste(panel, 'nexfrac', sep='-')
-  if(length(subpanel)) lb <- paste(lb, subpanel, sep='-')
-
-  startPlot(lb, h=h, w=w)
-  print(r)
-  endPlot()
-
-  cap <- if(length(head)) head
-   else sprintf('Left panel: Incremental (sequential) and marginal (each exclusion treated separately) exclusions.  Right panel: Fraction of subjects remaining after incremental exclusions.  The denominator of the fraction is the number of subjects not pending randomization (%s).',
-                n)
-  cap <- paste(cap,
-               if(sort) 'Exclusions are sorted by descending number of incremental exclusions.'
-               else 'Exclusions are in the prespecified order shown in the figure.')
-  cap <- paste(cap, N['enrolled'], 'subjects were enrolled,',
-               sum(pending),
-               'non-excluded subjects are pending randomization, and',
-               m, 'subjects were excluded.')
-  if(length(rnd)) cap <- paste(cap, sum(rnd, na.rm=TRUE),
-                               'subjects were randomized.')
-
-  cap <- paste(cap, tail, wrn1, wrn2)
-
-  putFig(panel=panel, name=lb,
-         caption='Incremental exclusions and fraction of remaining subjects',
-         longcaption=cap)
-
+    
+    col <- c('black', '#0080ff')
+    r <-
+      dotplot(excl2 ~ x + fracremain, panel=panel.ex,
+              groups=hh,
+              pch=c(20, 18), col=col,
+              outer = TRUE,
+              scales = list(x = list(relation = "free")),
+              xlab = NULL, between = list(x = 1),
+              key = list(
+                points = list(col = col, pch = c(20,18)),
+                text = list(c('Sequential (Incremental) Exclusions',
+                  'Individual (Marginal) Exclusions'), col = col,
+                  cex = 0.7),
+                columns = 2, between = 0.5, space = "bottom"))
+    r$condlevels[[1]] <- c("Number Excluded", "Fraction Remaining")
+    
+    lb <- paste(panel, 'nexfrac', sep='-')
+    if(length(subpanel)) lb <- paste(lb, subpanel, sep='-')
+    
+    startPlot(lb, h=h, w=w)
+    print(r)
+    endPlot()
+    
+    cap <- if(length(head)) head
+     else sprintf('Left panel: Incremental (sequential) and marginal (each exclusion treated separately) exclusions.  Right panel: Fraction of subjects remaining after incremental exclusions.  The denominator of the fraction is the number of subjects not pending randomization (%s).',
+                  n)
+    cap <- paste(cap,
+     if(sort) 'Exclusions are sorted by descending number of incremental exclusions.'
+     else 'Exclusions are in the prespecified order shown in the figure.')
+    cap <- paste(cap, N['enrolled'], 'subjects were enrolled,',
+                 sum(pending),
+                 'non-excluded subjects are pending randomization, and',
+                 m, 'subjects were excluded.')
+    if(length(rnd)) cap <- paste(cap, sum(rnd, na.rm=TRUE),
+                                 'subjects were randomized.')
+    
+    cap <- paste(cap, tail, wrn1, wrn2)
+    
+    putFig(panel=panel, name=lb,
+           caption='Incremental exclusions and fraction of remaining subjects',
+           longcaption=cap)
+  }
+    
   ## If needed, display subjects marked as randomized who are marked as
   ## meeting exclusion criteria
   if(length(rnd) && length(nexr)) {

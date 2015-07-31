@@ -5,7 +5,7 @@
 #' @@maintainer Frank E Harrell Jr \email{f.harrell@@vanderbilt.edu}
 #'
 #' @export Merge accrualReport dNeedle dReport eReport endPlot exReport getgreportOption nriskReport putFig sampleFrac setgreportOption startPlot survReport upFirst
-#' @import Hmisc ggplot2 lattice data.table
+#' @import Hmisc ggplot2 lattice data.table methods
 #' @importFrom latticeExtra useOuterStrips
 #' @importFrom rms npsurv survplot
 #' @importFrom survival Surv survfit

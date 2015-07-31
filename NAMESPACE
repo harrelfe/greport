@@ -27,3 +27,10 @@ importFrom(rms,npsurv)
 importFrom(rms,survplot)
 importFrom(survival,Surv)
 importFrom(survival,survfit)
+
+importFrom(grDevices, adjustcolor, dev.off, gray, pdf)
+importFrom(graphics, axis, box, lines, par, plot,
+           plot.new, points, text)
+importFrom(methods, existsFunction)
+importFrom(stats, as.formula, median, model.frame, qnorm,
+           reshape, sd, terms)

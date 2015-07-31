@@ -1,3 +1,9 @@
+Changes in version 0.6-0 (2015-07-30)
+   * accrualReport: put zoomed cumulative distribution on same graph as regular
+	 * exReport: added option plotExRemain to suppress 2-panel dot chart
+	 * NAMESPACE: import base functions used
+	 
+
 Changes in version 0.5-3 (2015-04-20)
    * putFig: add \clearpage after every appendix table
    * exReport: fine-tuned vertical dot plot
