@@ -1,6 +1,6 @@
 Changes in version 0.6-0 (2015-07-30)
    * accrualReport: put zoomed cumulative distribution on same graph as regular
-	 * exReport: added option plotExRemain to suppress 2-panel dot chart
+	 * exReport: added option plotExRemain to suppress 2-panel dot chart, solved problem with collisions of labels on vertical cumulative exclusion plot
 	 * NAMESPACE: import base functions used
 	 
 

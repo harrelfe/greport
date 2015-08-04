@@ -98,6 +98,8 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     rep(FALSE, length(x))
   else is.na(x) | tolower(x) %in% c('unknown','n/a','u','uncertain')
 
+  mblue <- '#0080ff'
+  
   N     <- getgreportOption('denom')[c('enrolled', 'randomized')]
   n <- norig <- nrow(X)
   if(n != N['enrolled'])
@@ -240,15 +242,14 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   b <- ifelse(u == '', paste(' / ', margdenom, sep=''),
                        paste(' (', u, 'n=', margdenom, ')', sep=''))
   elab <- ifelse(margdenom < norig, paste(elab, b, sep=''), elab)
-  elabl <- sapply(strwrap(elab, width=25, simplify=FALSE),
-                 function(x) paste(x, collapse='\n'))
-  elabr <-  sapply(strwrap(elab, width=25, exdent=8, simplify=FALSE),
-                 function(x) paste(x, collapse='\n'))
+  swr <- function(w, ...) 
+    sapply(strwrap(w, ..., simplify=FALSE),
+           function(x) paste(x, collapse='\n'))
+  elabl <- swr(elab, width=25)
+  elabr <-  swr(elab, width=25, exdent=8)
   # When smaller font used, wrap with longer width
-  elabl2 <- sapply(strwrap(elab, width=37, simplify=FALSE),
-                   function(x) paste(x, collapse='\n'))
-  elabr2 <-  sapply(strwrap(elab, width=37, exdent=8, simplify=FALSE),
-                    function(x) paste(x, collapse='\n'))
+  elabl2 <- swr(elab, width=37)
+  elabr2 <- swr(elab, width=37, exdent=8)
 
   names(elab) <- names(elabl) <- names(elabr) <- names(elabl2) <-
     names(elabr2) <- c(Xname, othlab)
@@ -263,7 +264,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   if(length(subpanel)) lb <- paste(lb, subpanel, sep='-')
 
   startPlot(lb, h=hc, w=wc, lattice=FALSE,
-            mar=c(1.5,10,1.5,10), mgp=c(1.5, .5, 0))
+            mar=c(1,0,1,0), mgp=c(1.5, .5, 0))
   plot.new()
   m <- sum(nexclude)
   cumex <- cumsum(nexclude)
@@ -276,8 +277,8 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   minor <- seq(r[1], r[2], by=10)
   axis(2, pos=0, at=major, cex.axis=.675)
   axis(2, pos=0, at=minor, tcl=-.25, labels=FALSE)
-  points(rep(.075, length(cumex)), cumex, pch=19, cex=.7, xpd=NA,
-         col='#0080ff')
+  points(rep(.0125, length(cumex)), cumex, pch=19, cex=.7, xpd=NA,
+         col=mblue)
   side <- 2
   for(i in 1 : length(cumex)) {
     a <- nexclude[i]
@@ -287,10 +288,18 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     y <- cumex[i]
     u <- if(side == 1) el else er
     v <- paste(if(i == 1) '' else '+', a, '  ', u, sep='')
-    if(side == 1)
-      text(-.6, y, v, adj=1, xpd=NA, col='#0080ff', cex=cex)
-    else
-      text(.35, y, v, adj=0, xpd=NA, col='#0080ff', cex=cex)
+    ## See if not likely to vertically run into previous entry
+    if(i < 3 || (y - cumex[i - 2]) / diff(r) > 0.01) {
+      if(side == 1)
+        text(-.135, y, v, adj=1, xpd=NA, col=mblue, cex=cex)
+      else
+        text(.07, y, v, adj=0, xpd=NA, col=mblue, cex=cex)
+    } else {
+      if(side == 1)
+        text(-1, y + .0035 * diff(r), v, adj=0, xpd=NA, col=mblue, cex=cex)
+      else
+        text(1, y + .0035 * diff(r), v, adj=1, xpd=NA, col=mblue, cex=cex)
+    }
     side <- 3 - side
   }
   endPlot()
@@ -398,7 +407,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
         }
       }
     
-    col <- c('black', '#0080ff')
+    col <- c('black', mblue)
     r <-
       dotplot(excl2 ~ x + fracremain, panel=panel.ex,
               groups=hh,
