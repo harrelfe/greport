@@ -184,32 +184,36 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     Xname <- names(X)
     Xlab  <- Xlab[Xname]
   }
-  
-  marg      <- sapply(X, function(x) sum(ispos(x), na.rm=TRUE))
+
+  # Subset subjects who were not actually randomized (rightly or wrongly)
+  Xnr <- X
+  Xnr  <- if(length(rnd)) X [! rnd, , drop=FALSE] else X
+  Xcnr <- if(length(rnd)) Xc[! rnd, , drop=FALSE] else Xc
+  marg      <- sapply(Xnr, function(x) sum(ispos(x), na.rm=TRUE))
   
   add      <- if(sort) which.max(marg) else 1
   cadd     <- Xname[add]
-  exclude  <- ispos(X[[cadd]])   ## new exclusion
+  exclude  <- ispos(Xnr[[cadd]])   ## new exclusion
   nexclude <- sum(exclude, na.rm=TRUE)
-  nexcludec <- if(cadd %in% names(Xc)) sum(exclude & Xc[[cadd]], na.rm=TRUE)
+  nexcludec <- if(cadd %in% names(Xcnr)) sum(exclude & Xcnr[[cadd]], na.rm=TRUE)
    else nexclude
-  X[exclude, ] <- NA  ## only consider subjects not previously excl.
+  Xnr[exclude, ] <- NA  ## only consider subjects not previously excl.
   cond.denom <- n
   cd         <- n - nexclude
   
   if(k > 1) for(i in 2 : k) {
-    remain   <- sapply(X, function(x) sum(ispos(x), na.rm=TRUE))
+    remain   <- sapply(Xnr, function(x) sum(ispos(x), na.rm=TRUE))
     add      <- if(sort) which.max(remain) else i
     xn       <- Xname[add]
-    exclude  <- ispos(X[[xn]])
+    exclude  <- ispos(Xnr[[xn]])
     nex      <- sum(exclude, na.rm=TRUE)
-    nexc <- if(xn %in% names(Xc)) sum(exclude & Xc[[xn]], na.rm=TRUE)
+    nexc <- if(xn %in% names(Xcnr)) sum(exclude & Xcnr[[xn]], na.rm=TRUE)
      else nex
     if(nex > 0) {
       cadd         <- c(cadd, xn)
       nexclude     <- c(nexclude,  nex)
       nexcludec    <- c(nexcludec, nexc)
-      X[exclude, ] <- NA
+      Xnr[exclude, ] <- NA
       cond.denom   <- c(cond.denom, cd)
       cd           <- cd - sum(exclude, na.rm=TRUE)
     }
@@ -280,8 +284,13 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   points(rep(.0125, length(cumex)), cumex, pch=19, cex=.7, xpd=NA,
          col=mblue)
   side <- 2
+  ones <- character(0)
   for(i in 1 : length(cumex)) {
     a <- nexclude[i]
+    if(a == 1) {
+      ones <- c(ones, ell[i])
+      next
+    }
     cex <- if(a / m < 0.02) .6 else if(a / m < 0.05) .8 else 1
     el <- if(cex >= .8) ell[i] else ell2[i]
     er <- if(cex >= .8) elr[i] else elr2[i]
@@ -296,15 +305,19 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
         text(.07, y, v, adj=0, xpd=NA, col=mblue, cex=cex)
     } else {
       if(side == 1)
-        text(-1, y + .0035 * diff(r), v, adj=0, xpd=NA, col=mblue, cex=cex)
+        text(-1, y + 0*.0035 * diff(r), v, adj=0, xpd=NA, col=mblue, cex=cex)
       else
-        text(1, y + .0035 * diff(r), v, adj=1, xpd=NA, col=mblue, cex=cex)
+        text(1, y + 0*.0035 * diff(r), v, adj=1, xpd=NA, col=mblue, cex=cex)
     }
     side <- 3 - side
   }
+  if(length(ones)) text(.96, r[2] - diff(r)/15,
+                        paste(c('One exclusion due to:', ones), collapse='\n'),
+                        adj=1, cex=0.65)
   endPlot()
+  narnd <- if(length(rnd)) ', for subjects not actually randomized' else ''
   cap <- if(length(head)) head
-   else 'Cumulative number of exclusions ($y$-axis) and number of additional exclusions after exclusions placed higher.'
+   else paste('Cumulative number of exclusions ($y$-axis) and number of additional exclusions after exclusions placed higher', narnd, '.', sep='')
   cap <- paste(cap,
                if(sort) 'Exclusions are sorted by descending number of incremental exclusions.'
         else 'Exclusions are in the prespecified order shown in the figure.')
@@ -342,7 +355,7 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   ct <- function(...) cat(..., sep='', file=file, append=TRUE)
   
   ct('\\begin{table}[htbp]\\small\n',
-     '\\caption[Exclusions]{Exclusions.  \\texttt{Incremental Exclusions} are those in addition to exclusions in earlier rows.  \\texttt{Marginal Exclusions} are numbers of subjects excluded for the indicated reason whether or not she was excluded for other reasons.  The three \\texttt{Fractions} are based on incremental exclusions.', if(length(tail))' ', tail,
+     '\\caption[Exclusions]{Exclusions', narnd, '.  \\texttt{Incremental Exclusions} are those in addition to exclusions in earlier rows.  \\texttt{Marginal Exclusions} are numbers of subjects excluded for the indicated reason whether or not she was excluded for other reasons.  The three \\texttt{Fractions} are based on incremental exclusions.', if(length(tail))' ', tail,
      '\\label{tab:exclstats', subp, '}}\n',
      '\\begin{center}\\begin{adjustwidth}{', adjustwidth, '}{',
      adjustwidth, '}\n',
@@ -357,9 +370,9 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                   frace[i],    '&',
                   fracremain[i], '\\tabularnewline'))
     cn <- cadd[i]
-    if(cn %in% names(Xc)) {
+    if(cn %in% names(Xcnr)) {
       ct('\\multicolumn{6}{l}{~~~~$\\frac{', nexcludec[i], '}{',
-         sx <- sum(Xc[, cn], na.rm=TRUE), '}$ =',
+         sx <- sum(Xcnr[, cn], na.rm=TRUE), '}$ =',
          rf(nexcludec[i] / sx), ' of ', latexTranslate(Xclab[cn]),
          '}\\tabularnewline\n')
       ct('&&&&&\\tabularnewline\n')

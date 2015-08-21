@@ -1,8 +1,8 @@
-Changes in version 0.6-0 (2015-07-30)
+Changes in version 0.6-0 (2015-08-30)
    * accrualReport: put zoomed cumulative distribution on same graph as regular
 	 * exReport: added option plotExRemain to suppress 2-panel dot chart, solved problem with collisions of labels on vertical cumulative exclusion plot
 	 * NAMESPACE: import base functions used
-	 
+	 * exReport: avoided collisions in vertical dot chart, excluded actually randomized subjects from exclusion frequencies
 
 Changes in version 0.5-3 (2015-04-20)
    * putFig: add \clearpage after every appendix table
