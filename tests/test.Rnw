@@ -384,6 +384,11 @@ set.seed(1)
 n <- 400
 dat <- data.frame(t1=runif(n, 2, 5), t2=runif(n, 2, 5),
                   e1=rbinom(n, 1, .5), e2=rbinom(n, 1, .5),
+                  cr1=factor(sample(c('cancer','heart','censor'), n, TRUE),
+                             c('censor', 'cancer', 'heart')),
+                  cr2=factor(sample(c('gastric','diabetic','trauma', 'censor'),
+                                    n, TRUE),
+                             c('censor', 'diabetic', 'gastric', 'trauma')),
                   treat=sample(c('a','b'), n, TRUE))
 dat <- upData(dat,
               labels=c(t1='Time to operation',
@@ -408,6 +413,11 @@ survReport(Surv(t1, e1) + Surv(t2, e2) ~ treat, data=dat,
 survReport(Surv(t1, e1) + Surv(t2, e2) ~ 1, data=dat,
            multi=TRUE, subpanel='multinostrat', append=TRUE, ps=9, what='1-S',
            y.n.risk=-.02)
+
+# Competing risk analysis
+survReport(Surv(t1, cr1) + Surv(t2, cr2) ~ treat, data=dat,
+           cause=list(c('cancer', 'heart'), 'diabetic'),
+           subpanel='cr', append=TRUE, w=4.75, h=6, ps=8, multi=TRUE)
 @ 
 \clearpage
 \section{Adverse Events}
