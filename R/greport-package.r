@@ -2,9 +2,9 @@
 #'
 #' @author Frank E Harrell Jr \email{f.harrell@@vanderbilt.edu}
 #'
-#' @@maintainer Frank E Harrell Jr \email{f.harrell@@vanderbilt.edu}
+#' @maintainer Frank E Harrell Jr \email{f.harrell@@vanderbilt.edu}
 #'
-#' @export Merge accrualReport dNeedle dReport eReport endPlot exReport getgreportOption nriskReport putFig sampleFrac setgreportOption startPlot survReport upFirst
+#' @export Merge accrualReport dNeedle dReport eReport endPlot exReport getgreportOption nriskReport putFig sampleFrac setgreportOption startPlot survReport
 #' @import Hmisc ggplot2 lattice data.table methods
 #' @importFrom latticeExtra useOuterStrips
 #' @importFrom rms npsurv survplot

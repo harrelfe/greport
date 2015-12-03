@@ -16,4 +16,3 @@ sampleFrac              Compute Sample Fractions
 setgreportOption        Set greport Options
 startPlot               Plot Initialization
 survReport              Survival Report
-upFirst                 Change First Letters to Upper Case

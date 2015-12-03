@@ -173,7 +173,6 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       exclv <- c(exclv, 'Total Subjects with Any Exclusion')
       nexr   <- c(nexr, nnre)
       if(length(Ids)) Ids <- c(Ids, '')
-#      E <- data.frame(Exclusion=latexTranslate(exclv), Frequency=nexr)
       E <- data.frame(Exclusion=exclv, Frequency=nexr)
     }
   }
@@ -185,35 +184,34 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     Xlab  <- Xlab[Xname]
   }
 
-  # Subset subjects who were not actually randomized (rightly or wrongly)
-  Xnr <- X
-  Xnr  <- if(length(rnd)) X [! rnd, , drop=FALSE] else X
-  Xcnr <- if(length(rnd)) Xc[! rnd, , drop=FALSE] else Xc
-  marg      <- sapply(Xnr, function(x) sum(ispos(x), na.rm=TRUE))
+  ## If randomization status provided, don't count exclusions on
+  ## randomized (rightly or wrongly) subjects, otherwise count all exclusions
+  use       <- if(length(rnd)) ! rnd else TRUE
+  marg      <- sapply(X, function(x) sum(ispos(x) & use, na.rm=TRUE))
   
   add      <- if(sort) which.max(marg) else 1
   cadd     <- Xname[add]
-  exclude  <- ispos(Xnr[[cadd]])   ## new exclusion
+  exclude  <- ispos(X[[cadd]]) & use   ## new exclusion
   nexclude <- sum(exclude, na.rm=TRUE)
-  nexcludec <- if(cadd %in% names(Xcnr)) sum(exclude & Xcnr[[cadd]], na.rm=TRUE)
+  nexcludec <- if(cadd %in% names(Xc)) sum(exclude & Xc[[cadd]], na.rm=TRUE)
    else nexclude
-  Xnr[exclude, ] <- NA  ## only consider subjects not previously excl.
+  X[exclude, ] <- NA  ## only consider subjects not previously excl.
   cond.denom <- n
   cd         <- n - nexclude
   
   if(k > 1) for(i in 2 : k) {
-    remain   <- sapply(Xnr, function(x) sum(ispos(x), na.rm=TRUE))
+    remain   <- sapply(X, function(x) sum(ispos(x) & use, na.rm=TRUE))
     add      <- if(sort) which.max(remain) else i
     xn       <- Xname[add]
-    exclude  <- ispos(Xnr[[xn]])
+    exclude  <- ispos(X[[xn]]) & use
     nex      <- sum(exclude, na.rm=TRUE)
-    nexc <- if(xn %in% names(Xcnr)) sum(exclude & Xcnr[[xn]], na.rm=TRUE)
+    nexc <- if(xn %in% names(Xc)) sum(exclude & Xc[[xn]], na.rm=TRUE)
      else nex
     if(nex > 0) {
       cadd         <- c(cadd, xn)
       nexclude     <- c(nexclude,  nex)
       nexcludec    <- c(nexcludec, nexc)
-      Xnr[exclude, ] <- NA
+      X[exclude, ] <- NA
       cond.denom   <- c(cond.denom, cd)
       cd           <- cd - sum(exclude, na.rm=TRUE)
     }
@@ -370,9 +368,9 @@ exReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                   frace[i],    '&',
                   fracremain[i], '\\tabularnewline'))
     cn <- cadd[i]
-    if(cn %in% names(Xcnr)) {
+    if(cn %in% names(Xc)) {
       ct('\\multicolumn{6}{l}{~~~~$\\frac{', nexcludec[i], '}{',
-         sx <- sum(Xcnr[, cn], na.rm=TRUE), '}$ =',
+         sx <- sum(Xc[, cn], na.rm=TRUE), '}$ =',
          rf(nexcludec[i] / sx), ' of ', latexTranslate(Xclab[cn]),
          '}\\tabularnewline\n')
       ct('&&&&&\\tabularnewline\n')

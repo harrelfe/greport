@@ -446,56 +446,6 @@ appsection <- function(section=NULL, subsection=NULL, main=FALSE, panel='') {
   invisible()
 }
 
-#' Change First Letters to Upper Case
-#'
-#' Changes the first letter of each word in a string to upper case, keeping selected words in lower case.  Words containing at least 2 capital letters are kept as-is.
-#'
-#' @param txt a character vector
-#' @param lower set to \code{TRUE} to make only the very first letter of the string upper case, and to keep words with at least 2 capital letters in their original form
-#' @param alllower set to \code{TRUE} to make every word start with lower case unless it has at least 2 caps
-#' @references
-#' \url{http://lanecc.libguides.com/content.php?pid=38483&sid=295540}, \url{http://en.wikipedia.org/wiki/Letter_case#Headings_and_publication_titles}, \url{http://titlecapitalization.com}
-#' @export
-#' @examples
-#' upFirst(c('this and that','that is Beyond question'))
-
-upFirst <- function(txt, lower=FALSE, alllower=FALSE) {
-  f <- function(x) {
-  notcap <- c('a', 'about', 'above', 'across', 'after', 'against',
-                'along', 'among', 'an', 'and', 'around', 'as', 'at',
-                'before', 'behind', 'below', 'beneath', 'beside',
-                'besides', 'between', 'beyond', 'but', 'by', 'despite',
-                'down', 'during', 'except', 'following', 'for', 'from',
-                'in', 'inside', 'into', 'like', 'mid', 'minus', 'near',
-                'next', 'nor', 'of', 'off', 'on', 'onto', 'opposite',
-                'or', 'out', 'outside', 'over', 'past', 'per', 'plus',
-                'regarding', 'round', 'save', 'since', 'so', 'than',
-                'the', 'through', 'throughout', 'till', 'times',
-                'to', 'toward', 'towards', 'under', 'underneath',
-                'unlike', 'until', 'up', 'upon', 'via', 'vs.', 'when',
-                'with', 'within', 'without', 'worth', 'yet')
-  s <- strsplit(x, " ")[[1]]
-  ## Find words that have more than one upper case letter; assume these
-  ## are acronyms that need capitalization preserved
-  a <- grepl('[A-Z]{1,}.*[A-Z]{1,}', s)
-  s <- if(alllower)
-         ifelse(a, s, tolower(s))
-  else if(lower)
-         ifelse(a, s, ifelse((1 : length(s)) == 1,
-                             paste(toupper(substring(s, 1, 1)),
-                                   tolower(substring(s, 2)), sep=''),
-                             tolower(s)))
-       else
-         ifelse(a, s, ifelse((1 : length(s)) == 1 | s %nin% notcap,
-                             paste(toupper(substring(s, 1, 1)),
-                                   tolower(substring(s, 2)), sep=''),
-                             tolower(s)))
-  paste(s, collapse=' ')
-}
-  for(i in 1 : length(txt)) txt[i] <- f(txt[i])
-  txt
-}
-
 #' Merge Multiple Data Frames or Data Tables
 #'
 #' Merges an arbitrarily large series of data frames or data tables containing common \code{id} variables (keys for data tables).  Information about number of observations and number of unique \code{id}s in individual and final merged datasets is printed.  The first data frame has special meaning in that all of its observations are kept whether they match \code{id}s in other data frames or not.  For all other data frames, by default non-matching observations are dropped.  The first data frame is also the one against which counts of unique \code{id}s are compared.  Sometimes \code{merge} drops variable attributes such as \code{labels} and \code{units}.  These are restored by \code{Merge}.  If all objects are of class \code{data.table}, faster merging will be done using the \code{data.table} package's join operation.  This assumes that all objects have identical key variables and those of the variables on which to merge.
