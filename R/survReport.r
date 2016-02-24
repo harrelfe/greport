@@ -32,7 +32,7 @@
 #'   n <- 400
 #'   dat <- data.frame(t1=runif(n, 2, 5), t2=runif(n, 2, 5),
 #'                     e1=rbinom(n, 1, .5), e2=rbinom(n, 1, .5),
-#'                     treat=sample(c('a','b','c'), n, TRUE))
+#'                     treat=sample(c('a','b'), n, TRUE))
 #'   dat <- upData(dat,
 #'                 labels=c(t1='Time to operation',
 #'                          t2='Time to rehospitalization',
