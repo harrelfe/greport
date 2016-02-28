@@ -11,6 +11,7 @@
 #' @param violinbox set to \code{TRUE} to add violin plots to box plots
 #' @param violinbox.opts a list to pass to \code{panel.violin}
 #' @param summaryPsort set to \code{TRUE} to sort categories in descending order of frequencies
+#' @param stable set to \code{FALSE} to suppress creation of backup supplemental tables for graphics
 #' @param fun a function that takes individual response variables (which may be matrices, as in \code{\link[survival]{Surv}} objects) and creates one or more summary statistics that will be computed while the resulting data frame is being collapsed to one row per condition.  Dot charts are drawn when \code{fun} is given.
 #' @param data data frame
 #' @param subset a subsetting epression for the entire analysis
@@ -40,6 +41,7 @@ dReport <-
            violinbox.opts=list(col=adjustcolor('blue', alpha.f=.25),
              border=FALSE),
            summaryPsort=FALSE,
+           stable=TRUE,
            fun=NULL, data=NULL, subset=NULL, na.action=na.retain,
            panel = 'desc', subpanel=NULL, head=NULL, tail=NULL,
            continuous=10, h=5.5, w=5.5, outerlabels=TRUE, append=FALSE,
@@ -403,12 +405,12 @@ dReport <-
          } )
 
   popname <- paste('poptable', lbn, sep='')
-  cat(sprintf('\\def\\%s{\\protect\n', popname), file=file, append=TRUE)
+  if(stable) cat(sprintf('\\def\\%s{\\protect\n', popname), file=file, append=TRUE)
   poptab <- NULL
 
-  if(substring(what, 1, 3) == 'byx')
+  if(stable && substring(what, 1, 3) == 'byx')
     poptab <- latexit(s, what, byx.type, file=file)
-  else if(what == 'proportions') {
+  else if(stable && what == 'proportions') {
     z <- latex(s, groups=groups, size=szg, file=file, append=TRUE,
                landscape=FALSE)   ## may sometimes need landscape=manygroups
     nstrata <- attr(z, 'nstrata')
@@ -417,17 +419,19 @@ dReport <-
   else if(what == 'box' || (what == 'xy' && length(fun))) {
     S <- summaryM(formula.no.id, data=data, subset=subset, na.action=na.action,
                   test=FALSE, groups=groups)
-    z <- latex(S, table.env=FALSE, file=file, append=TRUE, prmsd=TRUE,
-               npct='both', exclude1=FALSE, middle.bold=TRUE, center=center,
-               round='auto', insert.bottom=FALSE, size=szg,
-               landscape=manygroups)
-    poptab <- if(length(S$group.freq) > 3) 'full' else 'mini'
-    legend <- attr(z, 'legend')
-    legend <- if(! length(legend)) ''
+    if(stable) {
+     z <- latex(S, table.env=FALSE, file=file, append=TRUE, prmsd=TRUE,
+                npct='both', exclude1=FALSE, middle.bold=TRUE, center=center,
+                round='auto', insert.bottom=FALSE, size=szg,
+                landscape=manygroups)
+     poptab <- if(length(S$group.freq) > 3) 'full' else 'mini'
+     legend <- attr(z, 'legend')
+     legend <- if(! length(legend)) ''
      else paste('. ', paste(legend, collapse='\n'), sep='')
-    nstrata <- attr(z, 'nstrata')
+     nstrata <- attr(z, 'nstrata')
+    }
   }
-  cat('}\n', file=file, append=TRUE)
+  if(stable) cat('}\n', file=file, append=TRUE)
 
   nobs <- Nobs$nobs
   r <- range(nobs)

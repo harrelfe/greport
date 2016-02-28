@@ -85,6 +85,7 @@ mfrowSuggest <- function(n, small=FALSE) {
 #'  \item{\code{pdfdir}:}{name of subdirectory in which to write \code{pdf} graphics}
 #'  \item{\code{texdir}:}{name of subdirectory in which to write \code{LaTeX} code}
 #'  \item{\code{texwhere}:}{default is \code{"texdir"} to use location specified by \code{texdir}.  Set to \code{""} to write generated non-appendix LaTeX code to the console as expected by \code{knitr}}
+#'	\item{\code{defs}"}{fully qualified file name to which to write LaTeX macro definitions such as poptables}
 #' }
 setgreportOption <- function(...) {
   default <- getOption('greport')
@@ -102,8 +103,8 @@ setgreportOption <- function(...) {
            tx.var = '', er.col = NULL, alpha.f = 0.7,
            denom = c(enrolled=NA, randomized=NA),
            tablelink = 'hyperref', figenv='figure', figpos='htb!',
-           gtype = 'pdf', pdfdir='pdf', texdir='gentex',
-           texwhere='texdir')
+           gtype = 'pdf', pdfdir='pdf', texdir='gentex', 
+           texwhere='texdir', defs='gentex/defs.tex')
 
   if(length(opts)) {
     if(any(names(opts) %nin% names(default)))
@@ -266,7 +267,7 @@ dNeedle <- function(sf, name, file='', append=TRUE) {
 #' @param longcaption character. Long caption for figure.
 #' @param tcaption character.  Short caption for supporting table.
 #' @param tlongcaption character.  Long caption for supporting table.
-#' @param poptable an optional character string containing LaTeX code that will be used as a pop-up tool tip for the figure (typically a tabular)
+#' @param poptable an optional character string containing LaTeX code that will be used as a pop-up tool tip for the figure (typically a tabular).  Set to \code{NULL} to suppress supplemental tables that back up figures.
 #' @param popfull set to \code{TRUE} to make the pop-up be full-page
 #' @param sidecap set to \code{TRUE} (only applies if \code{greportOption(figenv="SCfigure")}) to assume the figure is narrow and to use side captions
 #' @param outtable set to \code{TRUE} to only have the caption and hyperlink to graphics in a LaTeX table environment and to leave the tabulars to free-standing LaTeX markup.  This is useful when the table is long, to prevent hyperlinking from making the table run outside the visable area.  Instead of the hyperlink area being the whole table, it will be the caption.  A \code{clearpage} is issued after the tabular.
@@ -276,7 +277,7 @@ dNeedle <- function(sf, name, file='', append=TRUE) {
 putFig <- function(panel, name, caption=NULL, longcaption=NULL,
                    tcaption=caption, tlongcaption=NULL,
                    poptable=NULL, popfull=FALSE, sidecap=FALSE,
-                   outtable=FALSE, append=TRUE) {
+                   outtable=FALSE, stable=TRUE, append=TRUE) {
   o <- getgreportOption()
   gtype     <- o$gtype
   texdir    <- o$texdir
