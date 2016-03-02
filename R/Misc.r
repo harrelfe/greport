@@ -277,7 +277,7 @@ dNeedle <- function(sf, name, file='', append=TRUE) {
 putFig <- function(panel, name, caption=NULL, longcaption=NULL,
                    tcaption=caption, tlongcaption=NULL,
                    poptable=NULL, popfull=FALSE, sidecap=FALSE,
-                   outtable=FALSE, stable=TRUE, append=TRUE) {
+                   outtable=FALSE, append=TRUE) {
   o <- getgreportOption()
   gtype     <- o$gtype
   texdir    <- o$texdir
