@@ -7,10 +7,11 @@
 dReport(formula, groups = NULL, what = c("box", "proportions", "xy", "byx"),
   byx.type = c("violin", "quantiles"), violinbox = TRUE,
   violinbox.opts = list(col = adjustcolor("blue", alpha.f = 0.25), border =
-  FALSE), summaryPsort = FALSE, fun = NULL, data = NULL, subset = NULL,
-  na.action = na.retain, panel = "desc", subpanel = NULL, head = NULL,
-  tail = NULL, continuous = 10, h = 5.5, w = 5.5, outerlabels = TRUE,
-  append = FALSE, sopts = NULL, popts = NULL, lattice = FALSE)
+  FALSE), summaryPsort = FALSE, stable = TRUE, fun = NULL, data = NULL,
+  subset = NULL, na.action = na.retain, panel = "desc", subpanel = NULL,
+  head = NULL, tail = NULL, continuous = 10, h = 5.5, w = 5.5,
+  outerlabels = TRUE, append = FALSE, sopts = NULL, popts = NULL,
+  lattice = FALSE)
 }
 \arguments{
 \item{formula}{a formula accepted by the \code{bpplotM} or \code{summaryP} functions.  \code{formula} must have an \code{id(subjectidvariable)} term if there are repeated measures, in order to get correct subject counts as \code{nobs}.}
@@ -26,6 +27,8 @@ dReport(formula, groups = NULL, what = c("box", "proportions", "xy", "byx"),
 \item{violinbox.opts}{a list to pass to \code{panel.violin}}
 
 \item{summaryPsort}{set to \code{TRUE} to sort categories in descending order of frequencies}
+
+\item{stable}{set to \code{FALSE} to suppress creation of backup supplemental tables for graphics}
 
 \item{fun}{a function that takes individual response variables (which may be matrices, as in \code{\link[survival]{Surv}} objects) and creates one or more summary statistics that will be computed while the resulting data frame is being collapsed to one row per condition.  Dot charts are drawn when \code{fun} is given.}
 

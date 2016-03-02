@@ -1,5 +1,8 @@
 % Usage: Copy test.Rnw to a temporary directory and make directories
 % gentex and pdf under it, then run knitr on test.Rnw
+% Best to use the spaper and knitrl LaTeX packages, which will also do away with 
+% the need for some of the preamble below
+
 \documentclass{article}
 \usepackage{fancyhdr}
 \usepackage{graphicx}

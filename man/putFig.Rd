@@ -6,7 +6,8 @@
 \usage{
 putFig(panel, name, caption = NULL, longcaption = NULL,
   tcaption = caption, tlongcaption = NULL, poptable = NULL,
-  popfull = FALSE, sidecap = FALSE, outtable = FALSE, append = TRUE)
+  popfull = FALSE, sidecap = FALSE, outtable = FALSE, stable = TRUE,
+  append = TRUE)
 }
 \arguments{
 \item{panel}{character. Panel name.}
@@ -21,7 +22,7 @@ putFig(panel, name, caption = NULL, longcaption = NULL,
 
 \item{tlongcaption}{character.  Long caption for supporting table.}
 
-\item{poptable}{an optional character string containing LaTeX code that will be used as a pop-up tool tip for the figure (typically a tabular)}
+\item{poptable}{an optional character string containing LaTeX code that will be used as a pop-up tool tip for the figure (typically a tabular).  Set to \code{NULL} to suppress supplemental tables that back up figures.}
 
 \item{popfull}{set to \code{TRUE} to make the pop-up be full-page}
 
