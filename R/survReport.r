@@ -19,10 +19,12 @@
 #' @param multi logical.  If \code{TRUE}, multiple figures are produced, othewise a single figure with a matrix of survival plots is made.
 #' @param mfrow numeric 2-vector, used if \code{multi=FALSE}.  If not specified, default plot matrix layout will be figured.
 #' @param y.n.risk used if \code{what="1-S"}, to specify \code{y} coordinate for putting numbers at risk, typically below the \code{x}-axis label
+#' @mylim numeric 2-vector.  Used to force expansion of computed y-axis limits.  See \code{survplot}.
 #' @param bot number of spaces to reserve at bottom of plot for numbers at risk, if \code{what="1-S"}
 #' @param aehaz logical.  Set to \code{FALSE} to not print number of events and hazard rate on plots.
 #' @param times numeric vector.  If specified, prints cumulative incidence probabilities at those times on the plots.
 #' @param append logical. If \code{TRUE} output will be appended instead of overwritten.
+#' @param opts list.  A list specifying arguments to \code{survReport} and \code{startPlot} that override any other arguments.  This is useful when making a long series of \code{survReport} calls with the same options, as the options can be defined up front in a list.
 #' @param \dots ignored
 #' @export
 #' @examples
@@ -56,21 +58,28 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                        cause=NULL,
                        panel='surv', subpanel=NULL, head=NULL, tail=NULL,
                        h=3, w=4.5, multi=FALSE, mfrow=NULL, y.n.risk=0,
-                       bot=2, aehaz=TRUE, times=NULL, append=FALSE, ...)
+                       mylim=NULL, bot=2, aehaz=TRUE, times=NULL,
+                       append=FALSE, opts, ...)
 {
   if(grepl('[^a-zA-Z-]', panel))
     stop('panel must contain only A-Z a-z -')
   if(length(subpanel) && grepl('[^a-zA-Z-]', subpanel))
     stop('subpanel must contain only A-Z a-z -')
 
-  mwhat <- missing(what)
-  what  <- match.arg(what)
-  if(length(cause)) {
-    if(mwhat) what <- '1-S'
-    if(what == 'S') stop('for competing risks what can only be "1-S"')
-  }
+  what <- match.arg(what)
+  if(length(cause)) what <- '1-S'
+  conf <- match.arg(conf)
+
+  ## Bring arguments from opts as if they were listed outside opts
+  if(length(opts) && is.list(opts))
+    for(j in 1 : length(opts))
+      assign(names(opts)[j], opts[[j]], immediate=TRUE)
+  ## Add other startPlot and spar arguments into opts
+  w <- c(list(h=h, w=w, multi=multi, mfrow=mfrow, bot=bot), list(...))
+  for(x in names(w)) if(x %nin% names(opts)) opts[[x]] <- w[[x]]
+
   kmlab <- if(what == 'S') 'Kaplan-Meier estimates'
-   else 'One minus Kaplan-Meier estimates'
+           else 'One minus Kaplan-Meier estimates'
 
   past <- function(x) {
     l <- length(x)
@@ -81,7 +90,6 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   }
     
 
-  conf <- match.arg(conf)
   form <- Formula(formula)
   Y <- if(length(subset)) model.frame(form, data=data, subset=subset,
                                       na.action=na.action)
@@ -89,8 +97,6 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   X <- model.part(form, data=Y, rhs=1)
   Y <- model.part(form, data=Y, lhs=1)
   
-  conf <- match.arg(conf)
-
   texdir <- getgreportOption('texdir')
   file   <- if(getgreportOption('texwhere') == 'gentex')
     sprintf('%s/%s.tex', texdir, panel) else ''
@@ -138,9 +144,9 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   
   if(nycause == 1) multi <- FALSE
   if(! multi) {
-    mf <- if(length(mfrow)) mfrow else mfrowSuggest(nycause)
-    startPlot(lb, h=h, w=w, mfrow=mf, bot=if(what=='1-S') bot else 0,
-              lattice=FALSE, ...)
+    if(! length(opts$mfrow)) opts$mfrow <- mfrowSuggest(nycause)
+    if(what == 'S')          opts$bot <- 0
+    do.call('startPlot', c(list(file=lb, lattice=FALSE), opts))
   }
 
   gro <- getgreportOption()
@@ -191,8 +197,8 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       evlab[icause] <- if(cau == '') label(y) else cau
       if(multi) {
         lbi <- paste(lb, icause, sep='-')
-        startPlot(lbi, h=h, w=w, bot=if(what=='1-S') bot else 0,
-                  lattice=FALSE, ...)
+        if(what == 'S') opts$bot <- 0
+        do.call('startPlot', c(list(file=lbi, lattice=FALSE), opts))
       }
       yl <- if(length(ylab)) ylab else upFirst(evlab[icause])
       yl <- if(what == 'S') paste(yl, '-Free Probability', sep='')
@@ -201,20 +207,20 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       if(what == 'S')
         survplot(s, 
                  n.risk=TRUE, conf=conf, lwd=lwd,
-                 lty=1, col=col, ylab=yl,
+                 lty=1, col=col, ylab=yl, mylim=mylim,
                  label.curves=list(keys='lines', key.opts=list(bty='n')),
                  levels.only=TRUE, aehaz=aehaz, times=times, ...)
       else
         survplot(s, state=if(length(cause)) cau,
                  fun=function(y) 1 - y,
                  n.risk=TRUE, y.n.risk=y.n.risk, conf=conf, lwd=lwd,
-                 lty=1, col=col, ylab=yl,
+                 lty=1, col=col, ylab=yl, mylim=mylim,
                  label.curves=list(keys='lines', key.opts=list(bty='n')),
                  levels.only=TRUE, aehaz=aehaz, times=times, ...)
 
       capconf <- if(conf == 'diffbands') ', along with half-height of 0.95 confidence limits centered at estimate midpoints. $N$=' else
     ', along with 0.95 confidence bands.  $N$='
-    
+
       if(multi) {
         endPlot()
         shortcap <- if(length(head)) head

@@ -1,5 +1,7 @@
-Changes in version 0.7-1 (2016-02-28)
+Changes in version 0.7-1 (2016-03-06)
    * dReport: added stable argument for suppressing backup tables
+	 * startPlot: stopped suppressing arguments for spar that are not in par
+	 * survReport: added opts argument
 
 Changes in version 0.7-0 (2015-12-02)
 	 * survReport: plot cumulative incidence estimates when left hand side of formula contains Surv objects for competing risks

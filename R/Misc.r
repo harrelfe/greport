@@ -377,7 +377,7 @@ putFig <- function(panel, name, caption=NULL, longcaption=NULL,
 #' @export
 
 startPlot <- function(file, h=7, w=7, lattice=TRUE, ...) {
-  gtype <- getgreportOption('gtype')
+  gtype  <- getgreportOption('gtype')
   pdfdir <- getgreportOption('pdfdir')
   if(! length(gtype) || gtype != 'interactive') {
     file <- paste(pdfdir, '/', gsub('\\.', '-', file), '.pdf', sep='')
@@ -401,9 +401,11 @@ startPlot <- function(file, h=7, w=7, lattice=TRUE, ...) {
         if(multi) par(mfrow=mfrow)
       }
   dotlist <- list(...)
-  if(length(dotlist))
-    dotlist <- dotlist[names(dotlist) %in% names(par())]
-  do.call(spar, dotlist)
+  if(length(dotlist)) {
+    allow <- union(names(par()), setdiff(names(formals(spar)), '...'))
+    dotlist <- dotlist[names(dotlist) %in% allow]
+  }
+  do.call('spar', dotlist)
   if(lattice) latticeInit()
   invisible()
 }
