@@ -76,7 +76,8 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
       assign(names(opts)[j], opts[[j]], immediate=TRUE)
   ## Add other startPlot and spar arguments into opts
   w <- c(list(h=h, w=w, multi=multi, mfrow=mfrow, bot=bot), list(...))
-  for(x in names(w)) if(x %nin% names(opts)) opts[[x]] <- w[[x]]
+  for(x in names(w)) if(! length(opts) || x %nin% names(opts))
+                       opts[[x]] <- w[[x]]
 
   kmlab <- if(what == 'S') 'Kaplan-Meier estimates'
            else 'One minus Kaplan-Meier estimates'

@@ -1,4 +1,4 @@
-Changes in version 0.7-1 (2016-03-06)
+Changes in version 0.7-1 (2016-03-08)
    * dReport: added stable argument for suppressing backup tables
 	 * startPlot: stopped suppressing arguments for spar that are not in par
 	 * survReport: added opts argument, mylim argument
