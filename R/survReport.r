@@ -59,7 +59,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                        panel='surv', subpanel=NULL, head=NULL, tail=NULL,
                        h=3, w=4.5, multi=FALSE, mfrow=NULL, y.n.risk=0,
                        mylim=NULL, bot=2, aehaz=TRUE, times=NULL,
-                       append=FALSE, opts, ...)
+                       append=FALSE, opts=NULL, ...)
 {
   if(grepl('[^a-zA-Z-]', panel))
     stop('panel must contain only A-Z a-z -')
