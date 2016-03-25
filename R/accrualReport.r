@@ -14,6 +14,7 @@
 #' @param targetDate \code{Date} or character vector corresponding to \code{targetN}
 #' @param closeDate \code{Date} or characterstring.  Used for randomizations per month and per site-month - contains the dataset closing date to be able to compute the number of dates that a group (country, site, etc.) has been online since randomizating its first subject.
 #' @param enrollmax numeric specifying the upper y-axis limit for cumulative enrollment when not zoomed
+#' @param studynos logical.  Set to \code{FALSE} to suppress summary study numbers table.
 #' @param minrand integer.  Minimum number of randomized subjects a country must have before a box plot of time to randomization is included.
 #' @param panel character string.  Name of panel, which goes into file base names and figure labels for cross-referencing.
 #' @param h numeric.  Height of ordinary plots, in inches.
@@ -30,7 +31,8 @@
 accrualReport <-
   function(formula, data=NULL, subset=NULL, na.action=na.retain,
            dateRange=NULL, zoom=NULL, targetN=NULL, targetDate=NULL,
-           closeDate=NULL, enrollmax=NULL, minrand=10, panel = 'accrual',
+           closeDate=NULL, enrollmax=NULL, studynos=TRUE,
+           minrand=10, panel = 'accrual',
            h=2.5, w=3.75, hb=5, wb=5, hdot=3.5)
 {
   formula <- Formula(formula)
@@ -158,7 +160,7 @@ accrualReport <-
                 'Subjects randomized per site per month')
     }
   }
-  if(length(z)) {
+  if(studynos && length(z)) {
     z <- data.frame(Number=z, Category=k)
     u <- latex(z, file=file, append=TRUE, rowname=NULL,
                col.just=c('r','l'), where='!htbp',
@@ -254,12 +256,12 @@ accrualReport <-
   }
 
   ## Extended box plots of time to randomization for randomized subjects
-  if(penroll && prandomize) {
+  if(penroll && prandomize && (pregion || pcountry)) {
+    x1 <- if(pregion)  X[[region]]
+    x2 <- if(pcountry) X[[country]]
     lb <- sprintf('%s-timetorand', panel)
     startPlot(lb, h=hb, w=wb, lattice=FALSE)
     y <- as.numeric(difftime(Y[[j]], Y[[enroll]], units='days'))
-    x1 <- if(pregion)  X[[region]]
-    x2 <- if(pcountry) X[[country]]
     use <- TRUE
     coexcl <- 0
     if(pcountry && minrand > 0) {
@@ -288,7 +290,10 @@ accrualReport <-
        else Days ~ 1
     popname <- '\\poptabledaysrand'
     cat(sprintf('\\def%s{\\protect\n', popname), file=file, append=TRUE)
-    rddata <- subset(data.frame(Days, x1=x1, x2=x2), ! is.na(Days))
+    rddata <- data.frame(Days)
+    if(length(x1)) rddata$x1 <- x1
+    if(length(x2)) rddata$x2 <- x2
+    rddata <- subset(rddata, ! is.na(Days))
     S <- summaryM(form, data=rddata, test=FALSE)
     z <- latex(S, table.env=FALSE, file=file, append=TRUE, prmsd=TRUE,
                middle.bold=TRUE, center='none', round=1, insert.bottom=FALSE)
