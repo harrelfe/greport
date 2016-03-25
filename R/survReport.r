@@ -16,7 +16,8 @@
 #' @param tail optional character string.  Specifies final text in the figure caption, e.g., what might have been put in a footnote in an ordinary text page.  This appears just before any needles.
 #' @param h numeric. Height of plots.
 #' @param w numeric. Width of plots in inches.
-#' @param multi logical.  If \code{TRUE}, multiple figures are produced, othewise a single figure with a matrix of survival plots is made.
+#' @param multi logical.  If \code{TRUE}, multiple figures are produced, otherwise a single figure with a matrix of survival plots is made.
+#' @param markevent logical.  Applies only if \code{multi=TRUE}.  Specify \code{TRUE} to put the event label in the extreme upper left of the plot.
 #' @param mfrow numeric 2-vector, used if \code{multi=FALSE}.  If not specified, default plot matrix layout will be figured.
 #' @param y.n.risk used if \code{what="1-S"}, to specify \code{y} coordinate for putting numbers at risk, typically below the \code{x}-axis label
 #' @mylim numeric 2-vector.  Used to force expansion of computed y-axis limits.  See \code{survplot}.
@@ -57,7 +58,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                        conf=c('diffbands', 'bands', 'bars', 'none'),
                        cause=NULL,
                        panel='surv', subpanel=NULL, head=NULL, tail=NULL,
-                       h=3, w=4.5, multi=FALSE, mfrow=NULL, y.n.risk=0,
+                       h=3, w=4.5, multi=FALSE, markevent=FALSE, mfrow=NULL, y.n.risk=0,
                        mylim=NULL, bot=2, aehaz=TRUE, times=NULL,
                        append=FALSE, opts=NULL, ...)
 {
@@ -93,6 +94,10 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
     upFirst(y, alllower=TRUE)
   }
     
+  stamp <- function(w) 
+	  text(grconvertX(0, 'ndc', 'user'), grconvertY(1, 'ndc', 'user'),
+	       w, adj=c(0, 1), xpd=NA, col='blue')
+	  
 
   form <- Formula(formula)
   Y <- if(length(subset)) model.frame(form, data=data, subset=subset,
@@ -204,28 +209,32 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
         if(what == 'S') opts$bot <- 0
         do.call('startPlot', c(list(file=lbi, lattice=FALSE), opts))
       }
-      yl <- if(length(ylab)) ylab else upFirst(evlab[icause])
+      yl <- ylb <- if(length(ylab)) ylab else upFirst(evlab[icause])
       yl <- if(what == 'S') paste(yl, '-Free Probability', sep='')
       else paste('Cumulative Incidence of', yl)
 
+      cex.ylab <- par('cex.lab') * ifelse(nchar(yl) > 33, .8, 1)
       if(what == 'S')
         survplot(s, 
                  n.risk=TRUE, conf=conf, lwd=lwd,
                  lty=1, col=col, ylab=yl, mylim=mylim,
                  label.curves=list(keys='lines', key.opts=list(bty='n')),
-                 levels.only=TRUE, aehaz=aehaz, times=times, ...)
+                 levels.only=TRUE, aehaz=aehaz, times=times, 
+                 cex.ylab=cex.ylab, ...)
       else
         survplot(s, state=if(length(cause)) cau,
                  fun=function(y) 1 - y,
                  n.risk=TRUE, y.n.risk=y.n.risk, conf=conf, lwd=lwd,
                  lty=1, col=col, ylab=yl, mylim=mylim,
                  label.curves=list(keys='lines', key.opts=list(bty='n')),
-                 levels.only=TRUE, aehaz=aehaz, times=times, ...)
+                 levels.only=TRUE, aehaz=aehaz, times=times,
+                 cex.ylab=cex.ylab, ...)
 
       capconf <- if(conf == 'diffbands') ', along with half-height of 0.95 confidence limits centered at estimate midpoints. $N$=' else
     ', along with 0.95 confidence bands.  $N$='
 
       if(multi) {
+		if(markevent) stamp(ylb)
         endPlot()
         shortcap <- if(length(head)) head
                     else if(cau == '') paste(kmlab, 'for',
