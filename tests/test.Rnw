@@ -44,8 +44,8 @@
 <<echo=FALSE>>=
 echo <- TRUE   # show code
 # echo <- FALSE  # hide code
-knitrSet(echo=echo, results='hide')
 require(greport)
+knitrSet(echo=echo, results='hide')
 @
 
 <<>>=

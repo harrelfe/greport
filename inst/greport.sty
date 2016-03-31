@@ -2,7 +2,7 @@
 %        \usepackage{greport}
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{greport}[2014/02/19 Support for R greport reports]
+\ProvidesPackage{greport}[2016/03/31 Support for R greport reports]
 
 % User must define LaTeX macros \tooltipn, \tooltipm, and \tooltipw
 % for narrow, medium, and wide LaTeX objects to pop up
@@ -15,6 +15,7 @@
   \def\popnotation{}
   \fi
 \ifnum\poptype=1
+  \usepackage{ocg-p}   % keeps ocgtools from loading ocg package
   \usepackage[mouseover]{ocgtools}
   \usepackage{xcolor,pbox}
   % Needs the 3 packages the user must install using e.g.:
@@ -38,8 +39,7 @@
 
 \ifnum\poptype=2
   \usepackage{tooltip,pbox}
-  % For movable tooltips, download tooltip.sty, move to
-  % /usr/share/texmf/tex/latex and run mktexlsr
+  % For movable tooltips, download tooltip.sty, move to ~/texmf/tex
   % Note: tooltip expands width pretty well for non-wide objects
   \newcommand{\tooltipn}[2]{\tooltip{#1~\textcolor[gray]{0.5}{$\mapsto$}}{%
        \pbox{7in}{#2}}}

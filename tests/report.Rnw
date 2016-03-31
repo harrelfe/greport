@@ -55,8 +55,8 @@ echo <- TRUE     # include code in report
 # echo <- FALSE    # exclude code in report
 cat('%------------------\n')
 cat(sprintf('\\def\\inclcode{%s}\n', 1 * echo))
-knitrSet(echo=echo)
 require(greport)
+knitrSet(echo=echo)
 @
 
 <<>>=

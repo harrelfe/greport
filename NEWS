@@ -1,9 +1,10 @@
-Changes in version 0.7-1 (2016-03-25)
+Changes in version 0.7-1 (2016-03-31)
    * dReport: added stable argument for suppressing backup tables
 	 * startPlot: stopped suppressing arguments for spar that are not in par
 	 * survReport: added opts argument, mylim argument
 	 * survReport: reduced font size of ylab when long, added markevent argument
 	 * accrualReport: added studynos argument
+	 * greport.sty: attach ocg-p LaTeX package so that ocgtools no longer needs ocg, asymptote, acrotex
 
 Changes in version 0.7-0 (2015-12-02)
 	 * survReport: plot cumulative incidence estimates when left hand side of formula contains Surv objects for competing risks
