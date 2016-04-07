@@ -1,8 +1,9 @@
-% Usage: \def\poptype{0:no popup tooltips  1:ocgtools  2:movable popups}
+% Usage: \def\poptype{0:no popup tooltips  1:ocgtools  2:movable popups
+%                     3:tiny inline popups}
 %        \usepackage{greport}
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{greport}[2016/03/31 Support for R greport reports]
+\ProvidesPackage{greport}[2016/04/07 Support for R greport reports]
 
 % User must define LaTeX macros \tooltipn, \tooltipm, and \tooltipw
 % for narrow, medium, and wide LaTeX objects to pop up
@@ -52,6 +53,14 @@
        % \parbox[c]{6.5in}{#2}}}
  \def\hsepline{}
 \fi
+
+\ifnum\poptype=3
+  \newcommand{\tooltipn}[2]{{\\\tiny #2}\hfill #1}
+  \newcommand{\tooltipm}[2]{#1~\tiny #2}
+  \newcommand{\tooltipw}[2]{#1~\tiny #2}
+  \def\hsepline{}   %{\hrule}
+  \def\popnotation{}
+  \fi
 
 \typeout{Using poptype=\poptype}
 
