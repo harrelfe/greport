@@ -23,7 +23,8 @@
 % hyperlinked items (for screen only)
   
 \def\poptype{1}
-% 0=no popup tooltips  1=ocgtools  2=movable popups
+% 0=no popup tooltips  1=ocgtools  2=movable popups   3=in-line tiny tables
+% with no popups
 \usepackage{greport}   % must appear after \usepackage{hyperref}
 
 \graphicspath{{pdf/}}

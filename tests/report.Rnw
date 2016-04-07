@@ -22,7 +22,8 @@
 % Remove colorlinks and linkcolor options to hyperref to box the
 % hyperlinked items (for screen only)
 
-\def\poptype{1}   % 0=no pop-up tooltips  1=ocgtools  2=movable pop-ups
+\def\poptype{3}   % 0=no pop-up tooltips  1=ocgtools  2=movable pop-ups
+                  % 3=no pop-ups, put as tiny tables in figure captions
 \usepackage{greport}
 
 \graphicspath{{pdf/}}
@@ -151,6 +152,7 @@ Ralph McGill, John Tukey, Edward Tufte, and Jacques Bertin.
 
 \section{Notation}
 \ifnum\poptype > 0
+\ifnum\poptype < 3
 \paragraph{Pop-up Tooltips}
 Certain elements of the report, signaled by
 \textcolor[gray]{0.5}{$\mapsto$}, have pop-up tooltips behind them.
@@ -171,6 +173,7 @@ with a mouse gesture (do not hold the mouse button down).  Click on
 the pop-up to make it stick in a certain location.  Hover over
 \textcolor[gray]{0.5}{$\mapsto$} to make the pop-up disappear, or
 click on the pop-up again to unstick it.
+\fi
 \fi
 \fi
 
@@ -229,12 +232,19 @@ dNeedle(c(1,2,3,1)/4,'lttdemod')
       \hline
   \end{tabular}
 \end{center}
+\ifnum\poptype > 0
+\ifnum\poptype < 3
 There are pop-up tooltips embedded in the needles.  When hovering the
 mouse over \textcolor[gray]{0.5}{$\mapsto$} a table of subject counts
 will pop up. 
+\fi
+\fi
 
 \paragraph{Extended Box Plots}
-\newcommand{\eboxpopup}[1]{\tooltipm{#1}{\includegraphics{bpplt-proto-1}}}
+% For poptype 1 and 2:
+%\newcommand{\eboxpopup}[1]{\tooltipm{#1}{\includegraphics{bpplt-proto-1}}}
+% For poptype 3:
+\newcommand{\eboxpopup}[1]{\hyperlink{bpplt}{#1}}
 % To not generate pop-up use: \newcommand{\eboxpopup}[1]{}
 For depicting distributions of continuous variables, many of the
 following displays use extended box plots, also called
@@ -245,6 +255,8 @@ mouse over the word ``box'' will pop up this prototype as needed.
 <<bpplt-proto,w=5,h=3.5>>=
 bpplt()
 @
+\hypertarget{bpplt}{}
+
 Typically violin plots are superimposed onto box plots in what
 follows.  Violin plots show mirror images of the estimated probability
 density function for continuous variable, using a kernel density
@@ -279,12 +291,17 @@ extended box plots.
 \end{tabular}
 }
 \begin{center}
-\quantint
+\quantint\hypertarget{quantint}{}
 \end{center}
-\newcommand{\qintpopup}[1]{\tooltipn{#1}{\quantint}}
-% To no generate pop-up use \newcommand{\qintpopup}[1]{}
+%\newcommand{\qintpopup}[1]{\tooltipn{#1}{\quantint}}
+\newcommand{\qintpopup}{\hyperlink{quantint}{these~}}
+% To not generate pop-up use \newcommand{\qintpopup}[1]{}
+\ifnum\poptype > 0
+\ifnum\poptype < 3
 These definitions will pop-up when hovering the mouse at the end of
 the phrase ``quantile intervals'' in captions.
+\fi
+\fi
 
 In addition there is a black vertical line centered at the midpoint of
 the two medians, with height equal to $\frac{1}{2}$ of the width of an
@@ -497,6 +514,10 @@ the user must install the following \LaTeX\ packages:
 \code{acrotex}, \code{ocgtools}, and \code{asymptote}.  If using
 \code{poptype=2}, the user must install the \code{tooltip} style.
 See \url{http://biostat.mc.vanderbilt.edu/Greport} for more information.
+\code{poptype=3} just puts the denominator information as tiny tables
+in figure captions and don't require use of any special \LaTeX\
+packages.  This approach solves a problem with Macs and Ipads not
+handling pop-ups correctly.
 
 Before running the \R\ code to produce the report components, create the
 following directories underneath your project directory: \code{pdf}
