@@ -49,6 +49,8 @@ survReport(formula, data = NULL, subset = NULL, na.action = na.retain,
 
 \item{y.n.risk}{used if \code{what="1-S"}, to specify \code{y} coordinate for putting numbers at risk, typically below the \code{x}-axis label}
 
+\item{mylim}{numeric 2-vector.  Used to force expansion of computed y-axis limits.  See \code{survplot}.}
+
 \item{bot}{number of spaces to reserve at bottom of plot for numbers at risk, if \code{what="1-S"}}
 
 \item{aehaz}{logical.  Set to \code{FALSE} to not print number of events and hazard rate on plots.}
