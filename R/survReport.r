@@ -17,7 +17,7 @@
 #' @param h numeric. Height of plots.
 #' @param w numeric. Width of plots in inches.
 #' @param multi logical.  If \code{TRUE}, multiple figures are produced, otherwise a single figure with a matrix of survival plots is made.
-#' @param markevent logical.  Applies only if \code{multi=TRUE}.  Specify \code{TRUE} to put the event label in the extreme upper left of the plot.
+#' @param markevent logical.  Applies only if \code{multi=TRUE}.  Specify \code{FALSE} to not put the event label in the extreme upper left of the plot.
 #' @param mfrow numeric 2-vector, used if \code{multi=FALSE}.  If not specified, default plot matrix layout will be figured.
 #' @param y.n.risk used if \code{what="1-S"}, to specify \code{y} coordinate for putting numbers at risk, typically below the \code{x}-axis label
 #' @param mylim numeric 2-vector.  Used to force expansion of computed y-axis limits.  See \code{survplot}.
@@ -58,7 +58,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
                        conf=c('diffbands', 'bands', 'bars', 'none'),
                        cause=NULL,
                        panel='surv', subpanel=NULL, head=NULL, tail=NULL,
-                       h=3, w=4.5, multi=FALSE, markevent=FALSE, mfrow=NULL, y.n.risk=0,
+                       h=3, w=4.5, multi=FALSE, markevent=TRUE, mfrow=NULL, y.n.risk=0,
                        mylim=NULL, bot=2, aehaz=TRUE, times=NULL,
                        append=FALSE, opts=NULL, ...)
 {
