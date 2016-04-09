@@ -10,6 +10,9 @@
 #' @importFrom rms npsurv survplot
 #' @importFrom survival Surv survfit
 #' @importFrom Formula Formula model.part
+#' @importFrom grDevices adjustcolor dev.off gray pdf
+#' @importFrom graphics abline axis box grconvertX grconvertY lines par plot plot.new points text
+#' @importFrom stats as.formula median model.frame qnorm reshape sd terms
 #' @docType package
 #' @aliases greport package-greport
 #' @name greport
