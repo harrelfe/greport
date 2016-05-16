@@ -11,6 +11,7 @@
 #' @param violinbox set to \code{TRUE} to add violin plots to box plots
 #' @param violinbox.opts a list to pass to \code{panel.violin}
 #' @param summaryPsort set to \code{TRUE} to sort categories in descending order of frequencies
+#' @param exclude1 logical used for \code{latex} methods when \code{summaryM} or \code{summaryP} are called by \code{dReport}, or for plot methods for \code{summaryP}.  The default is \code{TRUE} to cause the most frequent level of any two-level categorical variable to not be used as a separate category in the graphic or table.  See \code{\link[Hmisc]{summaryM}}.
 #' @param stable set to \code{FALSE} to suppress creation of backup supplemental tables for graphics
 #' @param fun a function that takes individual response variables (which may be matrices, as in \code{\link[survival]{Surv}} objects) and creates one or more summary statistics that will be computed while the resulting data frame is being collapsed to one row per condition.  Dot charts are drawn when \code{fun} is given.
 #' @param data data frame
@@ -40,7 +41,7 @@ dReport <-
            violinbox=TRUE,
            violinbox.opts=list(col=adjustcolor('blue', alpha.f=.25),
              border=FALSE),
-           summaryPsort=FALSE,
+           summaryPsort=FALSE, exclude1=TRUE,
            stable=TRUE,
            fun=NULL, data=NULL, subset=NULL, na.action=na.retain,
            panel = 'desc', subpanel=NULL, head=NULL, tail=NULL,
@@ -348,7 +349,7 @@ dReport <-
          proportions = {
            sopts$sort <- summaryPsort
            s <- do.call('summaryP', c(dl, sopts))
-           if(lattice) p <- do.call('plot', c(list(x=s, groups=groups), popts))
+           if(lattice) p <- do.call('plot', c(list(x=s, groups=groups, exclude1=exclude1), popts))
            else {
              popts <- if(length(groups) == 1 && groups == tvar)
                c(popts, list(col  =getgreportOption('tx.col'),
@@ -363,7 +364,7 @@ dReport <-
                      strip.text.y=element_text(size=rel(0.75), color='blue',
                        angle=0),
                      legend.position='bottom')
-             p <- do.call('ggplot', c(list(data=s, groups=groups), popts))
+             p <- do.call('ggplot', c(list(data=s, groups=groups, exclude1=exclude1), popts))
              fnvar <- attr(p, 'fnvar')
              if(length(fnvar)) tail <- paste(tail, ' ', fnvar, '.', sep='')
              if(length(groups)) p <- p + guides(color=guide_legend(title=''),
@@ -411,7 +412,7 @@ dReport <-
   if(stable && substring(what, 1, 3) == 'byx')
     poptab <- latexit(s, what, byx.type, file=file)
   else if(stable && what == 'proportions') {
-    z <- latex(s, groups=groups, size=szg, file=file, append=TRUE,
+    z <- latex(s, groups=groups, exclude1=exclude1, size=szg, file=file, append=TRUE,
                landscape=FALSE)   ## may sometimes need landscape=manygroups
     nstrata <- attr(z, 'nstrata')
     poptab <- if(manygroups) 'full' else 'mini'
@@ -421,7 +422,7 @@ dReport <-
                   test=FALSE, groups=groups)
     if(stable) {
      z <- latex(S, table.env=FALSE, file=file, append=TRUE, prmsd=TRUE,
-                npct='both', exclude1=FALSE, middle.bold=TRUE, center=center,
+                npct='both', exclude1=exclude1, middle.bold=TRUE, center=center,
                 round='auto', insert.bottom=FALSE, size=szg,
                 landscape=manygroups)
      poptab <- if(length(S$group.freq) > 3) 'full' else 'mini'
