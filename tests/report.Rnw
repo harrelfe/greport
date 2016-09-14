@@ -3,13 +3,11 @@
 % To compile: knitr report; pdflatex report
 % Produces: report.pdf
 \documentclass{article}
-\usepackage{graphicx}
-\usepackage{relsize}    % for \smaller etc.
+\usepackage{knitrl}
 \usepackage{moreverb}   % for \verbatimtabinput
 \usepackage{fancyhdr}   % for fancy headers
 \usepackage{url}        % for \url{}
 \usepackage{changepage} % for exReport \begin{adjustwidth}
-% pdflatex used Sweavel.sty that is a symbolic link to Sweavelbw.sty
 
 \def\titl{Example Closed Meeting Data Monitoring Committee Report}
 \definecolor{darkblue}{RGB}{0,0,139}
@@ -30,8 +28,6 @@
 
 \newcommand{\code}[1]{\texttt{\smaller #1}}  % format software names
 % smaller implemented by relsize: use 1 size smaller than current font
-
-\newcommand{\R}{{\normalfont\textsf{R}}{}}
 
 \author{Frank Harrell}
 \title{\titl}

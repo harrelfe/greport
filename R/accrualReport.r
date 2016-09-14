@@ -208,7 +208,7 @@ accrualReport <-
     lb <- sprintf('%s-cumulative-%s', panel, lab)
     shortcap <- sprintf("Subjects %s over time", lab)
     cap <- if(length(target))
-             sprintf('.  The solid back line depicts the cumulative frequency.  The dotted line represent targets.', lab) else ''
+             sprintf('.  The solid back line depicts the cumulative frequency.  The thick grayscale line represent targets.', lab) else ''
     pzoom <- length(zoom) > 0
     if(pzoom) {
       zoom <- as.Date(zoom)
@@ -220,31 +220,36 @@ accrualReport <-
     longcap <- paste(shortcap, cap, '~\\hfill\\lttc', sep = '')
 
     startPlot(lb, h=h, w=w * (1 + 0.75 * pzoom), lattice=FALSE)
-    par(mfrow=c(1, 1 + pzoom), mar=c(4,3.5,2,1))
-    Ecdf(as.numeric(y), what='f', xlab=sprintf('Date %s', upFirst(lab)),
+    par(mfrow=c(1, 1 + pzoom), mar=c(4, 3.5, 2, 1))
+    plot(0, 0, type='n', xlab=sprintf('Date %s', upFirst(lab)),
          ylab='Cumulative Number',
-         subtitles=FALSE, axes=FALSE,
+         axes=FALSE,
          xlim=as.numeric(dr),
          ylim=c(0, if(length(target)) max(length(y), target)
           else if(lab == 'enrolled' && length(enrollmax)) enrollmax
           else length(y)))
+    if(length(target)) lines(dtarget, target, lty=1, lwd=5,
+                             col=gray(.8))
+         
+    Ecdf(as.numeric(y), what='f', add=TRUE, lwd=.75)
     axis(2)
     axisDate(dr)
-    if(length(target)) lines(dtarget, target, lty=3, lwd=1)
     box(lwd=.75, col=gray(.4))
     
     if(pzoom) {
       abline(v=as.numeric(zoom), col=gray(.85))
-      Ecdf(as.numeric(y), what='f', xlab=sprintf('Date %s', upFirst(lab)),
-           ylab='Cumulative Number',
-           subtitles=FALSE, axes=FALSE,
-           xlim=zoom,
-           ylim=c(0, if(length(target)) max(sum(y <= zoom[2], na.rm=TRUE),
+      plot(0, 0, type='n', xlab=sprintf('Date %s', upFirst(lab)),
+         ylab='Cumulative Number',
+         axes=FALSE,
+         xlim=zoom,
+         ylim=c(0, if(length(target)) max(sum(y <= zoom[2], na.rm=TRUE),
              max(target[dtarget <= zoom[2]])) else
              sum(y <= zoom[2], na.rm=TRUE)))
+      if(length(target)) lines(dtarget, target, lty=1, lwd=5,
+                               col=gray(.8))
+      Ecdf(as.numeric(y), what='f', add=TRUE, lwd=.75)
       axis(2)
       axisDate(zoom)
-      if(length(target)) lines(dtarget, target, lty=3, lwd=1)
       box(lwd=.5, col=gray(.4))
     }
 
