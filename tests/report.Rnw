@@ -46,8 +46,6 @@
     \today}
   
 <<setup,echo=FALSE,results='asis'>>=
-# knitrSet and spar functions may be found in
-# http://biostat.mc.vanderbilt.edu/wiki/pub/Main/RConfiguration/Rprofile
 echo <- TRUE     # include code in report
 # echo <- FALSE    # exclude code in report
 cat('%------------------\n')
