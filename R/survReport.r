@@ -84,7 +84,7 @@ survReport <- function(formula, data=NULL, subset=NULL, na.action=na.retain,
   }
 
   kmlab <- if(what == 'S') 'Kaplan-Meier estimates'
-           else 'One minus Kaplan-Meier estimates'
+           else 'Kaplan-Meier cumulative incidence estimates'
 
   past <- function(x) {
     l <- length(x)

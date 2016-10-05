@@ -12,6 +12,7 @@ Changes in version 0.7-1 (2016-04-08)
 	 * greport.sty: attach ocg-p LaTeX package so that ocgtools no longer needs ocg, asymptote, acrotex
 	 * greport.sty: added poptype=3 to use tiny tables and no actual pop-ups
 	 * survReport: changed default markevent to TRUE
+	 * dReport: passed continuous argument to summaryM
 
 Changes in version 0.7-0 (2015-12-02)
 	 * survReport: plot cumulative incidence estimates when left hand side of formula contains Surv objects for competing risks

@@ -21,7 +21,7 @@
 #' @param subpanel If calling \code{dReport} more than once for the same type of chart (by different values of \code{what}), specify \code{subpanel} to distinguish the multiple calls.  In that case, \code{-subpanel} will be appended to \code{panel} when creating figure labels and cross-references.
 #' @param head character string.  Specifies initial text in the figure caption, otherwise a default is used
 #' @param tail optional character string.  Specifies final text in the figure caption, e.g., what might have been put in a footnote in an ordinary text page.  This appears just before any needles.
-#' @param continuous the minimum number of numeric values a variable must have in order to be considered continuous
+#' @param continuous the minimum number of numeric values a variable must have in order to be considered continuous.  Also passed to \code{summaryM}.
 #' @param h numeric.  Height of plot, in inches
 #' @param w numeric.  Width of plot
 #' @param outerlabels logical that if \code{TRUE}, pass \code{lattice} graphics through the \code{latticeExtra} package's \code{useOuterStrips}function if there are two conditioning (paneling) variables, to put panel labels in outer margins.
@@ -419,7 +419,7 @@ dReport <-
   }
   else if(what == 'box' || (what == 'xy' && length(fun))) {
     S <- summaryM(formula.no.id, data=data, subset=subset, na.action=na.action,
-                  test=FALSE, groups=groups)
+                  test=FALSE, groups=groups, continuous=continuous)
     if(stable) {
      z <- latex(S, table.env=FALSE, file=file, append=TRUE, prmsd=TRUE,
                 npct='both', exclude1=exclude1, middle.bold=TRUE, center=center,
