@@ -377,6 +377,14 @@ nriskReport(days ~ region + id(subjid),
             data=addMarginal(d2, region),
             head='Number of subjects followed for medication usage',
             panel='meds', append=TRUE, h=3, w=4.5)
+
+# Separate analysis not stratified by region, which will also provide
+# more detailed graphs.  Make up some new visits to have more than 1/subj.
+# Make up a new definition of time zero
+d2$days[(n + 1) : (2 * n)] <- sample(1 : n, n, TRUE)
+nriskReport(days ~ id(subjid), data=d2, time0='PCI',
+            panel='medsb', append=TRUE,
+            h=3, w=4.5)
 @ 
 \clearpage
 
@@ -417,7 +425,7 @@ survReport(Surv(t1, e1) + Surv(t2, e2) ~ 1, data=dat,
            y.n.risk=-.02)
 
 # Competing risk analysis
-survReport(Surv(t1, cr1) + Surv(t2, cr2) ~ treat, data=dat,
+if(FALSE) survReport(Surv(t1, cr1) + Surv(t2, cr2) ~ treat, data=dat,
            cause=list(c('cancer', 'heart'), 'diabetic'),
            subpanel='cr', append=TRUE, w=4.75, h=6, ps=8, multi=TRUE)
 @ 

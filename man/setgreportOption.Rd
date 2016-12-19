@@ -26,7 +26,7 @@ setgreportOption(...)
  \item{\code{pdfdir}:}{name of subdirectory in which to write \code{pdf} graphics}
  \item{\code{texdir}:}{name of subdirectory in which to write \code{LaTeX} code}
  \item{\code{texwhere}:}{default is \code{"texdir"} to use location specified by \code{texdir}.  Set to \code{""} to write generated non-appendix LaTeX code to the console as expected by \code{knitr}}
-\item{\code{defs}"}{fully qualified file name to which to write LaTeX macro definitions such as poptables}
+\item{\code{defs}:}{fully qualified file name to which to write LaTeX macro definitions such as poptables}
 }}
 }
 \description{

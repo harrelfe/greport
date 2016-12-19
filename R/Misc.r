@@ -569,3 +569,67 @@ Merge <- function(..., id, all=TRUE, verbose=TRUE) {
   attr(M, 'info') <- info
   M
 }
+
+
+
+#' Mask Values of a Vector
+#'
+#' Modifies the value of a vector so as to mask the information by generating random data subject to constraints and keeping the length, type, label, and units attributes of the original variable.  For a binary numeric or logical variable a random vector with prevalence (by default) of 0.5 replaces the original.  For a factor variable, a random multinomial sample is drawn, with equal expected frequencies of all levels.  For a numeric variable, the range is preserved but the distribution is uniform over that range, and generated values are rounded by an amount equal to the minimum spacing between distinct values.  Character variables are just randomly reordered.
+#'
+#' @param x an input vector
+#' @param prev a numeric scalar specifying the prevalence for binary variables
+#' @param NAs if the variable contains \code{NA}s, keep the same expected proportion of \code{NA}s but distribute them randomly.  Otherwise, the new vector will have no missing values.
+#' @export
+
+maskVal <- function(x, prev=0.5, NAs=TRUE) {
+  lab <- attr(x, 'label')
+  un  <- attr(x, 'units')
+  n   <- length(x)
+  if(n == 0) return(x)
+  m <- sum(is.na(x))
+  if(m == n) return(x)
+  y <- if(m == 0) x else x[! is.na(x)]
+
+  if(is.logical(x))
+    x <- sample(c(FALSE,TRUE), n, replace=TRUE, prob=c(1 - prev, prev))
+  else
+    if(all(y %in% c(0,1)))
+      x <- sample(0:1, n, replace=TRUE, prob=c(1 - prev, prev))
+  else
+    if(is.factor(x))
+      x <- factor(sample(levels(x), n, replace=TRUE),
+                  levels=levels(x))
+  else
+    if(is.character(x)) x <- x[order(runif(n))]
+  else {
+    r <- range(y)
+    u <- runif(n, min=r[1], max=r[2])
+    x <- if(length(y) < 4) u
+         else {
+           d <- min(diff(sort(unique(y))))
+           pmax(r[1], pmin(r[2], d * round(u / d)))
+         }
+  }
+
+  if(NAs && m > 0) x[runif(n) < (m / n)] <- NA
+    
+  if(length(lab)) label(x) <- lab
+  if(length(un))  units(x) <- un
+  x
+}
+
+#' Mask Variables in a Data Frame
+#'
+#' Given a list of applicable variable names in a formula, runs \code{maskVal} on any variables in a data frame \code{x} whose name is found in \code{formula}.
+#'
+#' @param x an input data frame or data table
+#' @param formula a formula specifying the variables to perturb
+#' @param \dots parameters to pass to \code{maskVal}
+#' @export
+
+maskDframe <- function(x, formula, ...) {
+  for(v in intersect(all.vars(formula), names(x)))
+    x[[v]] <- maskVal(x[[v]], ...)
+  x
+}
+

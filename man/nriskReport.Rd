@@ -4,15 +4,17 @@
 \alias{nriskReport}
 \title{Number at Risk Report}
 \usage{
-nriskReport(formula, groups = NULL, data = NULL, subset = NULL,
-  na.action = na.retain, ylab = "Number Followed", panel = "nrisk",
-  head = NULL, tail = NULL, h = 5.5, w = 5.5, outerlabels = TRUE,
-  append = FALSE, popts = NULL)
+nriskReport(formula, groups = NULL, time0 = "randomization", data = NULL,
+  subset = NULL, na.action = na.retain, ylab = "Number Followed",
+  panel = "nrisk", head = NULL, tail = NULL, h = 5.5, w = 5.5,
+  outerlabels = TRUE, append = FALSE, popts = NULL)
 }
 \arguments{
 \item{formula}{a formula with time and the left hand side, and with variables on the right side being possible stratification variables.  If no stratification put \code{1} as the right hand side.  Specify unique subject IDs by including a term \code{id()} if subjects have more than one observation.}
 
 \item{groups}{a character string naming a superpositioning variable.  Must also be included in \code{formula}.}
+
+\item{time0}{a character string defining the meaning of time zero in follow-up.  Default is \code{"randomization"}.}
 
 \item{data}{data frame}
 
@@ -42,7 +44,7 @@ nriskReport(formula, groups = NULL, data = NULL, subset = NULL,
 Graph number of subjects at risk
 }
 \details{
-\code{nriskReport} generates multi-panel charts, separately for categorical analysis variables.  Each panel depicts the number at risk as a function of follow-up time.  The Hmisc \code{Ecdf} function is used.  Stratification is by treatment or other variables.  It is assumed that this function is only run on randomized subjects.
+\code{nriskReport} generates multi-panel charts, separately for categorical analysis variables.  Each panel depicts the number at risk as a function of follow-up time.  The Hmisc \code{Ecdf} function is used.  Stratification is by treatment or other variables.  It is assumed that this function is only run on randomized subjects.  If an \code{id} variable is present but \code{groups} and stratification variables are not, other plots are also produced: a histogram of the number of visits per subject, a histogram of times at which subjects have visits, the average number of contacts as a function of elapsed time, and a histogram showing the distribution of the longest gap between visits over subjects.
 }
 \examples{
 # See test.Rnw in tests directory
