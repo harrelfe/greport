@@ -136,7 +136,7 @@ accrualReport <-
     z <- c(z, c(nrand, g(persite, 1), nsitesr, g(persiter, 1)))
     k <- c(k, c('Subjects randomized', 'Subjects per site',
                 'Sites randomizing',
-                'Subjects randomized per randomizing size'))
+                'Subjects randomized per randomizing site'))
     ## maxs = for each site the # months since that site first randomized
     ##        a subject (NA if none randomized)
     ## site months is sum of maxs
