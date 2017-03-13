@@ -128,11 +128,15 @@ accrualReport <-
   }
 
   if(psite && prandomize) {
-    rdate <- Y[[randomize]]
-    nrand <- sum(! is.na(rdate))
-    persite <- nrand / nsites
-    z <- c(z, c(nrand, g(persite, 1)))
-    k <- c(k, c('Subjects randomized', 'Subjects per site'))
+    rdate    <- Y[[randomize]]
+    nrand    <- sum(! is.na(rdate))
+    persite  <- nrand / nsites
+    nsitesr  <- length(unique(Site[! is.na(rdate)]))
+    persiter <- nrand / nsitesr
+    z <- c(z, c(nrand, g(persite, 1), nsitesr, g(persiter, 1))
+           k <- c(k, c('Subjects randomized', 'Subjects per site',
+                       'Sites randomizing',
+                       'Subjects randomized per randomizing size'))
     ## maxs = for each site the # months since that site first randomized
     ##        a subject (NA if none randomized)
     ## site months is sum of maxs

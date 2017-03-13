@@ -1,8 +1,10 @@
-Changes in version 0.7-2 (2016-12-18)
+Changes in version 0.7-2 (2017-03-12)
    * dReport: added exclude1 argument, default to TRUE (see Hmisc::ggplot.summaryP)
 	 * Require Hmisc >= 4.0-0, rms >= 5.0-0
 	 * accrualReport: changed target enrollment/randomization curves to thick grayscale lines
 	 * nriskReport: added more plots when id is present but groups is not
+	 * maskVal, maskDframe: new functions for masking variables for test reports
+	 * accrualReport: added number sites randomizing, number subjects randomized per randomizing size
 
 Changes in version 0.7-1 (2016-04-08)
    * dReport: added stable argument for suppressing backup tables

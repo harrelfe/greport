@@ -574,7 +574,7 @@ Merge <- function(..., id, all=TRUE, verbose=TRUE) {
 
 #' Mask Values of a Vector
 #'
-#' Modifies the value of a vector so as to mask the information by generating random data subject to constraints and keeping the length, type, label, and units attributes of the original variable.  For a binary numeric or logical variable a random vector with prevalence (by default) of 0.5 replaces the original.  For a factor variable, a random multinomial sample is drawn, with equal expected frequencies of all levels.  For a numeric variable, the range is preserved but the distribution is uniform over that range, and generated values are rounded by an amount equal to the minimum spacing between distinct values.  Character variables are just randomly reordered.
+#' Modifies the value of a vector so as to mask the information by generating random data subject to constraints and keeping the length, type, label, and units attributes of the original variable.  For a binary numeric or logical variable a random vector with prevalence (by default) of 0.5 replaces the original.  For a factor variable, a random multinomial sample is drawn, with equal expected frequencies of all levels.  For a numeric variable, the range is preserved but the distribution is uniform over that range, and generated values are rounded by an amount equal to the minimum spacing between distinct values.  Character variables are just randomly reordered.  In the special case where the input vector contains only one unique non-NA value, the variable is assumed to be the type of variable where NA represents FALSE or "no", and the variable is replaced by a logical vector with the specified prevalence.
 #'
 #' @param x an input vector
 #' @param prev a numeric scalar specifying the prevalence for binary variables
@@ -589,6 +589,9 @@ maskVal <- function(x, prev=0.5, NAs=TRUE) {
   m <- sum(is.na(x))
   if(m == n) return(x)
   y <- if(m == 0) x else x[! is.na(x)]
+
+  if(length(unique(y)) == 1)
+    return(sample(c(FALSE, TRUE), n, replace=TRUE, prob=c(1 - prev, prev)))
 
   if(is.logical(x))
     x <- sample(c(FALSE,TRUE), n, replace=TRUE, prob=c(1 - prev, prev))
