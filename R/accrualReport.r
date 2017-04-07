@@ -164,6 +164,14 @@ accrualReport <-
                 'Subjects randomized per site per month')
     }
   }
+
+  if(penroll && prandomize) {
+    ttr <- as.numeric(difftime(Y[[randomize]], Y[[enroll]], units='days'))
+    z <- c(z, g(mean(ttr, na.rm=TRUE), 1))
+    k <- c(k, 'Mean days from enrollment to randomization')
+    z <- c(z, g(median(ttr, na.rm=TRUE), 1))
+    k <- c(k, 'Median days from enrollment to randomization')
+    }
   if(studynos && length(z)) {
     z <- data.frame(Number=z, Category=k)
     u <- latex(z, file=file, append=TRUE, rowname=NULL,

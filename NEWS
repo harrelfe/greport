@@ -4,7 +4,7 @@ Changes in version 0.7-2 (2017-03-12)
 	 * accrualReport: changed target enrollment/randomization curves to thick grayscale lines
 	 * nriskReport: added more plots when id is present but groups is not
 	 * maskVal, maskDframe: new functions for masking variables for test reports
-	 * accrualReport: added number sites randomizing, number subjects randomized per randomizing size
+	 * accrualReport: added number sites randomizing, number subjects randomized per randomizing size, mean and median days to randomization from enrollment
 
 Changes in version 0.7-1 (2016-04-08)
    * dReport: added stable argument for suppressing backup tables
