@@ -360,14 +360,18 @@ dReport(sbp ~ treat + region, data=d,
 <<meds,results='asis'>>=
 pan <- function(...)
   panel.plsmo(..., type='l', label.curves=max(which.packet()) == 1,
-              datadensity=TRUE)
+              method='intervals', mobs=10)  # normally mobs >= 96
+
+# Generalizes xyplot(meda ~ days | region, groups=treat,
+#                    panel=pan, data=d)
 dReport(meda + medb ~ days + treat + region, what='xy',
         groups='treat', data=d, h=3.75,
         popts=list(panel=pan, paneldoesgroups=TRUE,
-          ylab='Proportion Using',
+          ylab='Proportion Using', xlim=c(0, 130),
           scat1d.opts=list(lwd=.7)),
         head='Medication usage',
-        tail='Tick marks indicate observed measurement times.',
+        # tail='Tick marks indicate observed measurement times.',
+        tail='Tick marks indicate mean measurement times within intervals.',
         panel='meds')
 
 # Show number being followed as days since randomization gets larger
