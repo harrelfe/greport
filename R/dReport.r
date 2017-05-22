@@ -339,7 +339,6 @@ dReport <-
   }
   if(length(key)) popts$key <- key
 
-  cat('%what:', what, '\n', file=file, append=TRUE)
   switch(what,
          box = {
            sopts$violin      <- violinbox
