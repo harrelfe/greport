@@ -90,6 +90,8 @@ dReport <-
   manygroups <- length(glevels) > 3
   nstrata <- 1
   
+  ## If missing argument 'what' assign value of 'what' based
+  ## on other arguements.
   if(mwhat) {
     if(length(fun)) what <- 'xy'
     else {
@@ -99,13 +101,17 @@ dReport <-
     }
   }
   
+  ## Extract Labels from the right hand side of the formula
   labs      <- sapply(X, label)
+  ## If id() column exists then remove that label from the vector of label values.
   if(length(wid)) labs <- labs[- wid]
   stratlabs <- ifelse(labs == '',
                       if(length(wid)) names(X)[-wid] else names(X), labs)
+  ## Extract Labels from the left hand side of the formula
   ylabs     <- sapply(Y, label)
   ylabs     <- ifelse(ylabs == '', names(Y), ylabs)
 
+  ## paste to gether a comma seperated lexical list
   past <- function(x) {
     l <- length(x)
     if(l < 2) x
@@ -113,6 +119,10 @@ dReport <-
     else paste(paste(x[1 : (l - 1)], collapse=', '), x[l], sep=', and ')
   }
 
+  ## Extract the 0.05, 0.125, 0.25, 0.375, 0.625, 0.75, 0.875, and 0.95
+  ## quantiles the median, standard deviation, and length from the given vector.
+  ## if less then 3 elements in the given vector then return the meadian
+  ## 9 NA's and the length of the given vector.
   quant <- function(y) {
     probs <- c(0.05, 0.125, 0.25, 0.375)
     probs <- sort(c(probs, 1 - probs))
@@ -128,6 +138,7 @@ dReport <-
     c(Median=as.numeric(m), w, se=se, n=length(y))
   }
 
+  ## Get the mean and standard deviation for the given vector
   meanse <- function(y) {
     y <- y[! is.na(y)]
     n <- length(y)
@@ -146,6 +157,8 @@ dReport <-
     z
   }
 
+  ## Find the proportion, lower and upper confidence intervals the
+  ## standard deviation and length of the given vector.
   propw <- function(y) {
     y <- y[!is.na(y)]
     n <- length(y)
@@ -161,6 +174,8 @@ dReport <-
               names=c('Proportion', 'Lower', 'Upper', 'se', 'n'))
   }
 
+  ## create the latex table for the object s.  Return 'full' if 's'
+  ## attribute 'xnames' has 2 entries other wise return 'mini'
   latexit <- function(s, what, byx.type, file) {
     at <- attributes(s)
     xv <- at$xnames
@@ -232,6 +247,9 @@ dReport <-
     if(length(xv) == 2) 'full' else 'mini'
   }
 
+  ## If what is 'byx' then determine which summary function to use
+  ## when summarizing a vairable.  Also determine final value of
+  ## 'what' argument.
   if(what == 'byx') {
     if(length(fun)) stop('may not specify fun= when what="byx"')
     g <- function(y) {
@@ -265,13 +283,16 @@ dReport <-
 
   szg <- if(manygroups) 'smaller[2]' else 'smaller'
 
+  ## create table label for supplemental table
   lb <- sprintf('%s-%s', panel, what)
   if(length(subpanel)) lb <- paste(lb, subpanel, sep='-')
   lbn <- gsub('\\.', '', gsub('-', '', lb))
+  ## Create lttpop
   lttpop <- paste('ltt', lbn, sep='')
 
   ## Is first x variable on the x-axis of an x-y plot?
   fx <- (what == 'xy' && ! length(fun)) || substring(what, 1, 3) == 'byx'
+  ## Determine the base part of the title of the plot.
   a <- if(fx) {
     if(length(ylabs) < 7)
       paste(if(what != 'xy') 'for', past(ylabs), 'vs.\\', stratlabs[1])
@@ -280,9 +301,12 @@ dReport <-
                if(length(ylabs) < 7) past(ylabs) else
                paste(length(ylabs), 'variables'))
 
+  ## Capitalize the base part of the title and make it latex safe
   al <- upFirst(a, alllower=TRUE)
   al <- latexTranslate(al)
-  
+
+
+  ## Create the default title if 'head' is of length zero
   if(!length(head))
     head <-
       switch(what,
@@ -298,14 +322,20 @@ dReport <-
                 violin='with violin (density) plots'),
          al)      )
 
+  ## Create statification label by creating a english language list of
+  ## stratification variables.
   sl <- tolower(past(if((what == 'xy' && ! length(fun)) || 
                         what %in% c('byx.binary', 'byx.discrete',
                                     'byx.cont'))
                      stratlabs[-1] else stratlabs))
+
+  ## create short caption for graphic.
   cap <- if(!length(sl)) head
   else sprintf('%s stratified by %s', head, sl)
 
   shortcap <- cap
+
+  ## Create table caption for accompanying table.
   tcap <- switch(what,
                  box = paste('Statistics', al),
                  proportions = paste('Proportions', al),
@@ -315,15 +345,24 @@ dReport <-
                  byx.cont=paste('Medians', al))
   tcap <- if(length(sl)) sprintf('%s stratified by %s', tcap, sl)
   
+  ## transform pop-up box calls in caption
   cap <- gsub('Extended box', '\\\\protect\\\\eboxpopup{Extended box}', cap)
   cap <- gsub('quantile intervals', '\\\\protect\\\\qintpopup{quantile intervals}',
               cap)
-  
+
+  ## Begin the plot
   startPlot(lb, h=h, w=w)
+
+  ## extract the data list for ploting functions
   dl <- list(formula=formula.no.id,
              data=data, subset=subset, na.action=na.action,
              outerlabels=outerlabels)
+
+  ## Extact the key values for the plot from the 'popts' argument
   key <- popts$key
+
+  ## If no key specified and multiple groups then determine
+  ## default key values for the plot
   if(! length(key) && length(groups)) {
     klines <- list(x=.6, y=-.07, cex=.8,
                    columns=length(glevels), lines=TRUE, points=FALSE)
@@ -339,8 +378,11 @@ dReport <-
   }
   if(length(key)) popts$key <- key
 
+
+  ## Generate the plot of the object based on the value of 'what'
   switch(what,
          box = {
+           ## Do basic violin plot
            sopts$violin      <- violinbox
            sopts$violin.opts <- violinbox.opts
            s <- do.call('bpplotM', c(dl, sopts))
@@ -348,7 +390,9 @@ dReport <-
          },
          proportions = {
            sopts$sort <- summaryPsort
+           ## Run summaryP on extracted data with sopts
            s <- do.call('summaryP', c(dl, sopts))
+           ## If using lattice call the plot method for the summaryP object
            if(lattice) p <- do.call('plot', c(list(x=s, groups=groups, exclude1=exclude1), popts))
            else {
              popts <- if(length(groups) == 1 && groups == tvar)
@@ -356,6 +400,7 @@ dReport <-
                              shape=getgreportOption('tx.pch'),
                              abblen=12))
              else list(col=getgreportOption('nontx.col'), abblen=12)
+             ## Modify the theme of the ggplot
              popts$addlayer <-
                theme(axis.text.x =
                        element_text(size = rel(0.8), angle=-45,
@@ -366,10 +411,14 @@ dReport <-
                      legend.position='bottom')
              p <- do.call('ggplot', c(list(data=s, groups=groups, exclude1=exclude1), popts))
              fnvar <- attr(p, 'fnvar')
+             ## append the fnvar value to the tail of the caption
              if(length(fnvar)) tail <- paste(tail, ' ', fnvar, '.', sep='')
+             ## modify scale attributes
              if(length(groups)) p <- p + guides(color=guide_legend(title=''),
                                                 shape=guide_legend(title=''))
            }
+           ## Try to color the gaps of the grid, if that fails then print the ggplot2
+           ## object.
            presult <- tryCatch(
              colorFacet(p,
                         col=adjustcolor('blue', alpha.f=0.18)),
@@ -377,6 +426,7 @@ dReport <-
            if(length(presult$fail) && presult$fail) print(p)
          },
          xy = {
+           ## Create xy plots using the given summary function provided in 'fun'
            s <- do.call('summaryS', c(dl, list(fun=fun), sopts))
            p <- do.call('plot', c(list(x=s, groups=groups), popts))
            print(p)
@@ -384,6 +434,8 @@ dReport <-
          byx.binary = ,
          byx.discrete =,
          byx.cont = {
+           ## Create xy plots with summaryS using the previously
+           ## defined summary functions quant, meanse, and propw
            s <- do.call('summaryS', c(dl, list(fun=fun), sopts))
            ylim <- NULL
            if(what %in% c('byx.binary', 'byx.discrete') &&
@@ -397,6 +449,7 @@ dReport <-
                                max(s$y[j, 'Upper'], na.rm=TRUE))
              }
            }
+           ## Do a lattice plot of summaryS
            p <- do.call('plot',
             c(list(x=s, groups=groups, ylim=ylim,
                    panel=if(byx.type == 'violin' && what == 'byx.cont')
@@ -405,13 +458,20 @@ dReport <-
            print(p)
          } )
 
+  ## Create a pop-up table latex name
   popname <- paste('poptable', lbn, sep='')
+
+  ## if supplemental table is asked for create latex
+  ## function for later use.
+  ## Create latex def opening stub
   if(stable) cat(sprintf('\\def\\%s{\\protect\n', popname), file=file, append=TRUE)
   poptab <- NULL
 
   if(stable && substring(what, 1, 3) == 'byx')
+    ## Create the pop-up table using latexit function
     poptab <- latexit(s, what, byx.type, file=file)
   else if(stable && what == 'proportions') {
+    ## Create the pop-up table using the latex function
     z <- latex(s, groups=groups, exclude1=exclude1, size=szg, file=file, append=TRUE,
                landscape=FALSE)   ## may sometimes need landscape=manygroups
     nstrata <- attr(z, 'nstrata')
@@ -432,21 +492,27 @@ dReport <-
      nstrata <- attr(z, 'nstrata')
     }
   }
+  ## Create letex def closing stub
   if(stable) cat('}\n', file=file, append=TRUE)
 
   nobs <- Nobs$nobs
   r <- range(nobs)
   nn <- if(r[1] == r[2]) r[1] else paste(r[1], 'to', r[2])
+  ## append Nobs range to end of caption
   cap <- sprintf('%s. $N$=%s', cap, nn)
+  ## If tail exists the append tail on to the end of the caption
   if(length(tail)) cap <- paste(cap, tail, sep='. ')
+  ## Create needle graphic pop-up for caption
   n <- c(randomized=r[2])
   nobsg <- Nobs$nobsg
   if(length(nobsg)) n <- c(n, apply(nobsg, 1, max))
   dNeedle(sampleFrac(n, nobsY=Nobs), name=lttpop, file=file)
   cap <- sprintf('%s~\\hfill\\%s', cap, lttpop)
 
+  ## End the Plot
   endPlot()
 
+  ## out put the nessary latex code to import the plot created.
   putFig(panel = panel, name = lb, caption = shortcap,
          longcaption = cap,  tcaption=tcap,
          tlongcaption = paste(tcap, legend, sep=''),
