@@ -111,7 +111,7 @@ dReport <-
   ylabs     <- sapply(Y, label)
   ylabs     <- ifelse(ylabs == '', names(Y), ylabs)
 
-  ## paste to gether a comma seperated lexical list
+  ## paste together a comma seperated lexical list
   past <- function(x) {
     l <- length(x)
     if(l < 2) x
@@ -120,7 +120,7 @@ dReport <-
   }
 
   ## Extract the 0.05, 0.125, 0.25, 0.375, 0.625, 0.75, 0.875, and 0.95
-  ## quantiles the median, standard deviation, and length from the given vector.
+  ## quantiles, the median, standard deviation, and length from the given vector.
   ## if less then 3 elements in the given vector then return the meadian
   ## 9 NA's and the length of the given vector.
   quant <- function(y) {
@@ -138,7 +138,8 @@ dReport <-
     c(Median=as.numeric(m), w, se=se, n=length(y))
   }
 
-  ## Get the mean and standard deviation for the given vector
+  ## Get the mean and standard deviation and confidence interval
+  ## for the given vector
   meanse <- function(y) {
     y <- y[! is.na(y)]
     n <- length(y)
@@ -157,7 +158,7 @@ dReport <-
     z
   }
 
-  ## Find the proportion, lower and upper confidence intervals the
+  ## Find the proportion, lower and upper confidence intervals, the
   ## standard deviation and length of the given vector.
   propw <- function(y) {
     y <- y[!is.na(y)]
@@ -247,25 +248,45 @@ dReport <-
     if(length(xv) == 2) 'full' else 'mini'
   }
 
-  ## If what is 'byx' then determine which summary function to use
+  ## If argument 'what' is the value 'byx' then determine which summary function to use
   ## when summarizing a vairable.  Also determine final value of
   ## 'what' argument.
   if(what == 'byx') {
     if(length(fun)) stop('may not specify fun= when what="byx"')
+    ## Function to determine the number of unique numeric values
+    ## in a vector
     g <- function(y) {
       if(is.logical(y)) 2
       else if(! is.numeric(y)) 0
       else length(unique(y[! is.na(y)]))
     }
+    ## 'nu' contains the maximum number of unique values for all elements
+    ## of 'Y'.
     nu <- max(sapply(Y, g))
+    ## Set 'what' to its final value
+    ## if the maximum number of unique values for all elements of 'Y' is less the 3
+    ## then set variable 'fun' to the 'propw' function which displays the
+    ## propotions of the elements of 'Y'. Then set 'what' to the value 'byx.binary'.
     what <- if(nu < 3) {
       fun <- propw
       'byx.binary'
+      ## if the maximum number of unique values for all elements of 'Y' is less
+      ## then the number specified in the function argument 'continuous' (the
+      ## minimum number of numberic values a variable must have in order to be
+      ## considered continuous) then set 'fun' to the 'meanse' function which
+      ## displays the mean, standard deviation and confidence interval for the
+      ## elements of 'Y'. Then set 'what' to the value 'byx.discrete'.
     } else if(nu < continuous) {
       fun <- meanse
       'byx.discrete'
+      ## Other wise if argument 'byx.type' (determines the type of byx plot done.
+      ## either 'quantiles' or 'violin') equals the value 'quantiles' then set
+      ## 'fun' to the function 'quant' which displays the quantiles for the 
+      ## elements of 'Y'. Then set 'what' to the value 'byx.cont'.
     } else {
       if(byx.type == 'quantiles') fun <- quant
+      ## NOTE: if argument 'byx.type' equals 'NULL' or the value 'violin' then 'fun'
+      ## is 'NULL'.
       'byx.cont'
     }
   }
@@ -291,8 +312,13 @@ dReport <-
   lttpop <- paste('ltt', lbn, sep='')
 
   ## Is first x variable on the x-axis of an x-y plot?
+  ## This is determined if argument 'what' equals the value 'xy' and arguement
+  ## 'fun' is NULL
   fx <- (what == 'xy' && ! length(fun)) || substring(what, 1, 3) == 'byx'
   ## Determine the base part of the title of the plot.
+  ## if 'fx' is TRUE then the this is a versus plot where one or more y values
+  ## is ploted vs. the stratification variables. Otherwise this plot is
+  ## a just one or more y values plotted together.
   a <- if(fx) {
     if(length(ylabs) < 7)
       paste(if(what != 'xy') 'for', past(ylabs), 'vs.\\', stratlabs[1])
@@ -306,7 +332,7 @@ dReport <-
   al <- latexTranslate(al)
 
 
-  ## Create the default title if 'head' is of length zero
+  ## Create the default title if the arguemnt 'head' is not set.
   if(!length(head))
     head <-
       switch(what,
@@ -323,7 +349,8 @@ dReport <-
          al)      )
 
   ## Create statification label by creating a english language list of
-  ## stratification variables.
+  ## stratification variables if what is the value 'xy' and the argument
+  ## 'fun' is not set or argument 'what' starts with the value 'byx'.
   sl <- tolower(past(if((what == 'xy' && ! length(fun)) || 
                         what %in% c('byx.binary', 'byx.discrete',
                                     'byx.cont'))
@@ -358,11 +385,13 @@ dReport <-
              data=data, subset=subset, na.action=na.action,
              outerlabels=outerlabels)
 
-  ## Extact the key values for the plot from the 'popts' argument
+  ## Extact the key values for the plot from the argument 'popts'
+  ## (extra arguments that will be passed to a ploting method).
   key <- popts$key
 
-  ## If no key specified and multiple groups then determine
-  ## default key values for the plot
+  ## If no 'key' value is specified and there is a value in the
+  ## argument 'groups' (a superpositioning variable, usually treatment, for
+  ## categorical charts) then determine default key values for the plot.
   if(! length(key) && length(groups)) {
     klines <- list(x=.6, y=-.07, cex=.8,
                    columns=length(glevels), lines=TRUE, points=FALSE)
@@ -376,6 +405,8 @@ dReport <-
       byx.discrete =,
       byx.cont = klines)
   }
+  ## if 'key' has a value then set that value in the argument 'popts'
+  ## (extra arguments that will be passed to a ploting method)
   if(length(key)) popts$key <- key
 
 
@@ -426,7 +457,9 @@ dReport <-
            if(length(presult$fail) && presult$fail) print(p)
          },
          xy = {
-           ## Create xy plots using the given summary function provided in 'fun'
+             ## Create xy plots using the given summary function provided in argument
+             ## 'fun' (function that transforms the response variables into summary
+             ## statistics)
            s <- do.call('summaryS', c(dl, list(fun=fun), sopts))
            p <- do.call('plot', c(list(x=s, groups=groups), popts))
            print(p)
@@ -434,8 +467,10 @@ dReport <-
          byx.binary = ,
          byx.discrete =,
          byx.cont = {
-           ## Create xy plots with summaryS using the previously
-           ## defined summary functions quant, meanse, and propw
+           ## Create xy plots with function 'summaryS' using the argument 'fun'
+           ## (can be one of the following functions 'quant', 'meanse',
+           ## and 'propw').  If argument 'fun' is 'NULL' the do function
+           ## 'summaryS' default action.
            s <- do.call('summaryS', c(dl, list(fun=fun), sopts))
            ylim <- NULL
            if(what %in% c('byx.binary', 'byx.discrete') &&
