@@ -67,6 +67,8 @@ dReport <-
   center <- 'centerline'
   legend <- NULL
 
+  ## Find the number of observations in the Y variables grouped
+  ## by the value found in getgreportOption('tx.var')
   Nobs <- nobsY(formula, group=tvar,
                 data=data, subset=subset, na.action=na.action)
   formula.no.id <- Nobs$formula   ## removes id()
@@ -75,24 +77,44 @@ dReport <-
   en <- environment(form)
   assign(envir = en, 'id', function(x) x)
 
+  ## if argument 'subset' has a non-zero length then
+  ## Create a dataset that is a subset of the dataset 'data' using the argument 'subset'.
+  ## Otherwise Create a dataset from the dataset 'data' using the formula 'form' from the
+  ## argument formula
   Y <- if(length(subset)) model.frame(form, data=data, subset=subset,
                                       na.action=na.action)
    else model.frame(form, data=data, na.action=na.action)
+  ## Split the dataset 'Y' in the left and right hand sides of the
+  ## formula
   X <- model.part(form, data=Y, rhs=1)
   Y <- model.part(form, data=Y, lhs=1)
+
+  ## Extract the terms of the right hand side including
+  ## the id column declared using the 'id' functuion as special.
   rhs <- terms(form, rhs=1, specials='id')
   sr  <- attr(rhs, 'specials')
   ## specials counts from lhs variables
   wid <- sr$id
   if(length(wid)) wid <- wid - ncol(Y)
 
+  ## If argument 'groups' (Defines name of grouping term in formula) has
+  ## length then get the levels of the grouping term.
   glevels <- if(length(groups)) levels(X[[groups]])
+  ## If there are more the 3 levels in variable 'glevels then
+  ## set variable 'manygroups' to 'TRUE'
   manygroups <- length(glevels) > 3
   nstrata <- 1
   
   ## If missing argument 'what' assign value of 'what' based
   ## on other arguements.
   if(mwhat) {
+    ## If length of argument 'fun' is non-zero then argument 'what' is
+    ## set to value 'xy'.
+    ## Otherwise if the first element of object 'Y' is a character, a
+    ## factor or it inherits 'ynbind' then argument 'what' is set to
+    ## value 'proportions'.
+    ## Otherwise argument 'what' remains missing and variable 'type' is
+    ## set to value 'box' and never used again.
     if(length(fun)) what <- 'xy'
     else {
       y <- Y[[1]]
@@ -101,14 +123,21 @@ dReport <-
     }
   }
   
-  ## Extract Labels from the right hand side of the formula
+  ## Extract Labels from the right hand side of the formula using
+  ## Hmisc function 'label'
   labs      <- sapply(X, label)
-  ## If id() column exists then remove that label from the vector of label values.
+  ## If id() column exists then remove that label from the vector of label values
+  ## the right hand side of the formula
   if(length(wid)) labs <- labs[- wid]
+  ## Set replace blank labels in variable 'labs' to the name of the term in
+  ## variable 'X'
   stratlabs <- ifelse(labs == '',
                       if(length(wid)) names(X)[-wid] else names(X), labs)
-  ## Extract Labels from the left hand side of the formula
+  ## Extract Labels from the left hand side of the formula with the Hmisc
+  ## function 'label'
   ylabs     <- sapply(Y, label)
+  ## if the labels in variable 'ylabs' are blank replace with the term name
+  ## in variable 'Y'
   ylabs     <- ifelse(ylabs == '', names(Y), ylabs)
 
   ## paste together a comma seperated lexical list
@@ -175,8 +204,8 @@ dReport <-
               names=c('Proportion', 'Lower', 'Upper', 'se', 'n'))
   }
 
-  ## create the latex table for the object s.  Return 'full' if 's'
-  ## attribute 'xnames' has 2 entries other wise return 'mini'
+  ## create the latex table for the object s.  Return 'full' if
+  ## attribute 'xnames' of variable 's' has 2 entries otherwise return 'mini'
   latexit <- function(s, what, byx.type, file) {
     at <- attributes(s)
     xv <- at$xnames
@@ -252,6 +281,9 @@ dReport <-
   ## when summarizing a vairable.  Also determine final value of
   ## 'what' argument.
   if(what == 'byx') {
+    ## If argument 'fun' (a function for summarizing data for display)
+    ## has been specified then halt because having arguemt 'what' equal to
+    ## value 'byx' and having a value in argument 'fun' is incompatable.  
     if(length(fun)) stop('may not specify fun= when what="byx"')
     ## Function to determine the number of unique numeric values
     ## in a vector
@@ -270,10 +302,11 @@ dReport <-
     what <- if(nu < 3) {
       fun <- propw
       'byx.binary'
-      ## if the maximum number of unique values for all elements of 'Y' is less
-      ## then the number specified in the function argument 'continuous' (the
-      ## minimum number of numberic values a variable must have in order to be
-      ## considered continuous) then set 'fun' to the 'meanse' function which
+      ## if the maximum number of unique values for all elements of 'Y' (dataset of
+      ## left hand side of formula) is less then the number specified in the
+      ## function argument 'continuous' (the minimum number of numberic values
+      ## a variable must have in order to be considered continuous) then set
+      ## argument 'fun' () to the 'meanse' function which
       ## displays the mean, standard deviation and confidence interval for the
       ## elements of 'Y'. Then set 'what' to the value 'byx.discrete'.
     } else if(nu < continuous) {
@@ -299,26 +332,47 @@ dReport <-
       paste(glevels, collapse=','), '\n',
       file=file, append=TRUE)
 
+  ## If argument 'what' (main control variable) is equal to value 'box'
+  ## and argument 'groups' (Defines name of grouping term in formula) is
+  ## not specified and dataset 'X' has 1 column then set variable 'manygroups'
+  ## the value 'TRUE' if the number of levels in the first column of
+  ## of the dataset 'X' is more then 3. Otherwise set variable 'manygroups'
+  ## to value 'FALSE'.
+  ## Otherwise do nothing.
   if(what == 'box' && ! length(groups) && ncol(X) == 1)
     manygroups <- length(levels(X[[1]])) > 3
 
+  ## Set the text size to the value 'smaller[2]' if argument 'groups'
+  ## (Defines name of grouping term in formula) has more then 3 levels
+  ## or if argument 'what' is equal to value 'box' and argument
+  ## 'groups' is not specified and dataset 'X' has more then 3 levels
+  ## otherwise set the text size to value 'smaller'
   szg <- if(manygroups) 'smaller[2]' else 'smaller'
 
-  ## create table label for supplemental table
+  ## create table label for supplemental table using argument 'panel'
+  ## (value used to differentiate multiple calls to dReport) and the
+  ## value of argument 'what' (main controlling variable for dReport)
   lb <- sprintf('%s-%s', panel, what)
+  ## if argument 'subpanel' (value used to differentiate multiple calls
+  ## of dReport on the same dataset) exists then append it to the table
+  ## label.
   if(length(subpanel)) lb <- paste(lb, subpanel, sep='-')
+  ## strip out '-' from the table label
   lbn <- gsub('\\.', '', gsub('-', '', lb))
   ## Create lttpop
   lttpop <- paste('ltt', lbn, sep='')
 
-  ## Is first x variable on the x-axis of an x-y plot?
-  ## This is determined if argument 'what' equals the value 'xy' and arguement
-  ## 'fun' is NULL
+  ## Is first x variable on the x-axis of an x-y plot the result
+  ## of a summarizing function?
+  ## This is determined if argument 'what' (main control variable for
+  ## dReport) equals the value 'xy' and arguement 'fun' (summarizing
+  ## function for dataset) is not specified or if the first 3 letters of
+  ## argument 'what' is equal to the value 'byx'
   fx <- (what == 'xy' && ! length(fun)) || substring(what, 1, 3) == 'byx'
   ## Determine the base part of the title of the plot.
-  ## if 'fx' is TRUE then the this is a versus plot where one or more y values
-  ## is ploted vs. the stratification variables. Otherwise this plot is
-  ## a just one or more y values plotted together.
+  ## if variable 'fx' is TRUE then the this is a versus plot where one
+  ## or more y values is ploted vs. the stratification variables.
+  ## Otherwise this plot is a just one or more y values plotted together.
   a <- if(fx) {
     if(length(ylabs) < 7)
       paste(if(what != 'xy') 'for', past(ylabs), 'vs.\\', stratlabs[1])
@@ -332,7 +386,8 @@ dReport <-
   al <- latexTranslate(al)
 
 
-  ## Create the default title if the arguemnt 'head' is not set.
+  ## Create the default title if the arguemnt 'head' (optional header
+  ## text to display) is not speficied.
   if(!length(head))
     head <-
       switch(what,
@@ -377,7 +432,8 @@ dReport <-
   cap <- gsub('quantile intervals', '\\\\protect\\\\qintpopup{quantile intervals}',
               cap)
 
-  ## Begin the plot
+  ## Begin the plot specifing height with argument 'h' (height of table in inches)
+  ## and the width with argument 'w' (width of table in inches)
   startPlot(lb, h=h, w=w)
 
   ## extract the data list for ploting functions
