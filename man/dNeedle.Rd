@@ -18,4 +18,3 @@ dNeedle(sf, name, file = "", append = TRUE)
 \description{
 Create a LaTeX \code{picture} to draw needles for current sample sizes.  Uses colors set by call to \code{setgreportOptions}.
 }
-

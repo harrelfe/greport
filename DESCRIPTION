@@ -1,12 +1,11 @@
 Package: greport
 Version: 0.7-2
-Date: 2017-05-22
+Date: 2019-03-05
 Title: Graphical Reporting for Clinical Trials
 Author: Frank E Harrell Jr <f.harrell@vanderbilt.edu>
 Maintainer: Frank E Harrell Jr <f.harrell@vanderbilt.edu>
 Depends:
     Hmisc (>= 4.0-0),
-    data.table
 Imports:
     rms (>= 5.0-0),
     lattice,
@@ -14,7 +13,8 @@ Imports:
     ggplot2,
     Formula,
     survival,
-    methods
+    methods,
+		data.table
 Description: Contains many functions useful for
     monitoring and reporting the results of clinical trials and other
     experiments in which treatments are compared.  LaTeX is
@@ -24,4 +24,4 @@ Description: Contains many functions useful for
 License: GPL (>= 2)
 URL: http://biostat.mc.vanderbilt.edu/Greport,
     https://github.com/harrelfe/greport
-RoxygenNote: 5.0.1
+RoxygenNote: 6.1.1

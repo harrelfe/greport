@@ -20,4 +20,3 @@ oldmfrow <- mfrowSet(8)
 Compute a good \code{par("mfrow")} given the
 number of figures to plot.
 }
-

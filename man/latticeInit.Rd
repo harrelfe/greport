@@ -10,4 +10,3 @@ latticeInit()
 Initializes colors and other graphical attributes based on
 what is stored in system option \code{greport}.
 }
-

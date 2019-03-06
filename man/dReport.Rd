@@ -4,10 +4,10 @@
 \alias{dReport}
 \title{Descriptive Statistics Report}
 \usage{
-dReport(formula, groups = NULL, what = c("box", "proportions", "xy", "byx"),
-  byx.type = c("violin", "quantiles"), violinbox = TRUE,
-  violinbox.opts = list(col = adjustcolor("blue", alpha.f = 0.25), border =
-  FALSE), summaryPsort = FALSE, exclude1 = TRUE, stable = TRUE,
+dReport(formula, groups = NULL, what = c("box", "proportions", "xy",
+  "byx"), byx.type = c("violin", "quantiles"), violinbox = TRUE,
+  violinbox.opts = list(col = adjustcolor("blue", alpha.f = 0.25), border
+  = FALSE), summaryPsort = FALSE, exclude1 = TRUE, stable = TRUE,
   fun = NULL, data = NULL, subset = NULL, na.action = na.retain,
   panel = "desc", subpanel = NULL, head = NULL, tail = NULL,
   continuous = 10, h = 5.5, w = 5.5, outerlabels = TRUE,
@@ -75,4 +75,3 @@ Generate graphics and LaTeX with descriptive statistics
 \examples{
 # See test.Rnw in tests directory
 }
-

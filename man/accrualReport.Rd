@@ -4,10 +4,12 @@
 \alias{accrualReport}
 \title{Accrual Report}
 \usage{
-accrualReport(formula, data = NULL, subset = NULL, na.action = na.retain,
-  dateRange = NULL, zoom = NULL, targetN = NULL, targetDate = NULL,
-  closeDate = NULL, enrollmax = NULL, studynos = TRUE, minrand = 10,
-  panel = "accrual", h = 2.5, w = 3.75, hb = 5, wb = 5, hdot = 3.5)
+accrualReport(formula, data = NULL, subset = NULL,
+  na.action = na.retain, dateRange = NULL, zoom = NULL,
+  targetN = NULL, targetDate = NULL, closeDate = NULL,
+  enrollmax = NULL, studynos = TRUE, minrand = 10,
+  panel = "accrual", h = 2.5, w = 3.75, hb = 5, wb = 5,
+  hdot = 3.5)
 }
 \arguments{
 \item{formula}{formula object, with time variables on the left (separated by +) and grouping variables on the right.  Enrollment date, randomization date, region, country, and site when present must have the variables in parenthesis preceeded by the key words \code{enrollment, randomize, region, country, site}.}
@@ -57,4 +59,3 @@ Typically the left-hand-side variables of the formula, in order, are date of enr
 # See test.Rnw in tests directory
 }
 }
-

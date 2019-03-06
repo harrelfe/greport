@@ -9,7 +9,8 @@ exReport(formula, data = NULL, subset = NULL, na.action = na.retain,
   autoother = FALSE, sort = TRUE, whenapp = NULL, erdata = NULL,
   panel = "excl", subpanel = NULL, head = NULL, tail = NULL,
   apptail = NULL, h = 5.5, w = 6.5, hc = 4.5, wc = 5,
-  adjustwidth = "-0.75in", append = FALSE, popts = NULL, app = TRUE)
+  adjustwidth = "-0.75in", append = FALSE, popts = NULL,
+  app = TRUE)
 }
 \arguments{
 \item{formula}{a formula with only a right-hand side, possibly containing a term of the form \code{pending(x)} to inform the function of which subjects have incomplete randomization ("randomization pending").  The \code{pending} variable is ignored if a subject has an exclusion marked.  A \code{randomized} variable is an optional \code{logical} vector specifying which subjects are considered to have been randomized.  The presence of this variable causes consistency checking against exclusions.  One or more \code{cond} variables provide binary/logical vectors used to define subsets of subjects for which denominators are used to compute additional fractions of exclusions that are reported in a detailed table.  The arguments of the \code{cond} function are the name of the original variable (assumed to be provided as a regular variable in \code{formula}, a single character string giving the label for the condition, and the vector of essentially binary values that specify the condition.}
@@ -72,4 +73,3 @@ With input being a series of essentially binary variables with positive indicati
 \author{
 Frank Harrell
 }
-

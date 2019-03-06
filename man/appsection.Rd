@@ -4,7 +4,8 @@
 \alias{appsection}
 \title{Issue LaTeX section and/or subsection in appendix}
 \usage{
-appsection(section = NULL, subsection = NULL, main = FALSE, panel = "")
+appsection(section = NULL, subsection = NULL, main = FALSE,
+  panel = "")
 }
 \arguments{
 \item{section}{a character string that will cause a section command to be added to app.tex}
@@ -18,4 +19,3 @@ appsection(section = NULL, subsection = NULL, main = FALSE, panel = "")
 \description{
 This is useful for copying section and subsection titles in the main body of the report to the appendix, to help in navigating supporting tables.  LaTeX backslash characters need to be doubled.
 }
-

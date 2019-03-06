@@ -16,4 +16,3 @@ sampleFrac(n, nobsY = NULL, table = TRUE)
 \description{
 Uses denominators stored with \code{setgreportOption} along with counts specified to \code{SampleFrac} to compute fractions of subjects in current analysis
 }
-

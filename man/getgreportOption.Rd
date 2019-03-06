@@ -12,4 +12,3 @@ getgreportOption(opts = NULL)
 \description{
 Get greport options, assigning default values of unspecified optios.
 }
-

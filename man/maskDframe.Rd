@@ -16,4 +16,3 @@ maskDframe(x, formula, ...)
 \description{
 Given a list of applicable variable names in a formula, runs \code{maskVal} on any variables in a data frame \code{x} whose name is found in \code{formula}.
 }
-

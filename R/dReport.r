@@ -526,7 +526,7 @@ dReport <-
              ## col, shape, and abblen to argument 'popts'.
              ## Otherwise overwrite argument 'popts' with a list containing the elements
              ## col and abblen.
-             popts <- if(length(groups) == 1 && groups == tvar) {
+             popts <- if(length(groups) == 1 && groups == tvar) #{
                c(popts, list(col  =getgreportOption('tx.col'),
                              shape=getgreportOption('tx.pch'),
                              abblen=12))

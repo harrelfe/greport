@@ -7,13 +7,13 @@
 Merge(..., id, all = TRUE, verbose = TRUE)
 }
 \arguments{
+\item{\dots}{two or more dataframes or data tables}
+
 \item{id}{a formula containing all the identification variables such that the combination of these variables uniquely identifies subjects or records of interest.  May be omitted for data tables; in that case the \code{key} function retrieves the id variables.}
 
 \item{all}{set to \code{FALSE} to drop observations not found in second and later data frames (only applies if not using \code{data.table})}
 
 \item{verbose}{set to \code{FALSE} to not print information about observations}
-
-\item{\dots}{two or more dataframes or data tables}
 }
 \description{
 Merges an arbitrarily large series of data frames or data tables containing common \code{id} variables (keys for data tables).  Information about number of observations and number of unique \code{id}s in individual and final merged datasets is printed.  The first data frame has special meaning in that all of its observations are kept whether they match \code{id}s in other data frames or not.  For all other data frames, by default non-matching observations are dropped.  The first data frame is also the one against which counts of unique \code{id}s are compared.  Sometimes \code{merge} drops variable attributes such as \code{labels} and \code{units}.  These are restored by \code{Merge}.  If all objects are of class \code{data.table}, faster merging will be done using the \code{data.table} package's join operation.  This assumes that all objects have identical key variables and those of the variables on which to merge.
@@ -32,4 +32,3 @@ b <- data.table(sid=1:2, bp=c(120,130)); setkey(b, sid)
 d <- data.table(d); setkey(d, sid)
 all <- Merge(a, b, d)
 }
-

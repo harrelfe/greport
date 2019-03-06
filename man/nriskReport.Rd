@@ -4,10 +4,11 @@
 \alias{nriskReport}
 \title{Number at Risk Report}
 \usage{
-nriskReport(formula, groups = NULL, time0 = "randomization", data = NULL,
-  subset = NULL, na.action = na.retain, ylab = "Number Followed",
-  panel = "nrisk", head = NULL, tail = NULL, h = 5.5, w = 5.5,
-  outerlabels = TRUE, append = FALSE, popts = NULL)
+nriskReport(formula, groups = NULL, time0 = "randomization",
+  data = NULL, subset = NULL, na.action = na.retain,
+  ylab = "Number Followed", panel = "nrisk", head = NULL,
+  tail = NULL, h = 5.5, w = 5.5, outerlabels = TRUE,
+  append = FALSE, popts = NULL)
 }
 \arguments{
 \item{formula}{a formula with time and the left hand side, and with variables on the right side being possible stratification variables.  If no stratification put \code{1} as the right hand side.  Specify unique subject IDs by including a term \code{id()} if subjects have more than one observation.}
@@ -49,4 +50,3 @@ Graph number of subjects at risk
 \examples{
 # See test.Rnw in tests directory
 }
-
