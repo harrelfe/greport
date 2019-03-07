@@ -2,8 +2,6 @@
 #'
 #' @author Frank E Harrell Jr \email{f.harrell@@vanderbilt.edu}
 #'
-#' @maintainer Frank E Harrell Jr \email{f.harrell@@vanderbilt.edu}
-#'
 #' @export Merge accrualReport dNeedle dReport eReport endPlot exReport getgreportOption nriskReport putFig sampleFrac setgreportOption startPlot survReport
 #' @import Hmisc ggplot2 lattice data.table methods
 #' @importFrom latticeExtra useOuterStrips
@@ -12,7 +10,7 @@
 #' @importFrom Formula Formula model.part
 #' @importFrom grDevices adjustcolor dev.off gray pdf
 #' @importFrom graphics abline axis box grconvertX grconvertY lines par plot plot.new points text
-#' @importFrom stats as.formula median model.frame qnorm reshape sd terms
+#' @importFrom stats as.formula median model.frame qnorm reshape sd terms runif
 #' @docType package
 #' @aliases greport package-greport
 #' @name greport
