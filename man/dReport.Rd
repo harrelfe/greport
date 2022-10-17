@@ -4,14 +4,33 @@
 \alias{dReport}
 \title{Descriptive Statistics Report}
 \usage{
-dReport(formula, groups = NULL, what = c("box", "proportions", "xy",
-  "byx"), byx.type = c("violin", "quantiles"), violinbox = TRUE,
-  violinbox.opts = list(col = adjustcolor("blue", alpha.f = 0.25), border
-  = FALSE), summaryPsort = FALSE, exclude1 = TRUE, stable = TRUE,
-  fun = NULL, data = NULL, subset = NULL, na.action = na.retain,
-  panel = "desc", subpanel = NULL, head = NULL, tail = NULL,
-  continuous = 10, h = 5.5, w = 5.5, outerlabels = TRUE,
-  append = FALSE, sopts = NULL, popts = NULL, lattice = FALSE)
+dReport(
+  formula,
+  groups = NULL,
+  what = c("box", "proportions", "xy", "byx"),
+  byx.type = c("violin", "quantiles"),
+  violinbox = TRUE,
+  violinbox.opts = list(col = adjustcolor("blue", alpha.f = 0.25), border = FALSE),
+  summaryPsort = FALSE,
+  exclude1 = TRUE,
+  stable = TRUE,
+  fun = NULL,
+  data = NULL,
+  subset = NULL,
+  na.action = na.retain,
+  panel = "desc",
+  subpanel = NULL,
+  head = NULL,
+  tail = NULL,
+  continuous = 10,
+  h = 5.5,
+  w = 5.5,
+  outerlabels = TRUE,
+  append = FALSE,
+  sopts = NULL,
+  popts = NULL,
+  lattice = FALSE
+)
 }
 \arguments{
 \item{formula}{a formula accepted by the \code{bpplotM} or \code{summaryP} functions.  \code{formula} must have an \code{id(subjectidvariable)} term if there are repeated measures, in order to get correct subject counts as \code{nobs}.}
@@ -63,8 +82,6 @@ dReport(formula, groups = NULL, what = c("box", "proportions", "xy",
 \item{popts}{list specifying extra arguments to pass to a plot method.  One example is \code{text.at} to specify some number beyond \code{xlim[2]} to leave extra space for numerators and denominators when using \code{summaryP} for categorical analysis variables.  Another common use is for example \code{popts=list(layout=c(columns,rows))} to be used in rendering \code{lattice} plots.  \code{key} and \code{panel} are also frequently used.}
 
 \item{lattice}{set to \code{TRUE} to use \code{lattice} instead of \code{ggplot2} for proportions.  When this option is in effect, numerators and denominators are shown.}
-
-\item{\dots.}{Passed to \code{summaryP} or \code{bpplotM}}
 }
 \description{
 Generate graphics and LaTeX with descriptive statistics

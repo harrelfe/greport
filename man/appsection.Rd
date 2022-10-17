@@ -4,8 +4,7 @@
 \alias{appsection}
 \title{Issue LaTeX section and/or subsection in appendix}
 \usage{
-appsection(section = NULL, subsection = NULL, main = FALSE,
-  panel = "")
+appsection(section = NULL, subsection = NULL, main = FALSE, panel = "")
 }
 \arguments{
 \item{section}{a character string that will cause a section command to be added to app.tex}

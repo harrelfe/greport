@@ -4,13 +4,33 @@
 \alias{survReport}
 \title{Survival Report}
 \usage{
-survReport(formula, data = NULL, subset = NULL,
-  na.action = na.retain, ylab = NULL, what = c("S", "1-S"),
-  conf = c("diffbands", "bands", "bars", "none"), cause = NULL,
-  panel = "surv", subpanel = NULL, head = NULL, tail = NULL,
-  h = 3, w = 4.5, multi = FALSE, markevent = TRUE, mfrow = NULL,
-  y.n.risk = 0, mylim = NULL, bot = 2, aehaz = TRUE,
-  times = NULL, append = FALSE, opts = NULL, ...)
+survReport(
+  formula,
+  data = NULL,
+  subset = NULL,
+  na.action = na.retain,
+  ylab = NULL,
+  what = c("S", "1-S"),
+  conf = c("diffbands", "bands", "bars", "none"),
+  cause = NULL,
+  panel = "surv",
+  subpanel = NULL,
+  head = NULL,
+  tail = NULL,
+  h = 3,
+  w = 4.5,
+  multi = FALSE,
+  markevent = TRUE,
+  mfrow = NULL,
+  y.n.risk = 0,
+  mylim = NULL,
+  bot = 2,
+  aehaz = TRUE,
+  times = NULL,
+  append = FALSE,
+  opts = NULL,
+  ...
+)
 }
 \arguments{
 \item{formula}{a formula with survival (\code{Surv}) objects on the left hand side and an optional stratification factor on the right (or \code{1} if none).  The survival object component variables should be labeled; these labels are used for graph annotation.  If any of the \code{Surv} objects are competing risk objects (see \code{\link[survival]{Surv}}), event labels come from the factor levels in the variable that was the second argument to \code{Surv}, and the first factor level must correspond to right-censored observations.}

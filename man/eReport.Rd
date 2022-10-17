@@ -4,10 +4,23 @@
 \alias{eReport}
 \title{Event Report}
 \usage{
-eReport(formula, data = NULL, subset = NULL, na.action = na.retain,
-  minincidence = 0, conf.int = 0.95, etype = "adverse events",
-  panel = "events", subpanel = NULL, head = NULL, tail = NULL,
-  h = 6, w = 7, append = FALSE, popts = NULL)
+eReport(
+  formula,
+  data = NULL,
+  subset = NULL,
+  na.action = na.retain,
+  minincidence = 0,
+  conf.int = 0.95,
+  etype = "adverse events",
+  panel = "events",
+  subpanel = NULL,
+  head = NULL,
+  tail = NULL,
+  h = 6,
+  w = 7,
+  append = FALSE,
+  popts = NULL
+)
 }
 \arguments{
 \item{formula}{a formula with one or two left hand variables (the first representing major categorization and the second minor), and 1-2 right hand variables.  One of these may be enclosed in \code{id()} to indicate the presence of a unique subject ID, and the other is treatment.}

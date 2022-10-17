@@ -5,16 +5,17 @@
 \alias{greport}
 \alias{.noGenerics}
 \alias{package-greport}
-\alias{greport-package}
 \title{Graphical Reporting for Clinical Trials}
-\format{An object of class \code{logical} of length 1.}
+\format{
+An object of class \code{logical} of length 1.
+}
 \usage{
 .noGenerics
 }
 \description{
-Graphical Reporting for Clinical Trials
+Graphical clinical trial reporting based on Rmarkdown, LaTeX, and pdf
 }
 \author{
-Frank E Harrell Jr \email{f.harrell@vanderbilt.edu}
+Frank E Harrell Jr \email{fh@fharrell.com}
 }
 \keyword{datasets}

@@ -28,6 +28,6 @@ Current Goals
 
 Web Sites
 =============
-* Overall: http://biostat.mc.vanderbilt.edu/Greport
+* Overall: http://hbiostat.org/R/greport
 * CRAN: http://cran.r-project.org/web/packages/greport
 * Changelog: https://github.com/harrelfe/greport/commits/master

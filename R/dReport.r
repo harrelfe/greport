@@ -25,7 +25,6 @@
 #' @param h numeric.  Height of plot, in inches
 #' @param w numeric.  Width of plot
 #' @param outerlabels logical that if \code{TRUE}, pass \code{lattice} graphics through the \code{latticeExtra} package's \code{useOuterStrips}function if there are two conditioning (paneling) variables, to put panel labels in outer margins.
-#' @param \dots. Passed to \code{summaryP} or \code{bpplotM}
 #' @param append logical.  Set to \code{FALSE} to start a new panel
 #' @param sopts list specifying extra arguments to pass to \code{bpplotM}, \code{summaryP}, or \code{summaryS}
 #' @param popts list specifying extra arguments to pass to a plot method.  One example is \code{text.at} to specify some number beyond \code{xlim[2]} to leave extra space for numerators and denominators when using \code{summaryP} for categorical analysis variables.  Another common use is for example \code{popts=list(layout=c(columns,rows))} to be used in rendering \code{lattice} plots.  \code{key} and \code{panel} are also frequently used.

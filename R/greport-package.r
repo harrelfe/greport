@@ -1,6 +1,8 @@
 #' Graphical Reporting for Clinical Trials
 #'
-#' @author Frank E Harrell Jr \email{f.harrell@@vanderbilt.edu}
+#' Graphical clinical trial reporting based on Rmarkdown, LaTeX, and pdf
+#' 
+#' @author Frank E Harrell Jr \email{fh@fharrell.com}
 #'
 #' @export Merge accrualReport dNeedle dReport eReport endPlot exReport getgreportOption nriskReport putFig sampleFrac setgreportOption startPlot survReport
 #' @import Hmisc ggplot2 lattice data.table methods

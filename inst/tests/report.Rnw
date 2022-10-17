@@ -507,7 +507,7 @@ on the screen.  If using pop-up method \code{poptype=1},
 the user must install the following \LaTeX\ packages:
 \code{acrotex}, \code{ocgtools}, and \code{asymptote}.  If using
 \code{poptype=2}, the user must install the \code{tooltip} style.
-See \url{http://biostat.mc.vanderbilt.edu/Greport} for more information.
+See \url{http://hbiostat.org/R/greport} for more information.
 \code{poptype=3} just puts the denominator information as tiny tables
 in figure captions and don't require use of any special \LaTeX\
 packages.  This approach solves a problem with Macs and Ipads not
@@ -528,12 +528,10 @@ then to make sure the entire appendix is generated turn off all
 caching and re-run the program.
 
 The user musc define a function \code{spar} using the one in
-\url{http://biostat.mc.vanderbilt.edu/wiki/pub/Main/RConfiguration/Rprofile}
+\url{https://github.com/harrelfe/rscripts/blob/master/reptools.r}
 as a template.  \code{spar} sets good default graphical parameters
 (e.g., space between axis labels and axes) for non-\code{lattice} \R\
-graphics.  The \code{Rprofile} example there also defines the
-\code{knitrSet} function that is used in this example, to pretty-print
-\R\ code. 
+graphics. 
 
 \subsection{Changing Lattice Graphics Parameters}
 The most common change needed in Lattice graphics is the font size in strip labels, especially to allow longer labels to fit.  Here is a summary of how to change this in a few \code{greport} contexts.
@@ -556,12 +554,7 @@ superscripts, subscripts, etc.  Variables that are not binary (0/1,
 labels) defined (e.g., using the \code{factor} function) that will be
 attractive in the report.  The Hmisc library \code{upData} function is
 useful for annotating variables with labels, units of measurement, and
-value labels.  See
-\href{http://biostat.mc.vanderbilt.edu/wiki/pub/Main/RS/sintro.pdf}
-{Alzola and Harrell, 2006},
-\href{http://biostat.mc.vanderbilt.edu/StatGraphCourse}, and
-\href{http://biostat.mc.vanderbilt.edu/StatCompCourse} for details
-about setting up analysis files.
+value labels.  See \href{https://hbiostat.org/rflow}{R Workflow}.
 
 \R\ code that created the analysis file for this report is shown
 below.  For this particular application, \code{units} and some of

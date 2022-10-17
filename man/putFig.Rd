@@ -4,10 +4,19 @@
 \alias{putFig}
 \title{Put Figure}
 \usage{
-putFig(panel, name, caption = NULL, longcaption = NULL,
-  tcaption = caption, tlongcaption = NULL, poptable = NULL,
-  popfull = FALSE, sidecap = FALSE, outtable = FALSE,
-  append = TRUE)
+putFig(
+  panel,
+  name,
+  caption = NULL,
+  longcaption = NULL,
+  tcaption = caption,
+  tlongcaption = NULL,
+  poptable = NULL,
+  popfull = FALSE,
+  sidecap = FALSE,
+  outtable = FALSE,
+  append = TRUE
+)
 }
 \arguments{
 \item{panel}{character. Panel name.}
