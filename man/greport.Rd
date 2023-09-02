@@ -4,7 +4,7 @@
 \name{greport}
 \alias{greport}
 \alias{.noGenerics}
-\alias{package-greport}
+\alias{greport-package}
 \title{Graphical Reporting for Clinical Trials}
 \format{
 An object of class \code{logical} of length 1.

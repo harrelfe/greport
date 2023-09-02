@@ -14,7 +14,7 @@
 #' @importFrom graphics abline axis box grconvertX grconvertY lines par plot plot.new points text
 #' @importFrom stats as.formula median model.frame qnorm reshape sd terms runif
 #' @docType package
-#' @aliases greport package-greport
+#' @aliases greport-package
 #' @name greport
 
 # The caching and check for conflicts require looking for a pattern of objects; the search may be avoided by defining an object .noGenerics
